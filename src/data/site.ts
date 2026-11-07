@@ -1,6 +1,6 @@
 // Dati del laboratorio. Modifica qui: si aggiornano in tutto il sito.
 export const site = {
-  name: "RL Lab Watches",
+  name: "Roberto Landi Lab Watches",
   owner: "Roberto Landi",
   tagline: "Restauro e riparazione di orologi di lusso",
   description:

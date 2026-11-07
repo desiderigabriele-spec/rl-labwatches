@@ -143,9 +143,9 @@ export default function WatchModel({
       new THREE.MeshStandardMaterial({ map, transparent: true, depthWrite: false, roughness: 1, metalness: 0, polygonOffset: true, polygonOffsetFactor: -2 });
     return {
       steel: spec("#d9d9dc", "#8c867b", 0.22, 0.7, 1),
-      gold: spec("#c8a96a", "#76643f", 0.28, 0.75, 1),
-      applied: spec("#e4cf9f", "#8f7d55", 0.3, 0.7, 0.55, "#3a2d14", 0.6, 0),
-      dial: spec("#0f1013", "#2b2721", 0.45, 0.85, 0.4),
+      gold: spec("#c5a04b", "#76643f", 0.28, 0.75, 1),
+      applied: spec("#e2c473", "#8f7d55", 0.3, 0.7, 0.55, "#3a2d14", 0.6, 0),
+      dial: spec("#00452c", "#33392b", 0.38, 0.85, 0.45), // verde del marchio
       plate: spec("#d8d5ce", "#6f6455", 0.32, 0.8, 0.9),
       bridge: spec("#e3e1dc", "#7a6f5f", 0.25, 0.8, 0.95),
       brass: spec("#d6b56b", "#6b5532", 0.3, 0.8, 1),

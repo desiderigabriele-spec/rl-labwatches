@@ -28,9 +28,9 @@ export default function Header() {
         scrolled || open ? "bg-paper/85 backdrop-blur-md border-b border-line" : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-8">
-        <Link href="/" aria-label="RL Lab Watches – Home">
-          <Logo />
+      <div className={`mx-auto flex max-w-7xl items-center justify-between px-4 transition-all duration-500 sm:px-8 ${scrolled ? "h-16" : "h-24 sm:h-28"}`}>
+        <Link href="/" aria-label="Roberto Landi Lab Watches – Home">
+          <Logo live delay="afterIntro" wordmark={!scrolled} className={`w-auto transition-[height] duration-500 ${scrolled ? "h-9" : "h-16 sm:h-20"}`} />
         </Link>
 
         <nav className="hidden md:flex items-center gap-9">
