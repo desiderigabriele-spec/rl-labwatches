@@ -25,7 +25,6 @@ npm run build    # build di produzione
 | Colori e font | `src/app/globals.css` (blocco `@theme`) |
 | Logo (kit vettoriale) | `public/brand/` · note e PDF in `docs/brand/` · componente `src/components/Logo.tsx` |
 | Orologio 3D della home | `src/components/WatchScene.tsx` (modello: `src/data/model3d.ts`) |
-| Orologio in evidenza ("Il pezzo del mese") | `featured: true` e `story` in `src/data/products.ts` |
 
 Le pagine sono in `src/app/` (una cartella per pagina).
 

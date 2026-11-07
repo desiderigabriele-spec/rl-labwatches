@@ -3,11 +3,11 @@ import { legalNav, nav, site, whatsappLink } from "@/data/site";
 
 export default function Footer() {
   return (
-    <footer className="guilloche sheen bg-green-2 text-cream">
+    <footer className="guilloche sheen relative bg-green-2 text-cream">
       <div className="mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-10 px-4 py-12 sm:px-8 sm:py-16 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:gap-12">
         <div className="col-span-2 space-y-5 lg:col-span-1">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/RL-completo-negativo.svg" alt="Roberto Landi Lab Watches" loading="lazy" width={1080} height={595} className="h-20 w-auto sm:h-28" />
+          <img src="/brand/parti/RL-completo-negativo-trasparente.svg" alt="Roberto Landi Lab Watches" loading="lazy" width={1080} height={595} className="h-20 w-auto sm:h-28" />
           <p className="max-w-sm text-sm leading-relaxed text-cream/65">
             Artigiano di orologi di lusso a Pistoia: restauro, revisione e riparazione con spedizione sicura in tutto il mondo.
           </p>

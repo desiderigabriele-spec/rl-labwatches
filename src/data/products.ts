@@ -15,10 +15,6 @@ export type Product = {
   photos?: string[];
   /** vista a 360°: cartella con i fotogrammi 001.jpg, 002.jpg, … e il loro numero */
   spin?: { dir: string; frames: number; ext?: "jpg" | "webp" };
-  /** in evidenza nella sezione "Il pezzo del mese" in home (uno solo) */
-  featured?: boolean;
-  /** due righe sulla storia del pezzo, per "Il pezzo del mese" */
-  story?: string;
   /** colore del bagliore in vetrina (di solito il colore del quadrante), es. "#1f8a5a" */
   accent?: string;
   /** dettagli aggiuntivi mostrati nella scheda, es. ["Cassa", "Acciaio, 40 mm"] */
@@ -35,8 +31,6 @@ export const spinFrames = (p: Product) =>
 export const products: Product[] = [
   {
     slug: "esempio-smeraldo",
-    featured: true,
-    story: "Un quadrante verde profondo che cambia tono con la luce, incorniciato da una lunetta in oro. Revisionato e lucidato nel mio laboratorio: pronto per una nuova storia al polso.",
     name: "Smeraldo",
     brand: "Esempio",
     ref: "RL-0401",

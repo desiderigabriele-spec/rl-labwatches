@@ -6,20 +6,30 @@ import { WhatsAppIcon } from "./WhatsAppButton";
 
 /**
  * Barra delle azioni su telefono: Chiama · WhatsApp · Preventivo.
- * Si nasconde mentre scorri verso il basso e riappare quando risali.
+ * È sempre visibile: si nasconde solo mentre scorri verso il basso e ricompare
+ * appena ti fermi, quando risali o quando arrivi in fondo alla pagina.
  */
 export default function MobileActionBar() {
   const [hidden, setHidden] = useState(false);
   useEffect(() => {
     let last = window.scrollY;
+    let idle = 0;
     const onScroll = () => {
       const y = window.scrollY;
-      if (Math.abs(y - last) < 8) return;
-      setHidden(y > last && y > 240);
-      last = y;
+      const atBottom = y + window.innerHeight >= document.documentElement.scrollHeight - 80;
+      if (Math.abs(y - last) >= 6) {
+        setHidden(y > last && y > 240 && !atBottom);
+        last = y;
+      }
+      // appena smetti di scorrere, la barra torna
+      window.clearTimeout(idle);
+      idle = window.setTimeout(() => setHidden(false), 350);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.clearTimeout(idle);
+    };
   }, []);
 
   const item = "flex flex-col items-center justify-center gap-1 text-[0.7rem] font-medium uppercase tracking-[0.12em]";
