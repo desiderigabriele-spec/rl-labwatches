@@ -1,7 +1,10 @@
 /**
- * Controller delle lancette del logo — versione TypeScript di docs/brand/web/logo-animation.js (kit).
- * Stessa logica e stessi angoli; unica differenza: trova le lancette anche con ID prefissati
- * ("…hour-hand"), necessari quando nella pagina ci sono più copie del logo.
+ * Controller delle lancette del logo — basato su docs/brand/web/logo-animation.js (kit).
+ * Differenze rispetto al kit:
+ *  - trova le lancette anche con ID prefissati ("…hour-hand"), necessari con più copie del logo;
+ *  - l'intro non fa giri completi (le lancette passavano sopra le scritte): le lancette partono
+ *    insieme dalle ore 9, salgono come l'ago di un quadrante e si fermano nella posa originale
+ *    con un piccolo rimbalzo, restando sempre nella metà superiore del quadrante.
  * Angoli in senso orario dalle ore 12; rotazione intorno al perno 628 607 (coordinate del kit).
  */
 export type LogoController = {
@@ -51,12 +54,17 @@ export function animateLogo(
   function intro() {
     reset();
     if (reduced) return;
+    // partenza: entrambe le lancette alle ore 9 (orizzontali, a sinistra)
+    const fromHour = -90 - baseHour;
+    const fromMinute = -90 - baseMinute;
     const start = performance.now();
     const tick = (now: number) => {
       if (disposed) return;
       const p = Math.min(1, (now - start) / Math.max(1, duration));
-      const ease = 1 - Math.pow(1 - p, 4);
-      apply(-360 * (1 - ease), -720 * (1 - ease));
+      // easeOutBack: arriva con un piccolo rimbalzo, senza mai scendere sotto l'orizzontale
+      const c1 = 1.3, c3 = c1 + 1;
+      const ease = 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2);
+      apply(fromHour * (1 - ease), fromMinute * (1 - ease));
       if (p < 1) frame = requestAnimationFrame(tick);
       else apply(0, 0);
     };

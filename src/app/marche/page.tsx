@@ -2,6 +2,7 @@ import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
 import { brands } from "@/data/brands";
+import BrandLogo from "@/components/BrandLogo";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({
@@ -29,8 +30,11 @@ export default function MarchePage() {
         <div className="grid gap-px overflow-hidden border border-line bg-line md:grid-cols-2">
           {brands.map((b, i) => (
             <Reveal key={b.name} delay={(i % 2) * 0.08} className="h-full">
-              <article className="h-full bg-paper p-8 sm:p-12">
-                <h2 className="font-display text-4xl font-light tracking-wide sm:text-5xl">{b.name}</h2>
+              <article className="group h-full bg-paper p-8 sm:p-12">
+                <div className="flex h-24 items-center">
+                  <BrandLogo brand={b} className={`text-fg transition-colors duration-500 group-hover:text-gold ${b.ratio > 3 ? "h-12" : "h-20"}`} />
+                </div>
+                <h2 className="mt-6 text-xs uppercase tracking-[0.3em] text-mute">Riparazione e restauro {b.name}</h2>
                 <span className="mt-5 block h-px w-12 bg-gold-2" />
                 <p className="mt-6 leading-relaxed text-mute">{b.text}</p>
               </article>

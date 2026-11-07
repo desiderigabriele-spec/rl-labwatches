@@ -41,6 +41,11 @@ for (const name of ["RL-orizzontale-metallo", "RL-completo-metallo", "RL-complet
   writeFileSync(join(pub, "parti", `${name}-scritte.svg`), words);
   // quadrante con lancette: markup inline
   let dial = removeBackground(["wordmark", "tagline"].reduce(removeGroup, src));
+  // le lancette non possono mai uscire sotto il quadrante (dove ci sono le scritte)
+  dial = dial
+    .replace("</defs>", '<clipPath id="hands-clip" clipPathUnits="userSpaceOnUse"><rect x="0" y="0" width="1600" height="640"/></clipPath></defs>')
+    .replace('<g id="hands" mask="url(#pivot-cutout)">', '<g id="hands" mask="url(#pivot-cutout)" clip-path="url(#hands-clip)">');
+  if (!dial.includes('clip-path="url(#hands-clip)"')) throw new Error(`${name}: gruppo delle lancette non trovato`);
   const viewBox = dial.match(/viewBox="([^"]*)"/)[1];
   const inner = dial.replace(/^[\s\S]*?<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "").replace(/<title>[\s\S]*?<\/title>/, "");
   parts[name] = { viewBox, dial: inner, words: `/brand/parti/${name}-scritte.svg` };

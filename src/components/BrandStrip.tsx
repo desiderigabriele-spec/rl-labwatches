@@ -1,26 +1,25 @@
 import Link from "next/link";
 import { brands } from "@/data/brands";
+import BrandLogo from "./BrandLogo";
 
-// Marche in scorrimento continuo (tipografia, niente loghi di terzi)
+// Loghi delle marche in scorrimento continuo
 export default function BrandStrip() {
   const row = [...brands, ...brands];
   return (
     <section className="overflow-hidden border-t border-line py-24" aria-labelledby="marche-titolo">
       <h2 id="marche-titolo" className="eyebrow text-center">Specializzato nei grandi marchi dell&apos;alta orologeria</h2>
-      <div className="marquee mt-12 flex w-max" aria-hidden>
+      <div className="marquee mt-14 flex w-max">
         {[0, 1].map((k) => (
-          <ul key={k} className="flex shrink-0 items-center">
+          <ul key={k} className="flex shrink-0 items-center" aria-hidden={k === 1}>
             {row.map((b, i) => (
-              <li key={`${k}-${i}`} className="flex items-center font-display text-5xl font-light text-fg/80 sm:text-7xl">
-                <span className="px-8 transition-colors hover:text-gold sm:px-12">{b.name}</span>
-                <span className="text-xl text-gold-2">◆</span>
+              <li key={`${k}-${i}`} className="flex items-center px-10 sm:px-16">
+                <BrandLogo brand={b} className={`text-fg/70 transition-colors duration-300 hover:text-gold ${b.ratio > 3 ? "h-9 sm:h-12" : "h-14 sm:h-20"}`} />
               </li>
             ))}
           </ul>
         ))}
       </div>
-      <p className="sr-only">{brands.map((b) => b.name).join(", ")}</p>
-      <div className="mt-12 text-center">
+      <div className="mt-14 text-center">
         <Link href="/marche" className="btn">Le marche che tratto</Link>
       </div>
     </section>
