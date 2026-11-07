@@ -118,7 +118,6 @@ body {
 }
 /* riflesso che attraversa lentamente il guilloché, come inclinando il polso */
 .sheen {
-  position: relative;
   overflow: hidden;
   isolation: isolate;
 }
@@ -162,10 +161,17 @@ body {
 
 /* Intro con il logo */
 .intro-splash {
-  animation: intro-out 0.9s cubic-bezier(0.76, 0, 0.24, 1) 2.3s forwards;
+  animation: intro-out 0.8s ease 2.3s forwards;
+}
+.intro-splash .intro-logo {
+  animation: intro-in 1s cubic-bezier(0.22, 1, 0.36, 1) both, intro-logo-out 0.8s ease 2.3s forwards;
+}
+@keyframes intro-logo-out {
+  to { transform: scale(0.94); opacity: 0; }
 }
 @media (max-width: 1023px) {
-  .intro-splash { animation-delay: 1.5s; animation-duration: 0.75s; }
+  .intro-splash { animation-delay: 1.5s; animation-duration: 0.7s; }
+  .intro-splash .intro-logo { animation: intro-in 1s cubic-bezier(0.22, 1, 0.36, 1) both, intro-logo-out 0.7s ease 1.5s forwards; }
 }
 .intro-logo {
   animation: intro-in 1s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -175,7 +181,7 @@ body {
   to { opacity: 1; transform: none; }
 }
 @keyframes intro-out {
-  to { transform: translateY(-100%); visibility: hidden; }
+  to { opacity: 0; visibility: hidden; }
 }
 html[data-intro="seen"] .intro-splash {
   display: none;

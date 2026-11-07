@@ -13,7 +13,6 @@ import SplitText from "@/components/SplitText";
 import ParallaxImage from "@/components/ParallaxImage";
 import Stats from "@/components/Stats";
 import IrisReveal from "@/components/IrisReveal";
-import FeaturedWatch from "@/components/FeaturedWatch";
 import { products } from "@/data/products";
 import { site } from "@/data/site";
 import { pageMeta } from "@/lib/seo";
@@ -103,15 +102,17 @@ export default function Home() {
       {/* CHI SONO */}
       <section className="relative overflow-hidden py-16 sm:py-32">
         <div className="mx-auto grid max-w-7xl items-center gap-14 px-4 sm:px-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <IrisReveal className="lg:order-2">
-            <ParallaxImage
-              src="/images/roberto-landi-ritratto.jpg"
-              alt="Ritratto di Roberto Landi, orologiaio a Pistoia"
-              sizes="(min-width: 1024px) 35vw, 90vw"
-              className="mx-auto aspect-[3/4] max-w-md bg-green"
-              strength={6}
-            />
-          </IrisReveal>
+          <Reveal className="lg:order-2">
+            <div className="relative mx-auto aspect-[3/4] max-w-md">
+              <Image
+                src="/images/roberto-landi-ritratto.webp"
+                alt="Ritratto di Roberto Landi, orologiaio a Pistoia"
+                fill
+                sizes="(min-width: 1024px) 35vw, 90vw"
+                className="object-contain object-bottom [mask-image:linear-gradient(to_bottom,black_80%,transparent)]"
+              />
+            </div>
+          </Reveal>
           <div className="lg:order-1">
             <Reveal>
               <p className="eyebrow">Salve, sono</p>
@@ -132,9 +133,6 @@ export default function Home() {
 
       {/* SERVIZI: scorrimento orizzontale */}
       <ServicesRail />
-
-      {/* IL PEZZO DEL MESE */}
-      {products.find((p) => p.featured) && <FeaturedWatch p={products.find((p) => p.featured)!} />}
 
       {/* VETRINA con i faretti */}
       <Showcase items={products.slice(0, 5)} />

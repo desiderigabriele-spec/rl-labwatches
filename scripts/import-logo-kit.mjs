@@ -36,8 +36,8 @@ const removeBackground = (svg) => svg.replace(/<rect x="[^"]*" y="[^"]*" width="
 const parts = {};
 for (const name of ["RL-orizzontale-metallo", "RL-completo-metallo", "RL-completo-negativo"]) {
   const src = readFileSync(join(kit, "SVG", `${name}.svg`), "utf8");
-  // scritte (+ eventuale fondo): file statico
-  let words = ["clock-face", "hands", "hand-pivot"].reduce(removeGroup, src);
+  // scritte su fondo trasparente (il colore di fondo lo dà già la pagina): file statico
+  let words = removeBackground(["clock-face", "hands", "hand-pivot"].reduce(removeGroup, src));
   writeFileSync(join(pub, "parti", `${name}-scritte.svg`), words);
   // quadrante con lancette: markup inline
   let dial = removeBackground(["wordmark", "tagline"].reduce(removeGroup, src));
@@ -55,6 +55,9 @@ writeFileSync(
   join(root, "src/brand/logo-parts.ts"),
   `// File generato da scripts/import-logo-kit.mjs — non modificare a mano.\n// Quadrante (lancette animabili) separato dalle scritte; geometria originale del kit.\nexport const LOGO_PARTS = ${JSON.stringify(parts, null, 2)} as const;\n\nexport type LogoVersion = keyof typeof LOGO_PARTS;\n`
 );
+
+// logo completo "negativo" senza il rettangolo verde, per il footer (che ha già il suo fondo)
+writeFileSync(join(pub, "parti", "RL-completo-negativo-trasparente.svg"), removeBackground(readFileSync(join(kit, "SVG", "RL-completo-negativo.svg"), "utf8")));
 
 // favicon: simbolo negativo su fondo quadrato
 const icon = readFileSync(join(kit, "SVG", "RL-simbolo-negativo.svg"), "utf8")
