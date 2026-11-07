@@ -18,4 +18,3 @@ node scripts/build-logo.mts
 Le lancette ruotano intorno al perno (628, 607). Nel componente `<Logo live />` segnano l'ora reale
 (aggiornata ogni minuto, non animate di continuo) e rispettano "riduci movimento".
 
-La versione precedente del kit (ricostruzione semplificata) è in `docs/brand-kit-precedente/`.
