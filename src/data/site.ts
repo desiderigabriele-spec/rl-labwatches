@@ -29,6 +29,8 @@ export const site = {
     facebook: "https://www.facebook.com/robertolandi.labwatches",
   },
   instagramHandle: "@rl_labwatches",
+  // Partita IVA: per legge va indicata sul sito di un'attività. Inseriscila qui (es. "01234567890").
+  vat: "" as string,
 } as const;
 
 export const whatsappLink = (text?: string) =>

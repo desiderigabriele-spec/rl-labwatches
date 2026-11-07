@@ -9,11 +9,35 @@ export type Product = {
   price: number | null; // null = prezzo su richiesta
   condition: string;
   description: string;
-  image?: string; // percorso in /public, es. "/prodotti/rolex-5513.jpg"
+  /** foto di copertina (anteprima nella lista), es. "/orologi/rolex-5513/cover.jpg" */
+  image?: string;
+  /** altre foto della galleria */
+  photos?: string[];
+  /** vista a 360°: cartella con i fotogrammi 001.jpg, 002.jpg, … e il loro numero */
+  spin?: { dir: string; frames: number; ext?: "jpg" | "webp" };
+  /** dettagli aggiuntivi mostrati nella scheda, es. ["Cassa", "Acciaio, 40 mm"] */
+  details?: [string, string][];
   sold?: boolean;
 };
 
+/** Percorsi dei fotogrammi della vista a 360° */
+export const spinFrames = (p: Product) =>
+  p.spin ? Array.from({ length: p.spin.frames }, (_, i) => `${p.spin!.dir}/${String(i + 1).padStart(3, "0")}.${p.spin!.ext ?? "jpg"}`) : [];
+
 export const products: Product[] = [
+  {
+    // DEMO della vista a 360° (fotogrammi generati dal modello 3D del sito): da rimuovere con gli orologi reali
+    slug: "esempio-vista-360",
+    name: "Dimostrazione vista a 360°",
+    brand: "Esempio",
+    ref: "Ref. 0000",
+    year: "—",
+    price: null,
+    condition: "Esempio",
+    description: "Esempio della vista a 360°: trascina l'orologio per ruotarlo. Con le foto reali, scattate su un piatto girevole, ogni orologio in vendita si potrà guardare da ogni lato.",
+    spin: { dir: "/orologi/esempio-vista-360/360", frames: 36 },
+    details: [["Fotogrammi", "36 (uno ogni 10°)"]],
+  },
   {
     slug: "esempio-subacqueo-anni-70",
     name: "Subacqueo automatico",

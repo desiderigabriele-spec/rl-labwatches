@@ -54,7 +54,7 @@ export default function Footer() {
       </div>
       <div className="border-t border-cream/15">
         <div className="mx-auto max-w-7xl px-4 py-6 text-xs text-cream/55 sm:px-8">
-          <p>© {new Date().getFullYear()} RL Lab Watches · {site.owner} · {site.address.city}, Italia</p>
+          <p>© {new Date().getFullYear()} RL Lab Watches · {site.owner} · {site.address.city}, Italia{site.vat && ` · P.IVA ${site.vat}`}</p>
         </div>
       </div>
     </footer>

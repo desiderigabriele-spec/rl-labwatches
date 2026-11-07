@@ -38,6 +38,41 @@ node scripts/import-logo-kit.mjs <cartella Roberto_Landi_Vector_Kit>
 
 Copia gli SVG in `public/brand/`, rigenera le parti animabili e la favicon.
 
+## Aggiungere un orologio in vendita (con vista a 360°)
+
+**1. Le foto**
+- *Foto normali*: fondo chiaro e uniforme (un box luminoso da fotografia va benissimo), luce diffusa,
+  telefono su treppiede. La prima foto in ordine alfabetico diventa la copertina.
+- *Vista a 360°*: orologio al centro di un piatto girevole, telefono fermo su treppiede, stessa luce.
+  Scatta una foto ogni 10° (36 foto) o ogni 15° (24 foto), sempre nello stesso verso.
+  Esistono piatti girevoli motorizzati che scattano da soli tramite app.
+
+**2. Importa le foto** (le raddrizza, le ridimensiona e le comprime):
+
+```bash
+node scripts/aggiungi-orologio.mjs rolex-submariner-16610 --foto ~/Desktop/sub/foto --360 ~/Desktop/sub/360
+```
+
+**3. Incolla il blocco** che lo script stampa in `src/data/products.ts` e completa nome, prezzo e descrizione.
+
+**4. Quando il catalogo è reale**, togli gli esempi da `products.ts` (e la cartella
+`public/orologi/esempio-vista-360`) e metti `SHOP_READY = true`: la pagina Orologi entra nella sitemap
+e ogni orologio viene mostrato su Google con prezzo e disponibilità.
+
+## Modulo contatti: invio diretto via email
+
+Il modulo invia le richieste con [Resend](https://resend.com) (piano gratuito: 3.000 email al mese).
+Finché non è configurato, il modulo apre l'app di posta del cliente con il messaggio già scritto.
+
+1. Crea un account su resend.com e una **API key**.
+2. (Consigliato) In Resend aggiungi il dominio `rl-labwatches.it` e i record DNS che indica,
+   così le email partono da un indirizzo del sito.
+3. Su Vercel → progetto → **Settings → Environment Variables** aggiungi:
+   - `RESEND_API_KEY` = la chiave
+   - `CONTACT_FROM` = `Sito RL Lab Watches <sito@rl-labwatches.it>` (solo dopo il punto 2)
+   - `CONTACT_TO` = la casella che riceve le richieste (predefinita: rlabwatches@gmail.com)
+4. Rifai il deploy (Deployments → ⋯ → Redeploy).
+
 ## SEO e migrazione da Wix
 
 I vecchi indirizzi Wix reindirizzano con **301** alle nuove pagine (`next.config.ts`), così Google

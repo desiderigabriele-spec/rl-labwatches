@@ -66,6 +66,7 @@ export const localBusinessLd = {
     })),
   },
   sameAs: Object.values(site.social),
+  ...(site.vat ? { vatID: `IT${site.vat}` } : {}),
 };
 
 export const websiteLd = {

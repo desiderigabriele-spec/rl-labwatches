@@ -1,6 +1,7 @@
-// Testi legali del vecchio sito (rl-labwatches.it su Wix), riportati fedelmente.
-// Unica correzione: il dominio errato "robertolandi-lawatches.it" sostituito con quello reale.
-// ATTENZIONE: da far rivedere (citano Google Analytics/Ads, non presenti nel nuovo sito).
+// Testi legali.
+// - privacy e cookie: riscritti per il nuovo sito (niente Analytics/Ads, hosting Vercel, modulo via email).
+//   BOZZA da far verificare a un consulente prima della pubblicazione definitiva.
+// - termini, note legali, spedizioni: testi del vecchio sito, con il dominio corretto.
 export type LegalBlock = ["h" | "p" | "note", string];
 export type LegalPage = { title: string; blocks: LegalBlock[] };
 
@@ -10,59 +11,83 @@ export const legal = {
     "blocks": [
       [
         "h",
-        "1. PREMESSA"
+        "1. Titolare del trattamento"
       ],
       [
         "p",
-        "La presente Informativa sulla Privacy è rilasciata da Roberto Landi, operante nel settore dell'orologeria di lusso (di seguito \"la Società\", \"Noi\", \"noi\" o \"nostro\"). Il rispetto e la fiducia dei nostri clienti sono elementi di primaria importanza per la nostra attività. Questa Informativa sulla Privacy ha lo scopo di illustrare in maniera dettagliata le modalità con cui la Società raccoglie, gestisce e protegge i dati personali degli utenti che visitano e interagiscono con il nostro sito web www.rl-labwatches.it (di seguito il \"Sito\")."
+        "Il titolare del trattamento dei dati personali raccolti tramite il sito www.rl-labwatches.it (di seguito il \"Sito\") è Roberto Landi, Via Padre Giovanni Antonelli 69, 51100 Pistoia (PT), Italia – email rlabwatches@gmail.com – tel. +39 328 772 5925."
       ],
       [
         "h",
-        "2. DATI PERSONALI RACCOLTI"
+        "2. Dati raccolti"
       ],
       [
         "p",
-        "Raccogliamo dati personali forniti volontariamente dagli utenti attraverso il modulo di contatto o il modulo di prenotazione di appuntamenti disponibili sul Sito, come ad esempio nome, indirizzo di posta elettronica e numero di telefono. Queste informazioni sono indispensabili per poter rispondere in maniera adeguata alle richieste degli utenti o gestire le prenotazioni degli appuntamenti."
+        "Dati forniti volontariamente: quando compili il modulo di contatto o di richiesta preventivo raccogliamo nome, indirizzo email, numero di telefono (facoltativo), marca e modello dell'orologio e il contenuto del messaggio. Se ci scrivi via email, telefono o WhatsApp tratteremo i dati che ci comunichi in quel canale."
       ],
       [
         "p",
-        "In aggiunta, facciamo uso di Google Analytics per raccogliere dati statistici anonimizzati sulle modalità di interazione degli utenti con il nostro Sito, quali ad esempio le pagine visitate e il tempo di permanenza su ciascuna pagina. Facciamo inoltre uso di Google Ads e Facebook Ads al fine di proporre agli utenti annunci pubblicitari basati sulle loro interazioni con il nostro Sito."
+        "Dati di navigazione: i server che ospitano il Sito registrano automaticamente dati tecnici necessari al suo funzionamento e alla sua sicurezza (ad esempio indirizzo IP, tipo di browser, pagine richieste, data e ora). Questi dati non sono usati per identificarti né per profilazione."
+      ],
+      [
+        "p",
+        "Il Sito non utilizza strumenti di analisi statistica, pubblicità o profilazione (come Google Analytics, Google Ads o Facebook Ads)."
       ],
       [
         "h",
-        "3. FINALITÀ DEL TRATTAMENTO DEI DATI PERSONALI"
+        "3. Finalità e base giuridica"
       ],
       [
         "p",
-        "I dati personali raccolti vengono utilizzati al fine di rispondere alle richieste degli utenti, gestire le prenotazioni di appuntamenti, inviare comunicazioni relative ai servizi richiesti e migliorare le funzionalità del nostro Sito e la qualità dei nostri servizi. I dati raccolti attraverso Google Analytics, Google Ads e Facebook Ads ci permettono di comprendere meglio le esigenze dei nostri utenti e ottimizzare le nostre strategie di marketing."
+        "I dati del modulo e delle comunicazioni sono trattati per rispondere alle tue richieste, preparare preventivi e gestire i servizi richiesti (esecuzione di misure precontrattuali e contrattuali, art. 6.1.b GDPR) e per adempiere agli obblighi di legge, ad esempio fiscali (art. 6.1.c GDPR). I dati di navigazione sono trattati per garantire il funzionamento e la sicurezza del Sito (legittimo interesse, art. 6.1.f GDPR)."
+      ],
+      [
+        "p",
+        "Il conferimento dei dati contrassegnati come obbligatori nel modulo è necessario per poterti rispondere."
       ],
       [
         "h",
-        "4. MISURE DI SICUREZZA ADOTTATE"
+        "4. Destinatari dei dati"
       ],
       [
         "p",
-        "La Società si impegna a garantire la protezione dei dati personali degli utenti. I dati personali sono conservati in maniera sicura e sono accessibili esclusivamente a personale autorizzato. La Società ha adottato misure tecniche e organizzative adeguate per tutelare i dati personali da eventuali perdite, usi impropri e accessi non autorizzati."
+        "I dati non sono venduti né ceduti a terzi. Possono essere trattati, solo per le finalità indicate, da fornitori che ci supportano in qualità di responsabili del trattamento: Vercel Inc. (hosting del Sito) e Resend (invio via email dei messaggi del modulo). Se scegli di contattarci tramite WhatsApp, i dati sono trattati anche da WhatsApp/Meta secondo le loro condizioni."
       ],
       [
         "h",
-        "5. MODIFICHE ALLA PRESENTE INFORMATIVA"
+        "5. Trasferimento dei dati fuori dall'Unione Europea"
       ],
       [
         "p",
-        "La Società si riserva il diritto di modificare o aggiornare la presente Informativa sulla Privacy in qualsiasi momento. Eventuali modifiche saranno pubblicate su questa pagina, pertanto si raccomanda agli utenti di controllare regolarmente per essere sempre informati sulle nostre pratiche correnti in materia di privacy."
+        "Alcuni fornitori possono trattare dati negli Stati Uniti. In tal caso il trasferimento avviene sulla base del Data Privacy Framework UE-USA o delle Clausole Contrattuali Standard approvate dalla Commissione Europea."
       ],
       [
         "h",
-        "6. CONTATTI"
+        "6. Conservazione"
       ],
       [
         "p",
-        "Per qualsiasi domanda relativa alla presente Informativa sulla Privacy o per esercitare i diritti inerenti ai dati personali, si prega di contattarci attraverso il modulo di contatto presente sul nostro Sito."
+        "I dati delle richieste sono conservati per il tempo necessario a gestirle e, se diventi cliente, per la durata del rapporto e per i tempi previsti dalla legge (ad esempio 10 anni per i documenti fiscali). Le richieste a cui non segue un servizio sono cancellate entro 24 mesi."
+      ],
+      [
+        "h",
+        "7. I tuoi diritti"
+      ],
+      [
+        "p",
+        "Puoi chiedere in qualsiasi momento l'accesso ai tuoi dati, la rettifica, la cancellazione, la limitazione del trattamento, la portabilità e opporti al trattamento (artt. 15-22 GDPR), scrivendo a rlabwatches@gmail.com. Hai inoltre il diritto di proporre reclamo al Garante per la protezione dei dati personali (www.garanteprivacy.it)."
+      ],
+      [
+        "h",
+        "8. Modifiche"
+      ],
+      [
+        "p",
+        "Questa informativa può essere aggiornata; la versione in vigore è sempre pubblicata su questa pagina."
       ],
       [
         "note",
-        "Data dell'ultima modifica: 29/06/2023"
+        "Ultimo aggiornamento: 07/11/2026"
       ]
     ]
   },
@@ -91,7 +116,7 @@ export const legal = {
       ],
       [
         "p",
-        "Le prenotazioni possono essere effettuate tramite il nostro sito web, per telefono, e-mail o WhatsApp. Forniremo una conferma della tua prenotazione via e-mail."
+        "Le richieste possono essere inviate tramite il modulo del sito web, per telefono, e-mail o WhatsApp. Forniremo una conferma della tua prenotazione via e-mail."
       ],
       [
         "h",
@@ -147,7 +172,7 @@ export const legal = {
       ],
       [
         "note",
-        "Data di ultimo aggiornamento: 29/06/2023"
+        "Data di ultimo aggiornamento: 07/11/2026"
       ]
     ]
   },
@@ -156,79 +181,51 @@ export const legal = {
     "blocks": [
       [
         "h",
-        "1. Informazioni Generali"
+        "1. Cosa sono i cookie"
       ],
       [
         "p",
-        "Il sito web www.rl-labwatches.it (da ora in avanti, il \"Sito\") utilizza i cookie. Un cookie è un piccolo file di testo che i siti visitati dall'utente inviano al suo terminale (solitamente al browser), dove vengono memorizzati per essere poi ritrasmessi agli stessi siti alla successiva visita del medesimo utente."
+        "I cookie sono piccoli file di testo che i siti visitati salvano sul dispositivo dell'utente per essere riletti nelle visite successive. Tecnologie simili permettono di memorizzare informazioni nel browser."
       ],
       [
         "h",
-        "2. Tipi di Cookie"
+        "2. Cookie utilizzati da questo Sito"
       ],
       [
         "p",
-        "Il Sito utilizza diverse tipologie di cookie, ognuno dei quali ha una specifica funzione. Di seguito viene fornita una descrizione dettagliata dei cookie utilizzati dal Sito."
+        "Il sito www.rl-labwatches.it non utilizza cookie di profilazione, cookie pubblicitari né cookie di analisi statistica di terze parti. Per questo motivo non viene mostrato alcun banner per la raccolta del consenso."
+      ],
+      [
+        "p",
+        "Il Sito usa esclusivamente una memoria tecnica del browser (sessionStorage) per ricordare, durante la sola sessione di navigazione, che l'animazione introduttiva è già stata mostrata. Questa informazione non contiene dati personali, non viene inviata ai nostri server e si cancella alla chiusura della scheda del browser. I caratteri tipografici sono serviti direttamente dal Sito, senza collegamenti a servizi esterni."
       ],
       [
         "h",
-        "Cookie Tecnici"
+        "3. Collegamenti a siti di terze parti"
       ],
       [
         "p",
-        "Questi cookie sono necessari per il corretto funzionamento del Sito e sono utilizzati per gestire il login e l'accesso alle funzioni riservate del Sito. La durata dei cookie è strettamente limitata alla sessione di lavoro (chiuso il browser vengono cancellati). L'uso di questi cookie e la relativa elaborazione dei dati personali è necessario per usufruire dei servizi offerti dal Sito."
+        "Il Sito contiene semplici collegamenti a Instagram, Facebook, WhatsApp e Google Maps. Questi servizi possono installare propri cookie solo se scegli di aprire i collegamenti; in quel caso si applicano le rispettive informative."
       ],
       [
         "h",
-        "Cookie di Analisi Statistica"
+        "4. Come gestire i cookie"
       ],
       [
         "p",
-        "Questi cookie sono utilizzati per raccogliere informazioni sull'utilizzo del Sito. Il Sito utilizza queste informazioni per analisi statistiche, per migliorare il sito e semplificarne l'uso, oltre che per monitorarne il corretto funzionamento. Questo tipo di cookie raccoglie informazioni in forma anonima sull'attività degli utenti nel Sito e sul modo in cui sono arrivati al Sito e alle pagine visitate."
-      ],
-      [
-        "p",
-        "In particolare, il Sito utilizza Google Analytics, un servizio di analisi web fornito da Google, Inc. (\"Google\"). Le informazioni generate dai cookie sull'utilizzo del sito web da parte degli utenti (compresi gli indirizzi IP) verranno trasmesse e depositate presso i server di Google negli Stati Uniti. Google utilizzerà queste informazioni allo scopo di tracciare e esaminare il tuo utilizzo del sito web, compilare report sulle attività del sito web per gli operatori del sito web e fornire altri servizi relativi alle attività del sito web e all'utilizzo di Internet. Google può anche trasferire queste informazioni a terzi ove ciò sia imposto dalla legge o laddove tali terzi trattino le suddette informazioni per conto di Google. Google non assocerà il tuo indirizzo IP a nessun altro dato posseduto da Google."
+        "Puoi in ogni momento cancellare o bloccare cookie e dati dei siti dalle impostazioni del tuo browser (ad esempio Chrome, Safari, Firefox o Edge). Il blocco della memoria tecnica descritta sopra non impedisce l'uso del Sito."
       ],
       [
         "h",
-        "3. Gestione dei Cookie"
+        "5. Titolare del trattamento"
       ],
       [
         "p",
-        "Puoi decidere se accettare o meno i cookie utilizzando le impostazioni del tuo browser. Attenzione: la disabilitazione totale o parziale dei cookie tecnici può compromettere l'utilizzo delle funzionalità del sito. La disabilitazione dei cookie \"terze parti\" non pregiudica in alcun modo la navigabilità."
+        "Il titolare del trattamento è Roberto Landi, Via Padre Giovanni Antonelli 69, 51100 Pistoia (PT), Italia – email rlabwatches@gmail.com – tel. +39 328 772 5925. Per maggiori informazioni consulta l'Informativa sulla Privacy."
       ],
       [
-        "p",
-        "L'impostazione può essere definita specificamente per i diversi siti e applicazioni web. Inoltre, i migliori browser consentono di definire impostazioni diverse per i cookie \"proprietari\" e per quelli di \"terze parti\"."
-      ],
-      [
-        "p",
-        "Ad esempio, in Firefox, attraverso il menu Strumenti->Opzioni ->Privacy, è possibile accedere a un pannello di controllo dove è possibile definire se accettare o meno i diversi tipi di cookie e procedere alla loro rimozione."
-      ],
-      [
-        "h",
-        "4. Diritti dell'Utente"
-      ],
-      [
-        "p",
-        "L'utente può esercitare in qualsiasi momento i diritti previsti dal Regolamento UE 2016/679 (GDPR), tra cui il diritto di accesso, di rettifica, di cancellazione, di limitazione, di opposizione al trattamento. Per esercitare tali diritti, l'utente può inviare una comunicazione all'indirizzo di posta elettronica rlabwatches@gmail.com."
-      ],
-      [
-        "h",
-        "5. Titolare del Trattamento dei Dati"
-      ],
-      [
-        "p",
-        "Il Titolare del trattamento dei dati è Roberto Landi, con sede in Via Porta al Borgo 7, 51100, Pistoia, Italia - e-mail: rlabwatches@gmail.com."
-      ],
-      [
-        "p",
-        "Per ulteriori informazioni sul trattamento dei dati personali da parte del Titolare, l'utente può consultare l'Informativa sulla privacy del Sito."
-      ],
-      [
-        "p",
-        "La presente Informativa sui cookie è stata aggiornata l'ultima volta il 29/06/2023. Qualsiasi aggiornamento sarà sempre pubblicato su questa pagina."
+        "note",
+        "Ultimo aggiornamento: 07/11/2026"
       ]
     ]
   },
