@@ -1,13 +1,13 @@
 "use client";
 import { useFrame } from "@react-three/fiber";
-import { RoundedBox } from "@react-three/drei";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
 /**
  * Rolex Cosmograph Daytona ref. 6239 "Paul Newman" costruito in codice, con movimento interno.
- * Il quadrante è una texture (public/models/daytona-6239/quadrante.webp), la scala tachimetrica
- * della lunetta e l'incisione del fondello sono disegnate al volo.
+ * Quadrante, fondello, corona e i due lati del movimento (Valjoux 72 / calibro 722) sono texture
+ * in public/models/daytona-6239; la scala tachimetrica della lunetta è disegnata al volo.
+ * Le proporzioni di cassa, anse e vetro seguono le viste di profilo.
  *
  * Lo stato (letto a ogni frame) controlla:
  *  - explode: 0 = montato, 1 = esploso nei suoi componenti
@@ -17,10 +17,13 @@ import * as THREE from "three";
 export type WatchState = { explode: number; wear: number; run: number };
 
 const lerp = THREE.MathUtils.lerp;
-const DIAL_TEXTURE = "/models/daytona-6239/quadrante.webp";
+const TEX = "/models/daytona-6239/";
 
 // ---------- misure (unità della scena: diametro cassa 2.44 = 37 mm) ----------
 const CASE_R = 1.2;
+/** cassa da z = CASE_BOTTOM a z = CASE_TOP */
+const CASE_TOP = 0.2;
+const CASE_BOTTOM = -0.3;
 const BEZEL_IN = 1.05;
 const BEZEL_OUT = 1.22;
 const DIAL_R = 1.0;
@@ -141,15 +144,14 @@ function makeBezelTexture() {
   });
 }
 
-/** Incisione del fondello, fatta a mano dalla moglie di Paul Newman */
-function makeEngravingTexture() {
-  return canvasTexture(512, (g) => {
-    g.clearRect(0, 0, 512, 512);
-    g.fillStyle = "rgba(40,40,40,0.85)";
-    g.textAlign = "center";
-    g.textBaseline = "middle";
-    g.font = "italic 300 58px Georgia, 'Times New Roman', serif";
-    ["DRIVE", "CAREFULLY", "ME"].forEach((w, i) => g.fillText(w, 256, 186 + i * 70));
+/** carica una texture e la applica al materiale quando è pronta (fino ad allora resta il colore pieno) */
+function loadInto(mat: THREE.MeshStandardMaterial, file: string, emissive = false) {
+  new THREE.TextureLoader().load(TEX + file, (t) => {
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 8;
+    mat.map = t;
+    if (emissive) mat.emissiveMap = t;
+    mat.needsUpdate = true;
   });
 }
 
@@ -177,33 +179,30 @@ function crystalGeometry(radius: number, height: number) {
   return geo;
 }
 
-function gearGeometry(r: number, teeth: number, depth = 0.022) {
-  const shape = new THREE.Shape();
-  const inner = r * 0.88;
-  for (let i = 0; i < teeth; i++) {
-    const a0 = (i / teeth) * Math.PI * 2;
-    const step = (Math.PI * 2) / teeth;
-    const pts: [number, number][] = [
-      [a0, inner],
-      [a0 + step * 0.2, r],
-      [a0 + step * 0.5, r],
-      [a0 + step * 0.7, inner],
-    ];
-    pts.forEach(([a, rr], j) => {
-      const x = Math.cos(a) * rr, y = Math.sin(a) * rr;
-      if (i === 0 && j === 0) shape.moveTo(x, y);
-      else shape.lineTo(x, y);
-    });
+/**
+ * Ansa vista di profilo (dal lato corona): larga alla radice, si assottiglia e piega verso il polso.
+ * Disegnata nel piano (distanza dal centro, altezza) ed estrusa lungo x.
+ */
+function lugGeometry(width: number) {
+  const s = new THREE.Shape();
+  s.moveTo(0.8, CASE_TOP);
+  s.lineTo(1.02, CASE_TOP - 0.005);
+  s.quadraticCurveTo(1.36, CASE_TOP - 0.03, 1.56, -0.13);
+  s.quadraticCurveTo(1.61, -0.27, 1.52, -0.36);
+  s.quadraticCurveTo(1.3, -0.33, 1.02, CASE_BOTTOM + 0.02);
+  s.lineTo(0.8, CASE_BOTTOM + 0.02);
+  s.closePath();
+  const geo = new THREE.ExtrudeGeometry(s, { depth: width - 0.04, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 3, curveSegments: 16 });
+  geo.translate(0, 0, -(width - 0.04) / 2);
+  // (profilo x, profilo y, estrusione) → (x, y, z) della scena = (estrusione, profilo x, profilo y)
+  geo.applyMatrix4(new THREE.Matrix4().set(0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1));
+  // si stringe verso la punta, come nella vista frontale
+  const p = geo.attributes.position;
+  for (let i = 0; i < p.count; i++) {
+    const k = THREE.MathUtils.clamp((p.getY(i) - 1.0) / 0.6, 0, 1);
+    p.setX(i, p.getX(i) * (1 - 0.3 * k));
   }
-  shape.closePath();
-  for (let i = 0; i < 4; i++) {
-    const a = (i / 4) * Math.PI * 2 + 0.25;
-    const h = new THREE.Path();
-    h.absarc(Math.cos(a) * r * 0.5, Math.sin(a) * r * 0.5, r * 0.22, 0, Math.PI * 2, false);
-    shape.holes.push(h);
-  }
-  const geo = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: false, curveSegments: 6 });
-  geo.translate(0, 0, -depth / 2);
+  geo.computeVertexNormals();
   return geo;
 }
 
@@ -234,13 +233,13 @@ function applyWear(s: MatSpec, w: number) {
 
 // posizione Z montata e spostamento in vista esplosa
 const LAYERS = {
-  crystal: [0.25, 2.3],
-  bezel: [0.18, 1.75],
-  hands: [0.2, 1.25],
-  dial: [0.18, 0.75],
-  movement: [0, 0.15],
+  crystal: [0.26, 2.3],
+  bezel: [CASE_TOP, 1.75],
+  hands: [0.19, 1.25],
+  dial: [0.17, 0.75],
+  movement: [-0.07, 0.15],
   case: [0, -0.65],
-  back: [-0.18, -1.35],
+  back: [CASE_BOTTOM, -2.0],
 } as const;
 
 type HandRef = React.RefObject<THREE.Group | null>;
@@ -294,8 +293,6 @@ export default function WatchModel({
   const hour = useRef<THREE.Group>(null);
   const minute = useRef<THREE.Group>(null);
   const second = useRef<THREE.Group>(null);
-  const balance = useRef<THREE.Group>(null);
-  const gears = useRef<(THREE.Mesh | null)[]>([]);
   const clock = useRef({ sec: 37, min: 8.6, hr: 10.14, t: 0 }); // ora "ferma" dell'orologio usurato
 
   const m = useMemo(() => {
@@ -304,13 +301,15 @@ export default function WatchModel({
 
     // il quadrante è anche leggermente emissivo, così la crema resta calda con qualsiasi luce
     const dial = spec("#ffffff", "#cdb98c", 0.6, 0.9, 0.05, "#ffffff", 0.32, 0.12);
-    new THREE.TextureLoader().load(DIAL_TEXTURE, (t) => {
-      t.colorSpace = THREE.SRGBColorSpace;
-      t.anisotropy = 8;
-      dial.mat.map = t;
-      dial.mat.emissiveMap = t;
-      dial.mat.needsUpdate = true;
-    });
+    loadInto(dial.mat, "quadrante.webp", true);
+    const caseback = spec("#ffffff", "#b3aa99", 0.3, 0.7, 0.75);
+    loadInto(caseback.mat, "fondello.webp");
+    const crownFace = spec("#ffffff", "#9a9182", 0.25, 0.7, 0.8);
+    loadInto(crownFace.mat, "corona.webp");
+    const mvDial = spec("#ffffff", "#b0a48c", 0.45, 0.85, 0.35);
+    loadInto(mvDial.mat, "movimento-lato-quadrante.webp");
+    const mvBridges = spec("#ffffff", "#b0a48c", 0.4, 0.85, 0.35);
+    loadInto(mvBridges.mat, "movimento-ponti.webp");
     const bezel = spec("#ececef", "#8c867b", 0.3, 0.7, 1);
     bezel.mat.map = makeBezelTexture();
 
@@ -319,33 +318,28 @@ export default function WatchModel({
       brushed: spec("#dadadd", "#857f74", 0.38, 0.75, 1),
       bezel,
       dial,
+      caseback,
+      crownFace,
+      mvDial,
+      mvBridges,
       rehaut: spec("#1d1d1d", "#2a2620", 0.5, 0.8, 0.4),
       lume: spec("#f2ecdc", "#c9b077", 0.6, 0.85, 0, "#f2ecdc", 0.08, 0),
       subHand: spec("#f4f1ea", "#d2c49f", 0.4, 0.8, 0.1),
       chrono: spec("#202020", "#2b2823", 0.4, 0.8, 0.5),
-      plate: spec("#d8d5ce", "#6f6455", 0.32, 0.8, 0.9),
-      bridge: spec("#e3e1dc", "#7a6f5f", 0.25, 0.8, 0.95),
-      brass: spec("#d6b56b", "#6b5532", 0.3, 0.8, 1),
-      screw: spec("#2c4f99", "#3b3a36", 0.3, 0.8, 0.9),
+      plate: spec("#c9c7c2", "#6f6455", 0.35, 0.8, 0.9),
       crystal: new THREE.MeshPhysicalMaterial({ transparent: true, opacity: 0.1, roughness: 0, metalness: 0, clearcoat: 1, color: "#ffffff", depthWrite: false }),
       grimeOverlay: overlay(makeDirtTexture(7, "grime")),
+      grimeLight: overlay(makeDirtTexture(13, "patina")),
       patinaOverlay: overlay(makeDirtTexture(31, "patina")),
-      engraving: new THREE.MeshStandardMaterial({ map: makeEngravingTexture(), transparent: true, depthWrite: false, roughness: 0.6, metalness: 0.6, polygonOffset: true, polygonOffsetFactor: -3 }),
-      jewel: new THREE.MeshStandardMaterial({ color: "#b3122a", emissive: "#5a0010", emissiveIntensity: 0.5, roughness: 0.15, metalness: 0.2 }),
     };
   }, []);
 
   const geos = useMemo(
     () => ({
       bezel: bezelGeometry(),
-      crystal: crystalGeometry(BEZEL_IN + 0.01, 0.12),
+      crystal: crystalGeometry(BEZEL_IN + 0.01, 0.18),
       arrow: arrowGeometry(),
-      gears: [
-        { geo: gearGeometry(0.34, 40), pos: [0.18, 0.22] as const, r: 0.34, mat: "brass" as const },
-        { geo: gearGeometry(0.22, 26), pos: [0.66, -0.12] as const, r: 0.22, mat: "brass" as const },
-        { geo: gearGeometry(0.17, 20), pos: [0.2, -0.36] as const, r: 0.17, mat: "steel" as const },
-        { geo: gearGeometry(0.13, 16), pos: [-0.38, 0.5] as const, r: 0.13, mat: "brass" as const },
-      ],
+      lug: lugGeometry(0.17),
     }),
     []
   );
@@ -360,8 +354,9 @@ export default function WatchModel({
     });
 
     // usura
-    [m.steel, m.brushed, m.bezel, m.dial, m.rehaut, m.lume, m.subHand, m.chrono, m.plate, m.bridge, m.brass, m.screw].forEach((s) => applyWear(s, wear));
+    [m.steel, m.brushed, m.bezel, m.dial, m.caseback, m.crownFace, m.mvDial, m.mvBridges, m.rehaut, m.lume, m.subHand, m.chrono, m.plate].forEach((s) => applyWear(s, wear));
     m.grimeOverlay.opacity = wear;
+    m.grimeLight.opacity = wear * 0.6;
     m.patinaOverlay.opacity = wear * 0.85;
     m.crystal.opacity = lerp(0.1, 0.4, wear);
     m.crystal.roughness = lerp(0, 0.55, wear);
@@ -383,12 +378,6 @@ export default function WatchModel({
     if (minute.current) minute.current.rotation.z = -(c.min / 60) * Math.PI * 2;
     if (hour.current) hour.current.rotation.z = -(c.hr / 12) * Math.PI * 2;
 
-    // movimento: bilanciere e ruote
-    c.t += dt * run;
-    if (balance.current) balance.current.rotation.z = Math.sin(c.t * Math.PI * 2 * 2.5) * 1.8 * run;
-    gears.current.forEach((gm, i) => {
-      if (gm) gm.rotation.z += (i % 2 ? -1 : 1) * (dt * run * 0.9) / geos.gears[i].r * 0.1;
-    });
   });
 
   const radial = (deg: number, r: number) => [Math.cos((deg * Math.PI) / 180) * r, Math.sin((deg * Math.PI) / 180) * r] as const;
@@ -397,35 +386,36 @@ export default function WatchModel({
     <group>
       {/* ---------------- CASSA ---------------- */}
       <group ref={g.case} name="cassa">
-        <mesh rotation={[Math.PI / 2, 0, 0]} material={m.steel.mat}>
-          <cylinderGeometry args={[CASE_R, CASE_R - 0.05, 0.36, 128, 1, true]} />
+        <mesh position={[0, 0, (CASE_TOP + CASE_BOTTOM) / 2]} rotation={[Math.PI / 2, 0, 0]} material={m.steel.mat}>
+          <cylinderGeometry args={[CASE_R, CASE_R - 0.05, CASE_TOP - CASE_BOTTOM, 128, 1, true]} />
         </mesh>
-        <mesh rotation={[Math.PI / 2, 0, 0]} material={m.grimeOverlay}>
-          <cylinderGeometry args={[CASE_R + 0.005, CASE_R - 0.045, 0.36, 96, 1, true]} />
+        <mesh position={[0, 0, (CASE_TOP + CASE_BOTTOM) / 2]} rotation={[Math.PI / 2, 0, 0]} material={m.grimeOverlay}>
+          <cylinderGeometry args={[CASE_R + 0.005, CASE_R - 0.045, CASE_TOP - CASE_BOTTOM, 96, 1, true]} />
         </mesh>
-        <mesh position={[0, 0, 0.17]} material={m.steel.mat}>
+        <mesh position={[0, 0, CASE_TOP - 0.005]} material={m.steel.mat}>
           <ringGeometry args={[1.0, CASE_R, 128]} />
         </mesh>
-        <mesh position={[0, 0, -0.17]} rotation={[Math.PI, 0, 0]} material={m.steel.mat}>
+        <mesh position={[0, 0, CASE_BOTTOM + 0.005]} rotation={[Math.PI, 0, 0]} material={m.brushed.mat}>
           <ringGeometry args={[0.98, CASE_R - 0.05, 128]} />
         </mesh>
-        {/* anse lunghe e affusolate, piegate verso il polso */}
+        {/* anse: profilo a banana preso dalla vista laterale */}
         {[
-          [0.7, 1],
-          [-0.7, 1],
-          [0.7, -1],
-          [-0.7, -1],
+          [0.76, 1],
+          [-0.76, 1],
+          [0.76, -1],
+          [-0.76, -1],
         ].map(([x, dir], i) => (
-          <group key={i} position={[x, dir * 0.92, 0.03]} rotation={[dir * 0.14, 0, Math.sign(x) * dir * -0.06]}>
-            <RoundedBox args={[0.2, 0.56, 0.17]} radius={0.035} smoothness={3} position={[0, dir * 0.28, 0]} material={m.brushed.mat} />
-          </group>
+          <mesh key={i} geometry={geos.lug} position={[x, 0, 0]} scale={[1, dir, 1]} material={m.brushed.mat} />
         ))}
-        {/* corona avvitata a ore 3 */}
-        <mesh position={[CASE_R + 0.04, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={m.steel.mat}>
+        {/* corona a ore 3, con la coroncina sulla testa */}
+        <mesh position={[CASE_R + 0.04, 0, -0.04]} rotation={[0, 0, Math.PI / 2]} material={m.steel.mat}>
           <cylinderGeometry args={[0.06, 0.06, 0.1, 20]} />
         </mesh>
-        <mesh position={[CASE_R + 0.15, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={m.steel.mat}>
+        <mesh position={[CASE_R + 0.15, 0, -0.04]} rotation={[0, 0, Math.PI / 2]} material={m.steel.mat}>
           <cylinderGeometry args={[0.13, 0.13, 0.17, 18]} />
+        </mesh>
+        <mesh position={[CASE_R + 0.236, 0, -0.04]} rotation={[0, Math.PI / 2, 0]} material={m.crownFace.mat}>
+          <circleGeometry args={[0.125, 32]} />
         </mesh>
         {/* pulsanti a pompa a ore 2 e 4 */}
         {[28, -28].map((deg) => {
@@ -433,7 +423,7 @@ export default function WatchModel({
           const [x1, y1] = radial(deg, CASE_R + 0.17);
           const rot = ((deg - 90) * Math.PI) / 180;
           return (
-            <group key={deg}>
+            <group key={deg} position={[0, 0, -0.04]}>
               <mesh position={[x0, y0, 0]} rotation={[0, 0, rot]} material={m.steel.mat}>
                 <cylinderGeometry args={[0.05, 0.05, 0.1, 20]} />
               </mesh>
@@ -445,77 +435,43 @@ export default function WatchModel({
         })}
       </group>
 
-      {/* ---------------- FONDELLO ---------------- */}
+      {/* ---------------- FONDELLO con "DRIVE CAREFULLY ME" ---------------- */}
       <group ref={g.back} name="fondello">
-        <mesh position={[0, 0, -0.02]} rotation={[Math.PI / 2, 0, 0]} material={m.steel.mat}>
-          <cylinderGeometry args={[1.12, 1.1, 0.05, 96]} />
+        <mesh position={[0, 0, -0.022]} rotation={[Math.PI / 2, 0, 0]} material={m.steel.mat}>
+          <cylinderGeometry args={[1.03, 1.01, 0.045, 96]} />
         </mesh>
-        <mesh position={[0, 0, -0.046]} rotation={[Math.PI, 0, 0]} material={m.grimeOverlay}>
-          <circleGeometry args={[1.1, 64]} />
+        <mesh position={[0, 0, -0.0455]} rotation={[0, Math.PI, 0]} material={m.caseback.mat}>
+          <circleGeometry args={[1.01, 96]} />
         </mesh>
-        <mesh position={[0, 0, -0.047]} rotation={[0, Math.PI, 0]} material={m.engraving}>
-          <circleGeometry args={[0.9, 48]} />
-        </mesh>
-        <mesh position={[0, 0, -0.05]} material={m.steel.mat}>
-          <torusGeometry args={[1.0, 0.02, 8, 96]} />
+        <mesh position={[0, 0, -0.046]} rotation={[0, Math.PI, 0]} material={m.grimeLight}>
+          <circleGeometry args={[1.01, 64]} />
         </mesh>
       </group>
 
-      {/* ---------------- MOVIMENTO (cronografo a carica manuale) ---------------- */}
+      {/* ---------------- MOVIMENTO Valjoux 72 / calibro 722 ---------------- */}
       <group ref={g.movement} name="movimento">
         <mesh rotation={[Math.PI / 2, 0, 0]} material={m.plate.mat}>
-          <cylinderGeometry args={[0.98, 0.98, 0.12, 96]} />
+          <cylinderGeometry args={[0.98, 0.98, 0.12, 96, 1, true]} />
         </mesh>
-        <mesh position={[0, 0, 0.061]} material={m.grimeOverlay}>
+        {/* lato quadrante (verso il davanti) */}
+        <mesh position={[0, 0, 0.06]} material={m.mvDial.mat}>
+          <circleGeometry args={[0.98, 96]} />
+        </mesh>
+        <mesh position={[0, 0, 0.061]} material={m.grimeLight}>
           <circleGeometry args={[0.98, 64]} />
         </mesh>
-        <RoundedBox args={[1.25, 0.3, 0.04]} radius={0.015} position={[0.1, 0.62, 0.08]} rotation={[0, 0, -0.25]} material={m.bridge.mat} />
-        <RoundedBox args={[1.1, 0.26, 0.04]} radius={0.015} position={[0.35, -0.6, 0.08]} rotation={[0, 0, 0.35]} material={m.bridge.mat} />
-        {geos.gears.map((gg, i) => (
-          <group key={i} position={[gg.pos[0], gg.pos[1], 0.085]}>
-            <mesh
-              name={`ruota_${i + 1}`}
-              ref={(el) => {
-                gears.current[i] = el;
-              }}
-              geometry={gg.geo}
-              material={m[gg.mat].mat}
-            />
-            <mesh position={[0, 0, 0.02]} rotation={[Math.PI / 2, 0, 0]} material={m.jewel}>
-              <cylinderGeometry args={[0.028, 0.028, 0.012, 16]} />
-            </mesh>
-          </group>
-        ))}
-        <group position={[-0.48, -0.32, 0.1]}>
-          <group ref={balance} name="bilanciere">
-            <mesh material={m.brass.mat}>
-              <torusGeometry args={[0.24, 0.022, 12, 64]} />
-            </mesh>
-            {[0, 1, 2].map((i) => (
-              <mesh key={i} rotation={[0, 0, (i / 3) * Math.PI * 2]} material={m.brass.mat}>
-                <boxGeometry args={[0.02, 0.48, 0.012]} />
-              </mesh>
-            ))}
-          </group>
-          <mesh position={[0, 0, 0.03]} rotation={[Math.PI / 2, 0, 0]} material={m.jewel}>
-            <cylinderGeometry args={[0.03, 0.03, 0.012, 16]} />
-          </mesh>
-        </group>
-        {[
-          [-0.42, 0.72],
-          [0.62, 0.48],
-          [-0.2, -0.78],
-          [0.85, -0.38],
-        ].map(([x, y], i) => (
-          <mesh key={i} position={[x, y, 0.11]} rotation={[Math.PI / 2, 0, 0]} material={m.screw.mat}>
-            <cylinderGeometry args={[0.04, 0.04, 0.02, 16]} />
-          </mesh>
-        ))}
+        {/* lato ponti, con bilanciere e ruote (verso il fondello) */}
+        <mesh position={[0, 0, -0.06]} rotation={[0, Math.PI, 0]} material={m.mvBridges.mat}>
+          <circleGeometry args={[0.98, 96]} />
+        </mesh>
+        <mesh position={[0, 0, -0.061]} rotation={[0, Math.PI, 0]} material={m.grimeLight}>
+          <circleGeometry args={[0.98, 64]} />
+        </mesh>
       </group>
 
       {/* ---------------- QUADRANTE ---------------- */}
       <group ref={g.dial} name="quadrante">
-        <mesh rotation={[Math.PI / 2, 0, 0]} material={m.rehaut.mat}>
+        <mesh rotation={[Math.PI / 2, 0, 0]} material={m.plate.mat}>
           <cylinderGeometry args={[DIAL_R, DIAL_R, 0.02, 128]} />
         </mesh>
         <mesh position={[0, 0, 0.0105]} material={m.dial.mat}>
@@ -525,8 +481,8 @@ export default function WatchModel({
           <circleGeometry args={[DIAL_R, 64]} />
         </mesh>
         {/* réhaut: anello scuro tra quadrante e lunetta */}
-        <mesh position={[0, 0, 0.03]} rotation={[Math.PI / 2, 0, 0]} material={m.rehaut.mat}>
-          <cylinderGeometry args={[BEZEL_IN, DIAL_R, 0.04, 128, 1, true]} />
+        <mesh position={[0, 0, 0.045]} rotation={[Math.PI / 2, 0, 0]} material={m.rehaut.mat}>
+          <cylinderGeometry args={[BEZEL_IN, DIAL_R, 0.07, 128, 1, true]} />
         </mesh>
       </group>
 
