@@ -1,10 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Montserrat } from "next/font/google";
+import { Cormorant_Garamond, IBM_Plex_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import IntroSplash from "@/components/IntroSplash";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import MobileActionBar from "@/components/MobileActionBar";
+import PageTransition from "@/components/PageTransition";
+import ReadingBezel from "@/components/ReadingBezel";
 import SmoothScroll from "@/components/SmoothScroll";
 import JsonLd from "@/components/JsonLd";
 import { localBusinessLd, OG_IMAGE, websiteLd } from "@/lib/seo";
@@ -16,6 +19,7 @@ const cormorant = Cormorant_Garamond({
   style: ["normal", "italic"],
   variable: "--font-cormorant",
 });
+const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-plex-mono" });
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-montserrat" });
 
 export const metadata: Metadata = {
@@ -33,7 +37,7 @@ export const viewport: Viewport = { themeColor: "#003d27" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="it" className={`${cormorant.variable} ${montserrat.variable}`} suppressHydrationWarning>
+    <html lang="it" className={`${cormorant.variable} ${montserrat.variable} ${plexMono.variable}`} suppressHydrationWarning>
       <body className="grain min-h-dvh flex flex-col">
         {/* salta l'intro se già vista in questa sessione (prima del render, senza sfarfallio) */}
         <script dangerouslySetInnerHTML={{ __html: `try{if(sessionStorage.getItem("rl-intro"))document.documentElement.dataset.intro="seen"}catch(e){}` }} />
@@ -44,6 +48,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="flex-1">{children}</main>
         <Footer />
         <WhatsAppButton />
+        <MobileActionBar />
+        <ReadingBezel />
+        <PageTransition />
         <SmoothScroll />
       </body>
     </html>

@@ -231,7 +231,7 @@ export default function WatchModel({
   return (
     <group>
       {/* ---------------- CASSA ---------------- */}
-      <group ref={g.case}>
+      <group ref={g.case} name="cassa">
         <mesh rotation={[Math.PI / 2, 0, 0]} material={m.steel.mat}>
           <cylinderGeometry args={[1.22, 1.18, 0.36, 96, 1, true]} />
         </mesh>
@@ -277,7 +277,7 @@ export default function WatchModel({
       </group>
 
       {/* ---------------- FONDELLO ---------------- */}
-      <group ref={g.back}>
+      <group ref={g.back} name="fondello">
         <mesh position={[0, 0, -0.02]} rotation={[Math.PI / 2, 0, 0]} material={m.steel.mat}>
           <cylinderGeometry args={[1.12, 1.1, 0.05, 96]} />
         </mesh>
@@ -290,7 +290,7 @@ export default function WatchModel({
       </group>
 
       {/* ---------------- MOVIMENTO ---------------- */}
-      <group ref={g.movement}>
+      <group ref={g.movement} name="movimento">
         <mesh rotation={[Math.PI / 2, 0, 0]} material={m.plate.mat}>
           <cylinderGeometry args={[0.98, 0.98, 0.12, 96]} />
         </mesh>
@@ -304,6 +304,7 @@ export default function WatchModel({
         {gearGeos.map((gg, i) => (
           <group key={i} position={[gg.pos[0], gg.pos[1], 0.085]}>
             <mesh
+              name={`ruota_${i + 1}`}
               ref={(el) => {
                 gears.current[i] = el;
               }}
@@ -317,7 +318,7 @@ export default function WatchModel({
         ))}
         {/* bilanciere */}
         <group position={[-0.48, -0.32, 0.1]}>
-          <group ref={balance}>
+          <group ref={balance} name="bilanciere">
             <mesh material={m.brass.mat}>
               <torusGeometry args={[0.24, 0.022, 12, 64]} />
             </mesh>
@@ -345,7 +346,7 @@ export default function WatchModel({
       </group>
 
       {/* ---------------- QUADRANTE ---------------- */}
-      <group ref={g.dial}>
+      <group ref={g.dial} name="quadrante">
         <mesh rotation={[Math.PI / 2, 0, 0]} material={m.dial.mat}>
           <cylinderGeometry args={[1.07, 1.07, 0.02, 96]} />
         </mesh>
@@ -365,7 +366,7 @@ export default function WatchModel({
       </group>
 
       {/* ---------------- LANCETTE ---------------- */}
-      <group ref={g.hands}>
+      <group ref={g.hands} name="lancette">
         {(
           [
             [hour, 0.5, 0.06, 0.005, m.applied.mat, 0.12],
@@ -373,7 +374,7 @@ export default function WatchModel({
             [second, 0.92, 0.014, 0.025, null, 0.22],
           ] as const
         ).map(([ref, len, w, z, mat, tail], i) => (
-          <group key={i} ref={ref} position={[0, 0, z]}>
+          <group key={i} ref={ref} name={["lancetta_ore", "lancetta_minuti", "lancetta_secondi"][i]} position={[0, 0, z]}>
             <mesh position={[0, (len - tail) / 2, 0]} material={mat ?? undefined}>
               <boxGeometry args={[w, len + tail, 0.012]} />
               {!mat && <meshStandardMaterial color="#b8433a" metalness={0.5} roughness={0.35} />}
@@ -386,7 +387,7 @@ export default function WatchModel({
       </group>
 
       {/* ---------------- LUNETTA ---------------- */}
-      <group ref={g.bezel}>
+      <group ref={g.bezel} name="lunetta">
         <mesh material={m.gold.mat}>
           <torusGeometry args={[1.14, 0.075, 24, 120]} />
         </mesh>
@@ -396,7 +397,7 @@ export default function WatchModel({
       </group>
 
       {/* ---------------- VETRO ---------------- */}
-      <group ref={g.crystal}>
+      <group ref={g.crystal} name="vetro">
         <mesh rotation={[Math.PI / 2, 0, 0]} material={m.crystal}>
           <cylinderGeometry args={[1.08, 1.08, 0.03, 96]} />
         </mesh>

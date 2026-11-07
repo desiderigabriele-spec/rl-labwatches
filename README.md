@@ -24,7 +24,8 @@ npm run build    # build di produzione
 | Titoli e descrizioni per Google | in cima a ogni `src/app/*/page.tsx` · dati strutturati in `src/lib/seo.ts` |
 | Colori e font | `src/app/globals.css` (blocco `@theme`) |
 | Logo (kit vettoriale) | `public/brand/` · note e PDF in `docs/brand/` · componente `src/components/Logo.tsx` |
-| Orologio 3D della home | `src/components/WatchScene.tsx` |
+| Orologio 3D della home | `src/components/WatchScene.tsx` (modello: `src/data/model3d.ts`) |
+| Orologio in evidenza ("Il pezzo del mese") | `featured: true` e `story` in `src/data/products.ts` |
 
 Le pagine sono in `src/app/` (una cartella per pagina).
 
@@ -64,6 +65,12 @@ node scripts/aggiungi-orologio.mjs rolex-submariner-16610 --foto ~/Desktop/sub/f
 **4. Quando il catalogo è reale**, togli gli esempi da `products.ts` (e le cartelle
 `public/orologi/esempio-*`) e metti `SHOP_READY = true`: la pagina Orologi entra nella sitemap
 e ogni orologio viene mostrato su Google con prezzo e disponibilità.
+
+## Modello 3D su misura
+
+Il sito usa un orologio 3D costruito a codice. Quando arriva il modello del modellatore (due file GLB:
+"nuovo" e "usurato"), si copiano in `public/models/` e si impostano in `src/data/model3d.ts`.
+Brief per il modellatore, nomi dei pezzi e istruzioni: `docs/modello-3d.md`.
 
 ## Modulo contatti: invio diretto via email
 

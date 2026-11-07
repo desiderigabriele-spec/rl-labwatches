@@ -38,7 +38,7 @@ export default function Logo({
 
   useEffect(() => {
     if (!svgRef.current) return;
-    const c = animateLogo(svgRef.current, { mode: "static" });
+    const c = animateLogo(svgRef.current, { mode: "static", duration: window.matchMedia("(max-width: 1023px)").matches ? 1150 : 1800 });
     ctrl.current = c;
     const t = animate === "intro" ? window.setTimeout(() => c.intro(), delay) : 0;
     return () => {

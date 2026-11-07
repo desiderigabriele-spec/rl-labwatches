@@ -1,24 +1,37 @@
 "use client";
-import { animate, useInView } from "motion/react";
+import { useInView } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
+/**
+ * Numero che avanza a scatti, 8 al secondo, come la lancetta dei secondi
+ * di un movimento a 28.800 alternanze l'ora (un'unità per battito).
+ */
 function Count({ to, suffix = "" }: { to: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true });
   const [v, setV] = useState(0);
   useEffect(() => {
     if (!inView) return;
-    const c = animate(0, to, { duration: 1.6, ease: [0.22, 1, 0.36, 1], onUpdate: (x) => setV(Math.round(x)) });
-    return () => c.stop();
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setV(to);
+      return;
+    }
+    let x = 0;
+    const t = window.setInterval(() => {
+      x++;
+      setV(x);
+      if (x >= to) window.clearInterval(t);
+    }, 125);
+    return () => window.clearInterval(t);
   }, [inView, to]);
-  return <span ref={ref}>{v}{suffix}</span>;
+  return <span ref={ref} className="tag-mono">{v}{suffix}</span>;
 }
 
 const stats: { value: number | string; suffix?: string; label: string }[] = [
   { value: 12, suffix: " mesi", label: "di garanzia su ogni riparazione" },
   { value: 9, label: "servizi, dal movimento al bracciale" },
   { value: 6, label: "grandi marchi trattati ogni giorno" },
-  { value: "Mondo", label: "spedizioni assicurate ovunque" },
+  { value: "Mondo", label: "spedizioni sicure in tutto il mondo" },
 ];
 
 export default function Stats() {

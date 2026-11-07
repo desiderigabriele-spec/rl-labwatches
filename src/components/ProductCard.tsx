@@ -9,7 +9,7 @@ export function WatchPlaceholder() {
       <circle cx="100" cy="100" r="52" fill="none" stroke="currentColor" strokeWidth="0.5" />
       {Array.from({ length: 12 }, (_, i) => {
         const a = (i / 12) * Math.PI * 2;
-        return <line key={i} x1={100 + Math.sin(a) * 44} y1={100 - Math.cos(a) * 44} x2={100 + Math.sin(a) * 50} y2={100 - Math.cos(a) * 50} stroke="currentColor" strokeWidth="1.5" />;
+        return <line key={i} x1={(100 + Math.sin(a) * 44).toFixed(2)} y1={(100 - Math.cos(a) * 44).toFixed(2)} x2={(100 + Math.sin(a) * 50).toFixed(2)} y2={(100 - Math.cos(a) * 50).toFixed(2)} stroke="currentColor" strokeWidth="1.5" />;
       })}
       <line x1="100" y1="100" x2="100" y2="68" stroke="currentColor" strokeWidth="2" />
       <line x1="100" y1="100" x2="124" y2="112" stroke="currentColor" strokeWidth="1.5" />
@@ -32,16 +32,20 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
         )}
         {product.spin && (
-          <span className="absolute right-4 top-4 bg-paper/90 px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-fg">360°</span>
+          <span className="absolute right-4 top-4 bg-paper/90 px-3 py-1 text-[0.7rem] uppercase tracking-[0.2em] text-fg">360°</span>
         )}
-        {product.sold && <span className="absolute left-4 top-4 bg-fg px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-paper">Venduto</span>}
+        {product.sold && <span className="absolute left-4 top-4 bg-fg px-3 py-1 text-[0.7rem] uppercase tracking-[0.2em] text-paper">Venduto</span>}
       </div>
       <div className="mt-5 flex items-start justify-between gap-4">
         <div>
-          <p className="text-[0.68rem] uppercase tracking-[0.24em] text-mute">{product.brand} · {product.year}</p>
+          <p className="text-[0.7rem] uppercase tracking-[0.24em] text-mute">{product.brand}</p>
           <h3 className="mt-1 font-display text-2xl">{product.name}</h3>
+          <p className="mt-2 flex flex-wrap gap-1.5 text-fg/60">
+            <span className="chip">Ref. {product.ref}</span>
+            <span className="chip">{product.year}</span>
+          </p>
         </div>
-        <p className="shrink-0 pt-1 text-sm text-gold">{formatPrice(product.price)}</p>
+        <p className="tag-mono shrink-0 pt-1 text-sm text-green">{formatPrice(product.price)}</p>
       </div>
     </Link>
   );

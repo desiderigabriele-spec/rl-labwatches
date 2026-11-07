@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import Viewer360 from "./Viewer360";
+import Loupe from "./Loupe";
 import { WatchPlaceholder } from "./ProductCard";
 
 /** Galleria della scheda orologio: vista a 360° (se presente) + foto */
@@ -16,11 +17,18 @@ export default function ProductGallery({ name, frames, photos }: { name: string;
         {view === -1 && has360 ? (
           <Viewer360 frames={frames} alt={name} />
         ) : photos[view] ? (
-          <Image src={photos[view]} alt={`${name} – foto ${view + 1}`} fill priority sizes="(min-width: 1024px) 50vw, 100vw" className="object-contain" />
+          <Loupe src={photos[view]} className="h-full w-full">
+            <Image src={photos[view]} alt={`${name} – foto ${view + 1}`} fill priority sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+          </Loupe>
         ) : (
           <div className="flex h-full items-center justify-center"><WatchPlaceholder /></div>
         )}
       </div>
+      {thumbs.length > 1 && (
+        <p className="tag-mono mt-4 text-xs text-mute">
+          {String(thumbs.indexOf(view) + 1).padStart(2, "0")} / {String(thumbs.length).padStart(2, "0")} · {view === -1 ? "vista a 360°" : "galleria"}
+        </p>
+      )}
       {thumbs.length > 1 && (
         <ul className="mt-4 flex flex-wrap gap-3">
           {thumbs.map((t) => (
