@@ -1,9 +1,12 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Montserrat } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import IntroSplash from "@/components/IntroSplash";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import JsonLd from "@/components/JsonLd";
+import { localBusinessLd, OG_IMAGE, websiteLd } from "@/lib/seo";
 import { site } from "@/data/site";
 
 const cormorant = Cormorant_Garamond({
@@ -16,28 +19,16 @@ const montserrat = Montserrat({ subsets: ["latin"], weight: ["300", "400", "500"
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: `${site.name} – Restauro e riparazione orologi a Pistoia`, template: `%s · ${site.name}` },
+  title: { default: "Roberto Landi: Artigiano Orologi di Lusso a Pistoia | RL Lab Watches", template: "%s | Roberto Landi" },
   description: site.description,
-  openGraph: { type: "website", locale: "it_IT", siteName: site.name },
+  applicationName: site.name,
+  authors: [{ name: site.owner }],
+  formatDetection: { telephone: false },
+  openGraph: { type: "website", locale: "it_IT", siteName: site.name, images: [OG_IMAGE] },
+  twitter: { card: "summary_large_image", images: [OG_IMAGE.url] },
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  name: site.name,
-  founder: site.owner,
-  description: site.description,
-  email: site.email,
-  url: site.url,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: site.address.street,
-    addressLocality: site.address.city,
-    postalCode: site.address.zip,
-    addressCountry: "IT",
-  },
-  sameAs: Object.values(site.social),
-};
+export const viewport: Viewport = { themeColor: "#003d27" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -46,10 +37,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* salta l'intro se già vista in questa sessione (prima del render, senza sfarfallio) */}
         <script dangerouslySetInnerHTML={{ __html: `try{if(sessionStorage.getItem("rl-intro"))document.documentElement.dataset.intro="seen"}catch(e){}` }} />
         <IntroSplash />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <JsonLd data={localBusinessLd} />
+        <JsonLd data={websiteLd} />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <WhatsAppButton />
       </body>
     </html>
   );

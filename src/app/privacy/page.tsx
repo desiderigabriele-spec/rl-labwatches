@@ -1,16 +1,13 @@
-import type { Metadata } from "next";
-import PageHero from "@/components/PageHero";
+import LegalPage from "@/components/LegalPage";
+import { legal } from "@/content/legal";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Informativa sulla privacy", robots: { index: false } };
+export const metadata = pageMeta({
+  title: "Informativa sulla Privacy",
+  description: "Informativa sulla privacy di Roberto Landi Lab Watches, Pistoia: quali dati raccogliamo tramite il sito, perché e come li proteggiamo.",
+  path: "/privacy",
+});
 
-// TODO: incollare qui il testo legale dal vecchio sito Wix (da far verificare a un consulente).
 export default function Page() {
-  return (
-    <>
-      <PageHero eyebrow="Legale" title="Informativa sulla privacy" />
-      <section className="mx-auto max-w-3xl px-4 py-20 text-mute sm:px-8">
-        <p>Testo in aggiornamento.</p>
-      </section>
-    </>
-  );
+  return <LegalPage page={legal.privacy} path="/privacy" />;
 }

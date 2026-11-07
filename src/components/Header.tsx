@@ -33,12 +33,12 @@ export default function Header() {
           <Logo version="RL-orizzontale-metallo" animate="hover" className={`transition-[height] duration-500 ${scrolled ? "h-10" : "h-12 sm:h-14"}`} />
         </Link>
 
-        <nav className="hidden md:flex items-center gap-9">
+        <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
           {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`relative text-[0.74rem] tracking-[0.24em] uppercase transition-colors ${
+              className={`relative text-[0.7rem] tracking-[0.2em] uppercase transition-colors ${
                 isActive(item.href) ? "text-gold" : "text-fg/75 hover:text-fg"
               }`}
             >
@@ -48,10 +48,11 @@ export default function Header() {
               )}
             </Link>
           ))}
+          <Link href="/preventivo" className="btn btn-solid !px-4 !py-2.5 !text-[0.66rem]">Preventivo</Link>
         </nav>
 
         <button
-          className="md:hidden p-2 -mr-2"
+          className="lg:hidden p-2 -mr-2"
           aria-label={open ? "Chiudi menu" : "Apri menu"}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
@@ -67,9 +68,9 @@ export default function Header() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden overflow-hidden border-t border-line"
+            className="lg:hidden overflow-hidden border-t border-line"
           >
-            <ul className="px-4 py-6 space-y-5">
+            <ul className="max-h-[calc(100dvh-5rem)] overflow-y-auto px-4 py-6 space-y-4">
               {nav.map((item, i) => (
                 <motion.li key={item.href} initial={{ x: -12, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.05 * i }}>
                   <Link href={item.href} className={`font-display text-3xl ${isActive(item.href) ? "text-gold" : "text-fg"}`}>
@@ -77,6 +78,9 @@ export default function Header() {
                   </Link>
                 </motion.li>
               ))}
+              <li className="pt-2">
+                <Link href="/preventivo" className="btn btn-solid">Richiedi un preventivo</Link>
+              </li>
             </ul>
           </motion.nav>
         )}

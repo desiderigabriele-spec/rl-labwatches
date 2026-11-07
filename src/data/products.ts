@@ -1,4 +1,5 @@
-// Catalogo dello shop. PRODOTTI SEGNAPOSTO: sostituire con quelli reali del vecchio sito Wix.
+// Catalogo degli orologi in vendita. PRODOTTI DI ESEMPIO: sostituirli con quelli reali.
+// Finché ci sono solo esempi, la pagina non viene indicizzata da Google (vedi SHOP_READY).
 export type Product = {
   slug: string;
   name: string;
@@ -44,6 +45,8 @@ export const products: Product[] = [
     description: "Prodotto di esempio: sostituire con un orologio reale del catalogo.",
   },
 ];
+
+export const SHOP_READY = false; // metti true quando il catalogo contiene orologi reali
 
 export const formatPrice = (p: number | null) =>
   p === null

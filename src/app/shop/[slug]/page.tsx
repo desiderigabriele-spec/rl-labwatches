@@ -4,7 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Reveal from "@/components/Reveal";
 import { WatchPlaceholder } from "@/components/ProductCard";
-import { formatPrice, products } from "@/data/products";
+import { formatPrice, products, SHOP_READY } from "@/data/products";
+import { pageMeta } from "@/lib/seo";
 import { site } from "@/data/site";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -16,7 +17,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = products.find((x) => x.slug === slug);
-  return p ? { title: `${p.brand} ${p.name}`, description: p.description } : {};
+  return p ? pageMeta({ title: `${p.brand} ${p.name}`, description: p.description, path: `/shop/${p.slug}`, noindex: !SHOP_READY }) : {};
 }
 
 export default async function ProductPage({ params }: Props) {

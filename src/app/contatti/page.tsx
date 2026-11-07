@@ -1,48 +1,31 @@
-import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
 import ContactForm from "@/components/ContactForm";
-import { site } from "@/data/site";
+import ContactInfo from "@/components/ContactInfo";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Contatti", description: `Contatta ${site.name} a ${site.address.city}: preventivi per restauro e riparazione orologi.` };
+export const metadata = pageMeta({
+  title: "Contatti: orologiaio a Pistoia",
+  description:
+    "Roberto Landi, orologiaio a Pistoia in Via Padre Giovanni Antonelli 69. Telefono, WhatsApp ed email per un preventivo gratuito o un consiglio.",
+  path: "/contatti",
+});
 
 export default function ContattiPage() {
-  const mapQuery = encodeURIComponent(`${site.address.street}, ${site.address.zip} ${site.address.city}`);
   return (
     <>
-      <PageHero eyebrow="Contatti" title="Parliamo del tuo orologio." intro="Scrivici per una valutazione o un preventivo. Ti risponderemo il prima possibile." />
-      <section className="mx-auto grid max-w-7xl gap-20 px-4 py-20 sm:px-8 lg:grid-cols-[1fr_1.4fr]">
-        <Reveal className="space-y-10">
-          <div>
-            <p className="eyebrow">Laboratorio</p>
-            <p className="mt-3 font-display text-2xl leading-snug">
-              {site.address.street}
-              <br />
-              {site.address.zip} {site.address.city}
-            </p>
-            <a href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-sm text-gold hover:underline">
-              Apri in Google Maps →
-            </a>
-          </div>
-          <div>
-            <p className="eyebrow">Scrivici</p>
-            <a href={`mailto:${site.email}`} className="mt-3 block font-display text-2xl hover:text-gold">{site.email}</a>
-            {site.phone && <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="mt-1 block font-display text-2xl hover:text-gold">{site.phone}</a>}
-          </div>
-          <div>
-            <p className="eyebrow">Orari</p>
-            <ul className="mt-3 space-y-1 text-fg/85">
-              {site.hours.map((h) => (
-                <li key={h.days} className="flex gap-6"><span className="w-20 text-mute">{h.days}</span>{h.time}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="flex gap-6 text-sm uppercase tracking-[0.2em]">
-            <a href={site.social.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-gold">Instagram</a>
-            <a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-gold">Facebook</a>
-          </div>
+      <PageHero
+        eyebrow="Contatti"
+        title="Contattami"
+        intro="Sono qui per rispondere a tutte le tue domande e discutere le tue esigenze di restauro e riparazione. Scrivimi per un preventivo gratuito o un consiglio."
+        crumbs={[{ name: "Contatti", path: "/contatti" }]}
+      />
+      <section className="mx-auto grid max-w-7xl gap-20 px-4 py-20 sm:px-8 lg:grid-cols-[1fr_1.3fr]">
+        <Reveal>
+          <ContactInfo />
         </Reveal>
         <Reveal delay={0.1}>
+          <h2 className="mb-8 font-display text-3xl">Inviami un messaggio</h2>
           <ContactForm />
         </Reveal>
       </section>

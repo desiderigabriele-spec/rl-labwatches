@@ -16,9 +16,12 @@ npm run build    # build di produzione
 
 | Cosa | File |
 | --- | --- |
-| Nome, indirizzo, email, telefono, orari, social | `src/data/site.ts` |
-| Servizi | `src/data/services.ts` |
-| Prodotti dello shop | `src/data/products.ts` (foto in `public/prodotti/`) |
+| Nome, indirizzo, email, telefono, WhatsApp, orari, social | `src/data/site.ts` |
+| Servizi (testi e foto) | `src/data/services.ts` (foto in `public/images/`) |
+| Marche, FAQ, recensioni | `src/data/brands.ts`, `src/data/faq.ts`, `src/data/reviews.ts` |
+| Testi legali | `src/content/legal.ts` |
+| Orologi in vendita | `src/data/products.ts` — quando sono reali metti `SHOP_READY = true` |
+| Titoli e descrizioni per Google | in cima a ogni `src/app/*/page.tsx` · dati strutturati in `src/lib/seo.ts` |
 | Colori e font | `src/app/globals.css` (blocco `@theme`) |
 | Logo (kit vettoriale) | `public/brand/` · note e PDF in `docs/brand/` · componente `src/components/Logo.tsx` |
 | Orologio 3D della home | `src/components/WatchScene.tsx` |
@@ -35,7 +38,26 @@ node scripts/import-logo-kit.mjs <cartella Roberto_Landi_Vector_Kit>
 
 Copia gli SVG in `public/brand/`, rigenera le parti animabili e la favicon.
 
-I vecchi indirizzi Wix (`/blank-7`, `/informativa-sulla-privacy`, …) reindirizzano alle nuove pagine: vedi `next.config.ts`.
+## SEO e migrazione da Wix
+
+I vecchi indirizzi Wix reindirizzano con **301** alle nuove pagine (`next.config.ts`), così Google
+trasferisce il posizionamento:
+
+| Vecchio (Wix) | Nuovo |
+| --- | --- |
+| `/about-5` | `/chi-sono` |
+| `/blank-3` | `/faq` |
+| `/blank-5` | `/marche` |
+| `/blank-7` | `/contatti` |
+| `/blank-8` | `/preventivo` |
+| `/informativa-sulla-privacy` | `/privacy` |
+| `/copia-di-informativa-sulla-privacy` | `/termini-di-servizio` |
+| `/copia-di-informativa-sulla-privacy-1` | `/cookie` |
+| `/copia-di-termini-di-servizio` | `/spedizioni-e-consegna` |
+| `/copia-di-spedizioni-e-consegna` | `/note-legali` |
+
+Ogni pagina ha titolo, descrizione, URL canonico e immagine social; il sito pubblica `sitemap.xml`,
+`robots.txt` e i dati strutturati schema.org (attività locale con orari e servizi, FAQ, breadcrumb).
 
 ## Deploy su Vercel
 
