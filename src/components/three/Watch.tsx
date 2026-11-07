@@ -1,11 +1,11 @@
 "use client";
 import { Suspense } from "react";
-import WatchModel, { type WatchLook, type WatchState } from "./WatchModel";
+import WatchModel, { type WatchState } from "./WatchModel";
 import GlbWatchModel from "./GlbWatchModel";
 import { WATCH_MODEL } from "@/data/model3d";
 
-/** Sceglie l'orologio da mostrare: il modello GLB del modellatore se presente, altrimenti quello a codice */
-export default function Watch(props: { state: React.RefObject<WatchState>; realTime?: boolean; strap?: boolean; look?: WatchLook }) {
+/** Sceglie l'orologio da mostrare: il modello GLB se presente, altrimenti il Daytona costruito in codice */
+export default function Watch(props: { state: React.RefObject<WatchState>; realTime?: boolean }) {
   if (!WATCH_MODEL) return <WatchModel {...props} />;
   return (
     <Suspense fallback={<WatchModel {...props} />}>
