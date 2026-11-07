@@ -15,6 +15,8 @@ export type Product = {
   photos?: string[];
   /** vista a 360°: cartella con i fotogrammi 001.jpg, 002.jpg, … e il loro numero */
   spin?: { dir: string; frames: number; ext?: "jpg" | "webp" };
+  /** colore del bagliore in vetrina (di solito il colore del quadrante), es. "#1f8a5a" */
+  accent?: string;
   /** dettagli aggiuntivi mostrati nella scheda, es. ["Cassa", "Acciaio, 40 mm"] */
   details?: [string, string][];
   sold?: boolean;
@@ -24,49 +26,73 @@ export type Product = {
 export const spinFrames = (p: Product) =>
   p.spin ? Array.from({ length: p.spin.frames }, (_, i) => `${p.spin!.dir}/${String(i + 1).padStart(3, "0")}.${p.spin!.ext ?? "jpg"}`) : [];
 
+// OROLOGI DIMOSTRATIVI (renderizzati dal modello 3D del sito, cartelle public/orologi/esempio-*):
+// da sostituire con i pezzi reali usando scripts/aggiungi-orologio.mjs (vedi README).
 export const products: Product[] = [
   {
-    // DEMO della vista a 360° (fotogrammi generati dal modello 3D del sito): da rimuovere con gli orologi reali
-    slug: "esempio-vista-360",
-    name: "Dimostrazione vista a 360°",
+    slug: "esempio-smeraldo",
+    name: "Smeraldo",
     brand: "Esempio",
-    ref: "Ref. 0000",
+    ref: "Collezione dimostrativa",
     year: "—",
     price: null,
     condition: "Esempio",
-    description: "Esempio della vista a 360°: trascina l'orologio per ruotarlo. Con le foto reali, scattate su un piatto girevole, ogni orologio in vendita si potrà guardare da ogni lato.",
-    spin: { dir: "/orologi/esempio-vista-360/360", frames: 36 },
-    details: [["Fotogrammi", "36 (uno ogni 10°)"]],
+    description: "Quadrante verde smeraldo, lunetta oro, cinturino in pelle testa di moro. Orologio dimostrativo: verrà sostituito dai pezzi reali in vendita.",
+    spin: { dir: "/orologi/esempio-smeraldo/360", frames: 18, ext: "webp" },
+    accent: "#1f9a62",
+    details: [['Quadrante', 'Verde smeraldo'], ['Lunetta', 'Oro'], ['Cinturino', 'Pelle']],
   },
   {
-    slug: "esempio-subacqueo-anni-70",
-    name: "Subacqueo automatico",
+    slug: "esempio-blu-notte",
+    name: "Blu notte",
     brand: "Esempio",
-    ref: "Ref. 0000",
-    year: "Anni '70",
+    ref: "Collezione dimostrativa",
+    year: "—",
     price: null,
-    condition: "Revisionato in laboratorio",
-    description: "Prodotto di esempio: sostituire con un orologio reale del catalogo.",
+    condition: "Esempio",
+    description: "Quadrante blu notte e bracciale in acciaio: il classico sportivo, elegante a ogni ora. Orologio dimostrativo: verrà sostituito dai pezzi reali in vendita.",
+    spin: { dir: "/orologi/esempio-blu-notte/360", frames: 18, ext: "webp" },
+    accent: "#3d74e0",
+    details: [['Quadrante', 'Blu notte'], ['Cassa', 'Acciaio'], ['Bracciale', 'Acciaio']],
   },
   {
-    slug: "esempio-cronografo-manuale",
-    name: "Cronografo a carica manuale",
+    slug: "esempio-ossidiana",
+    name: "Ossidiana",
     brand: "Esempio",
-    ref: "Ref. 0000",
-    year: "Anni '60",
-    price: 4800,
-    condition: "Restaurato, movimento originale",
-    description: "Prodotto di esempio: sostituire con un orologio reale del catalogo.",
+    ref: "Collezione dimostrativa",
+    year: "—",
+    price: null,
+    condition: "Esempio",
+    description: "Quadrante nero profondo e cassa in acciaio, con indici chiari per la massima leggibilità. Orologio dimostrativo: verrà sostituito dai pezzi reali in vendita.",
+    spin: { dir: "/orologi/esempio-ossidiana/360", frames: 18, ext: "webp" },
+    accent: "#d9dde3",
+    details: [['Quadrante', 'Nero'], ['Cassa', 'Acciaio'], ['Cinturino', 'Pelle nera']],
   },
   {
-    slug: "esempio-solo-tempo-oro",
-    name: "Solo tempo in oro",
+    slug: "esempio-avorio",
+    name: "Avorio",
     brand: "Esempio",
-    ref: "Ref. 0000",
-    year: "Anni '50",
-    price: 2900,
-    condition: "Ottime condizioni",
-    description: "Prodotto di esempio: sostituire con un orologio reale del catalogo.",
+    ref: "Collezione dimostrativa",
+    year: "—",
+    price: null,
+    condition: "Esempio",
+    description: "Quadrante avorio con indici oro: la sobrietà di un solo tempo d'altri tempi. Orologio dimostrativo: verrà sostituito dai pezzi reali in vendita.",
+    spin: { dir: "/orologi/esempio-avorio/360", frames: 18, ext: "webp" },
+    accent: "#f0d9a2",
+    details: [['Quadrante', 'Avorio'], ['Lunetta', 'Oro'], ['Cinturino', 'Pelle marrone']],
+  },
+  {
+    slug: "esempio-bordeaux",
+    name: "Bordeaux",
+    brand: "Esempio",
+    ref: "Collezione dimostrativa",
+    year: "—",
+    price: null,
+    condition: "Esempio",
+    description: "Quadrante bordeaux e finiture oro, per chi ama un dettaglio di carattere. Orologio dimostrativo: verrà sostituito dai pezzi reali in vendita.",
+    spin: { dir: "/orologi/esempio-bordeaux/360", frames: 18, ext: "webp" },
+    accent: "#d2405a",
+    details: [['Quadrante', 'Bordeaux'], ['Lunetta', 'Oro'], ['Cinturino', 'Pelle']],
   },
 ];
 

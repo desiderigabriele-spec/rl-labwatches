@@ -16,8 +16,8 @@ export default function ContattiPage() {
     <>
       <PageHero
         eyebrow="Contatti"
-        title="Contattami"
-        intro="Sono qui per rispondere a tutte le tue domande e discutere le tue esigenze di restauro e riparazione. Scrivimi per un preventivo gratuito o un consiglio."
+        title="Parliamo del tuo *orologio*"
+        intro="Hai una domanda, un dubbio o un orologio che merita nuova vita? Scrivimi o passa in laboratorio a Pistoia: la prima valutazione e il preventivo sono sempre gratuiti."
         crumbs={[{ name: "Contatti", path: "/contatti" }]}
       />
       <section className="mx-auto grid max-w-7xl gap-20 px-4 py-20 sm:px-8 lg:grid-cols-[1fr_1.3fr]">

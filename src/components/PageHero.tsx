@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Reveal from "./Reveal";
 import JsonLd from "./JsonLd";
+import SplitText from "./SplitText";
 import { breadcrumbLd } from "@/lib/seo";
 
 export default function PageHero({
@@ -30,7 +31,9 @@ export default function PageHero({
             </nav>
           )}
           <p className="eyebrow">{eyebrow}</p>
-          <h1 className="mt-5 font-display text-5xl font-light leading-[1.05] sm:text-7xl">{title}</h1>
+          <h1 className="mt-5 font-display text-5xl font-light leading-[1.05] sm:text-7xl">
+            {typeof title === "string" ? <SplitText text={title} delay={0.1} /> : title}
+          </h1>
           {intro && <div className="mt-6 max-w-2xl text-lg leading-relaxed text-mute">{intro}</div>}
         </Reveal>
       </div>
