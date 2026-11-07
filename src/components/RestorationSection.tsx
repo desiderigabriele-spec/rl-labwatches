@@ -6,19 +6,23 @@ import { useEffect, useRef, useState } from "react";
 
 const RestorationScene = dynamic(() => import("./RestorationScene"), { ssr: false });
 
+// i tempi seguono le fasi della scena 3D (three/restoration-timeline.ts)
 const steps = [
-  { range: [0, 0.13], title: "Arriva in laboratorio", text: "Graffi, sporco, un vetro ingiallito dal tempo. È fermo da anni, ma ha ancora molto da raccontare." },
-  { range: [0.16, 0.34], title: "Lo smonto", text: "Ogni componente viene separato, pulito e ispezionato. Nulla sfugge allo sguardo." },
-  { range: [0.37, 0.59], title: "Lo restauro", text: "Lucidatura e satinatura della cassa, recupero del quadrante, revisione del movimento." },
-  { range: [0.62, 0.8], title: "Lo rimonto", text: "Pezzo dopo pezzo, con la lubrificazione e la regolazione che il movimento richiede." },
-  { range: [0.84, 1], title: "Torna a battere", text: "Collaudato e pronto a misurare il tempo per altre generazioni." },
+  { range: [0, 0.07], title: "Arriva in laboratorio", text: "Graffi, sporco, un vetro ingiallito dal tempo. È fermo da anni, ma ha ancora molto da raccontare." },
+  { range: [0.1, 0.22], title: "Lo smonto", text: "Apro il fondello e separo ogni componente. Nulla sfugge allo sguardo." },
+  { range: [0.24, 0.42], title: "Il movimento", text: "Il fondello torna pulito sotto il pennello. Poi, con l'oliatore, una goccia d'olio su ogni rubino." },
+  { range: [0.46, 0.575], title: "Il quadrante", text: "Lo pulisco a pennello, con la delicatezza che merita un quadrante originale del 1968." },
+  { range: [0.59, 0.74], title: "La lucidatura", text: "Lunetta e cassa tornano a splendere alla pulitrice, contro il disco di cotone." },
+  { range: [0.76, 0.86], title: "Lo rimonto", text: "Pezzo dopo pezzo, con la regolazione che il movimento richiede." },
+  { range: [0.88, 1], title: "Torna a battere", text: "Collaudato e pronto a misurare il tempo per altre generazioni." },
 ] as const;
 
 function Step({ i, progress }: { i: number; progress: MotionValue<number> }) {
   const [a, b] = steps[i].range;
   const first = i === 0, last = i === steps.length - 1;
   // gli offset devono restare tra 0 e 1 (animazioni accelerate dallo scroll del browser)
-  const input = [Math.max(0, a - 0.03), a + 0.01, b - 0.01, Math.min(1, b + 0.03)];
+  // dissolvenze brevi: un passaggio esce prima che entri il successivo, i testi non si sovrappongono
+  const input = [Math.max(0, a - 0.005), a + 0.012, b - 0.012, Math.min(1, b + 0.005)];
   const opacity = useTransform(progress, input, [first ? 1 : 0, 1, 1, last ? 1 : 0]);
   const y = useTransform(progress, input, [first ? 0 : 24, 0, 0, last ? 0 : -24]);
   return (
@@ -42,7 +46,7 @@ export default function RestorationSection() {
   }, [near]);
 
   return (
-    <section ref={ref} className="relative h-[340vh] border-y border-line bg-paper-2 lg:h-[520vh]" aria-label="Il restauro, passo dopo passo">
+    <section ref={ref} className="relative h-[520vh] border-y border-line bg-paper-2 lg:h-[760vh]" aria-label="Il restauro, passo dopo passo">
       <div className="sticky top-0 flex h-dvh flex-col overflow-hidden">
         <div className="mx-auto w-full max-w-7xl px-4 pt-24 sm:px-8">
           <p className="eyebrow">Il restauro, passo dopo passo</p>
