@@ -38,7 +38,9 @@ function Sequence({ progress }: { progress: MotionValue<number> }) {
 
     if (root.current) {
       const t = st.clock.elapsedTime;
-      root.current.rotation.y = lerp(-0.3, -1.05, explode) + Math.sin(t * 0.4) * 0.06 + st.pointer.x * 0.12;
+      // durante lo smontaggio gira e mostra il retro (fondello inciso e movimento), poi torna di fronte per il restauro
+      const back = ss(v, 0.2, 0.32) * (1 - ss(v, 0.37, 0.5));
+      root.current.rotation.y = lerp(-0.3, -1.05, explode) - back * 1.3 + Math.sin(t * 0.4) * 0.06 + st.pointer.x * 0.12;
       root.current.rotation.x = lerp(0.12, 0.38, explode) - st.pointer.y * 0.08;
       // in vista esplosa rimpicciolisce e sposta a destra, così tutti i pezzi restano nell'inquadratura
       const narrow = st.size.width / st.size.height < 1;
