@@ -22,7 +22,7 @@ export default function FaqPage() {
   return (
     <>
       <JsonLd data={faqLd} />
-      <PageHero eyebrow="FAQ" title="Domande frequenti" intro="Le risposte alle domande più comuni dei miei clienti." crumbs={[{ name: "FAQ", path: "/faq" }]} />
+      <PageHero eyebrow="FAQ" title="Domande *frequenti*" intro="Tempi, costi, garanzia e spedizioni: le risposte alle domande che i clienti mi fanno più spesso." crumbs={[{ name: "FAQ", path: "/faq" }]} />
       <section className="mx-auto max-w-4xl px-4 py-20 sm:px-8">
         {faq.map((f, i) => (
           <Reveal key={f.q} delay={i * 0.03}>

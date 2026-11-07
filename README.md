@@ -43,20 +43,26 @@ Copia gli SVG in `public/brand/`, rigenera le parti animabili e la favicon.
 **1. Le foto**
 - *Foto normali*: fondo chiaro e uniforme (un box luminoso da fotografia va benissimo), luce diffusa,
   telefono su treppiede. La prima foto in ordine alfabetico diventa la copertina.
-- *Vista a 360°*: orologio al centro di un piatto girevole, telefono fermo su treppiede, stessa luce.
-  Scatta una foto ogni 10° (36 foto) o ogni 15° (24 foto), sempre nello stesso verso.
+- *Vista a 360° e vetrina con i faretti*: orologio al centro di un piatto girevole, telefono fermo su
+  treppiede, stessa luce. Scatta una foto ogni 20° (18 foto) o ogni 10° (36), sempre nello stesso verso.
   Esistono piatti girevoli motorizzati che scattano da soli tramite app.
+- *Per la vetrina con i faretti* le foto della rotazione devono essere **scontornate** (sfondo
+  trasparente, PNG): così l'orologio "sta" sul ripiano buio e si illumina. Si possono scontornare in
+  automatico, ad esempio con remove.bg, Photoroom o con "Isola soggetto" delle Foto di iPhone/Mac.
 
 **2. Importa le foto** (le raddrizza, le ridimensiona e le comprime):
 
 ```bash
-node scripts/aggiungi-orologio.mjs rolex-submariner-16610 --foto ~/Desktop/sub/foto --360 ~/Desktop/sub/360
+node scripts/aggiungi-orologio.mjs rolex-submariner-16610 --foto ~/Desktop/sub/foto --360 ~/Desktop/sub/360 --accento "#1f9a62"
 ```
 
 **3. Incolla il blocco** che lo script stampa in `src/data/products.ts` e completa nome, prezzo e descrizione.
 
-**4. Quando il catalogo è reale**, togli gli esempi da `products.ts` (e la cartella
-`public/orologi/esempio-vista-360`) e metti `SHOP_READY = true`: la pagina Orologi entra nella sitemap
+`--accento` è il colore del bagliore che compare sotto l'orologio quando si accende il faretto
+(di solito il colore del quadrante). I primi 5 orologi del catalogo vanno nella vetrina della home.
+
+**4. Quando il catalogo è reale**, togli gli esempi da `products.ts` (e le cartelle
+`public/orologi/esempio-*`) e metti `SHOP_READY = true`: la pagina Orologi entra nella sitemap
 e ogni orologio viene mostrato su Google con prezzo e disponibilità.
 
 ## Modulo contatti: invio diretto via email

@@ -16,11 +16,11 @@ export default function MarchePage() {
     <>
       <PageHero
         eyebrow="Specializzato nei migliori marchi internazionali"
-        title="Riparazione e restauro di orologi di lusso"
+        title="Riparazione e restauro di *orologi di lusso*"
         intro={
           <>
-            <p>La mia abilità e passione per l&apos;orologeria si estendono a una varietà di prestigiosi marchi internazionali. La mia esperienza e conoscenza mi permettono di operare con successo su modelli di tutte le principali case orologiere.</p>
-            <p className="mt-4">Di seguito, presento alcuni dei marchi con i quali lavoro più frequentemente.</p>
+            <p>Ogni Maison ha i suoi segreti: calibri, finiture, tolleranze. La mia esperienza mi permette di intervenire con sicurezza sui modelli di tutte le principali case orologiere.</p>
+            <p className="mt-4">Questi sono i marchi che passano più spesso sul mio banco di lavoro.</p>
           </>
         }
         crumbs={[{ name: "Marche", path: "/marche" }]}

@@ -1,21 +1,27 @@
 import Link from "next/link";
-import Reveal from "./Reveal";
 import { brands } from "@/data/brands";
 
-// Marche come tipografia (niente loghi di terzi): elegante e leggibile da Google
+// Marche in scorrimento continuo (tipografia, niente loghi di terzi)
 export default function BrandStrip() {
+  const row = [...brands, ...brands];
   return (
-    <section className="border-t border-line py-24" aria-labelledby="marche-titolo">
-      <div className="mx-auto max-w-7xl px-4 text-center sm:px-8">
-        <Reveal>
-          <h2 id="marche-titolo" className="eyebrow">Specializzato nei migliori marchi internazionali</h2>
-          <ul className="mx-auto mt-10 flex max-w-5xl flex-wrap items-center justify-center gap-x-12 gap-y-6">
-            {brands.map((b) => (
-              <li key={b.name} className="font-display text-3xl font-light tracking-wide text-fg/80 sm:text-4xl">{b.name}</li>
+    <section className="overflow-hidden border-t border-line py-24" aria-labelledby="marche-titolo">
+      <h2 id="marche-titolo" className="eyebrow text-center">Specializzato nei grandi marchi dell&apos;alta orologeria</h2>
+      <div className="marquee mt-12 flex w-max" aria-hidden>
+        {[0, 1].map((k) => (
+          <ul key={k} className="flex shrink-0 items-center">
+            {row.map((b, i) => (
+              <li key={`${k}-${i}`} className="flex items-center font-display text-5xl font-light text-fg/80 sm:text-7xl">
+                <span className="px-8 transition-colors hover:text-gold sm:px-12">{b.name}</span>
+                <span className="text-xl text-gold-2">◆</span>
+              </li>
             ))}
           </ul>
-          <Link href="/marche" className="btn mt-12">Le marche che tratto</Link>
-        </Reveal>
+        ))}
+      </div>
+      <p className="sr-only">{brands.map((b) => b.name).join(", ")}</p>
+      <div className="mt-12 text-center">
+        <Link href="/marche" className="btn">Le marche che tratto</Link>
       </div>
     </section>
   );

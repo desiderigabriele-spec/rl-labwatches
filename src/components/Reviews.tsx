@@ -7,7 +7,7 @@ export default function Reviews() {
       <div className="mx-auto max-w-7xl px-4 sm:px-8">
         <Reveal>
           <p className="eyebrow">Feedback e recensioni</p>
-          <h2 id="recensioni" className="mt-4 font-display text-4xl font-light sm:text-6xl">Alcuni dei miei clienti soddisfatti</h2>
+          <h2 id="recensioni" className="mt-4 font-display text-4xl font-light sm:text-6xl">Le parole dei miei clienti</h2>
         </Reveal>
         <div className="mt-16 grid gap-8 md:grid-cols-3">
           {reviews.map((r, i) => (

@@ -6,7 +6,10 @@
  *
  *   <slug>        nome dell'orologio nell'indirizzo, es. rolex-submariner-16610
  *   --foto        cartella con le foto normali (la prima in ordine alfabetico diventa la copertina)
- *   --360         cartella con i fotogrammi della rotazione (24–36 foto, in ordine di scatto)
+ *   --360         cartella con i fotogrammi della rotazione (18–36 foto, in ordine di scatto).
+ *                 Se sono PNG scontornati (sfondo trasparente) la trasparenza viene mantenuta:
+ *                 così l'orologio può stare nella vetrina con i faretti.
+ *   --accento     colore del bagliore in vetrina, es. "#1f8a5a" (facoltativo)
  *
  * Le foto vengono raddrizzate, ridimensionate, compresse e copiate in public/orologi/<slug>/.
  * Alla fine stampa il blocco da incollare in src/data/products.ts.
@@ -41,6 +44,8 @@ const root = new URL("../", import.meta.url).pathname;
 const out = join(root, "public/orologi", slug);
 mkdirSync(out, { recursive: true });
 
+const saveWebp = (src, dst, size) =>
+  sharp(src).rotate().resize({ width: size, height: size, fit: "inside", withoutEnlargement: true }).webp({ quality: 80, alphaQuality: 90 }).toFile(dst);
 const save = (src, dst, size) =>
   sharp(src).rotate().resize({ width: size, height: size, fit: "inside", withoutEnlargement: true }).jpeg({ quality: 82, mozjpeg: true }).toFile(dst);
 
@@ -62,9 +67,9 @@ if (spinDir) {
   const dir = join(out, "360");
   rmSync(dir, { recursive: true, force: true });
   mkdirSync(dir, { recursive: true });
-  for (const [i, f] of files.entries()) await save(join(spinDir, f), join(dir, `${String(i + 1).padStart(3, "0")}.jpg`), 1000);
+  for (const [i, f] of files.entries()) await saveWebp(join(spinDir, f), join(dir, `${String(i + 1).padStart(3, "0")}.webp`), 800);
   snippet.spin = { dir: `/orologi/${slug}/360`, frames: files.length };
-  console.log(`Fotogrammi 360°: ${files.length}${files.length < 24 ? " (consigliati almeno 24 per una rotazione fluida)" : ""}`);
+  console.log(`Fotogrammi 360°: ${files.length}${files.length < 18 ? " (consigliati almeno 18 per una rotazione fluida)" : ""}`);
 }
 
 console.log(`\nFatto: public/orologi/${slug}/\n\nIncolla in src/data/products.ts (e completa i campi):\n`);
@@ -76,6 +81,6 @@ console.log(`  {
     year: "",
     price: null, // oppure il prezzo in euro, es. 8500
     condition: "",
-    description: "",${snippet.image ? `\n    image: "${snippet.image}",` : ""}${snippet.photos.length ? `\n    photos: ${JSON.stringify(snippet.photos)},` : ""}${snippet.spin ? `\n    spin: { dir: "${snippet.spin.dir}", frames: ${snippet.spin.frames} },` : ""}
+    description: "",${snippet.image ? `\n    image: "${snippet.image}",` : ""}${snippet.photos.length ? `\n    photos: ${JSON.stringify(snippet.photos)},` : ""}${snippet.spin ? `\n    spin: { dir: "${snippet.spin.dir}", frames: ${snippet.spin.frames}, ext: "webp" },` : ""}${opt("--accento") ? `\n    accent: "${opt("--accento")}",` : ""}
     details: [["Cassa", ""], ["Movimento", ""], ["Corredo", "Scatola e garanzia"]],
   },`);

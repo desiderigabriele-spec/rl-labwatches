@@ -6,11 +6,11 @@ import { useRef } from "react";
 const RestorationScene = dynamic(() => import("./RestorationScene"), { ssr: false });
 
 const steps = [
-  { range: [0, 0.13], title: "Arriva in laboratorio", text: "Graffi, sporco, vetro ingiallito: l'orologio è fermo da anni." },
-  { range: [0.16, 0.34], title: "Smontaggio", text: "Ogni componente viene separato, catalogato e ispezionato." },
-  { range: [0.37, 0.59], title: "Pulizia e restauro", text: "Pulizia a ultrasuoni, lucidatura della cassa, recupero del quadrante." },
-  { range: [0.62, 0.8], title: "Rimontaggio", text: "Il movimento viene lubrificato e regolato, pezzo dopo pezzo." },
-  { range: [0.84, 1], title: "Torna a battere", text: "Controllato e collaudato, pronto per una nuova vita." },
+  { range: [0, 0.13], title: "Arriva in laboratorio", text: "Graffi, sporco, un vetro ingiallito dal tempo. È fermo da anni, ma ha ancora molto da raccontare." },
+  { range: [0.16, 0.34], title: "Lo smonto", text: "Ogni componente viene separato, pulito e ispezionato. Nulla sfugge allo sguardo." },
+  { range: [0.37, 0.59], title: "Lo restauro", text: "Lucidatura e satinatura della cassa, recupero del quadrante, revisione del movimento." },
+  { range: [0.62, 0.8], title: "Lo rimonto", text: "Pezzo dopo pezzo, con la lubrificazione e la regolazione che il movimento richiede." },
+  { range: [0.84, 1], title: "Torna a battere", text: "Collaudato e pronto a misurare il tempo per altre generazioni." },
 ] as const;
 
 function Step({ i, progress }: { i: number; progress: MotionValue<number> }) {

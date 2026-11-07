@@ -13,6 +13,16 @@ import * as THREE from "three";
  */
 export type WatchState = { explode: number; wear: number; run: number };
 
+/** Aspetto dell'orologio (colori del quadrante, della lunetta e del cinturino) */
+export type WatchLook = {
+  dial?: string;
+  bezel?: string;
+  indices?: string;
+  strap?: string;
+  /** bracciale in metallo invece del cinturino in pelle */
+  bracelet?: boolean;
+};
+
 const lerp = THREE.MathUtils.lerp;
 
 // ---------- texture procedurali ----------
@@ -115,10 +125,12 @@ export default function WatchModel({
   state,
   realTime = false,
   strap = false,
+  look = {},
 }: {
   state: React.RefObject<WatchState>;
   realTime?: boolean;
   strap?: boolean;
+  look?: WatchLook;
 }) {
   const g = {
     crystal: useRef<THREE.Group>(null),
@@ -143,9 +155,9 @@ export default function WatchModel({
       new THREE.MeshStandardMaterial({ map, transparent: true, depthWrite: false, roughness: 1, metalness: 0, polygonOffset: true, polygonOffsetFactor: -2 });
     return {
       steel: spec("#d9d9dc", "#8c867b", 0.22, 0.7, 1),
-      gold: spec("#bd923c", "#76643f", 0.28, 0.75, 1),
-      applied: spec("#e2c473", "#8f7d55", 0.3, 0.7, 0.55, "#3a2d14", 0.6, 0),
-      dial: spec("#00452a", "#33392b", 0.38, 0.85, 0.45), // verde del marchio
+      gold: spec(look.bezel ?? "#bd923c", "#76643f", 0.28, 0.75, 1),
+      applied: spec(look.indices ?? "#e2c473", "#8f7d55", 0.3, 0.7, 0.55, "#3a2d14", 0.6, 0),
+      dial: spec(look.dial ?? "#00452a", "#33392b", 0.38, 0.85, 0.45), // predefinito: verde del marchio
       plate: spec("#d8d5ce", "#6f6455", 0.32, 0.8, 0.9),
       bridge: spec("#e3e1dc", "#7a6f5f", 0.25, 0.8, 0.95),
       brass: spec("#d6b56b", "#6b5532", 0.3, 0.8, 1),
@@ -155,9 +167,10 @@ export default function WatchModel({
       grimeOverlay: overlay(grime),
       patinaOverlay: overlay(patina),
       jewel: new THREE.MeshStandardMaterial({ color: "#b3122a", emissive: "#5a0010", emissiveIntensity: 0.5, roughness: 0.15, metalness: 0.2 }),
-      leather: new THREE.MeshStandardMaterial({ color: "#2a1d14", roughness: 0.75 }),
+      leather: new THREE.MeshStandardMaterial({ color: look.strap ?? "#2a1d14", roughness: 0.75 }),
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [look.dial, look.bezel, look.indices, look.strap]);
 
   const gearGeos = useMemo(
     () => [
@@ -256,7 +269,7 @@ export default function WatchModel({
                   radius={0.05}
                   position={[0, dir * (1.45 + i * 0.52), -0.06 - i * i * 0.05]}
                   rotation={[dir * -0.12 * i, 0, 0]}
-                  material={m.leather}
+                  material={look.bracelet ? m.steel.mat : m.leather}
                 />
               ))}
             </group>

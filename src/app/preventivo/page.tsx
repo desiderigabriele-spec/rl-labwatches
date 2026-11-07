@@ -12,9 +12,9 @@ export const metadata = pageMeta({
 });
 
 const steps = [
-  ["Descrivi l'orologio", "Marca, modello e cosa vorresti fare. Qualche foto aiuta molto."],
-  ["Ricevi la valutazione", "Ti rispondo con una stima dei tempi e dei costi, senza impegno."],
-  ["Consegna o spedizione", "Su appuntamento in laboratorio a Pistoia, oppure con spedizione assicurata."],
+  ["Raccontami l'orologio", "Marca, modello e cosa vorresti fare. Qualche foto su WhatsApp aiuta molto."],
+  ["Ricevi la valutazione", "Ti indico intervento, tempi e costi con chiarezza, prima di iniziare. Senza impegno."],
+  ["Affidamelo", "Su appuntamento nel mio laboratorio di Pistoia, oppure con spedizione tracciata da tutto il mondo."],
 ];
 
 export default function PreventivoPage() {
@@ -22,8 +22,8 @@ export default function PreventivoPage() {
     <>
       <PageHero
         eyebrow="Preventivo gratuito"
-        title="Richiedi un preventivo"
-        intro="Compila tutti i campi: ti risponderò con una valutazione dell'intervento sul tuo orologio."
+        title="Richiedi un *preventivo*"
+        intro="Raccontami il tuo orologio: ti rispondo con una valutazione dell'intervento, dei tempi e dei costi. Gratis e senza impegno."
         crumbs={[{ name: "Preventivo", path: "/preventivo" }]}
       />
       <section className="mx-auto grid max-w-7xl gap-20 px-4 py-20 sm:px-8 lg:grid-cols-[0.8fr_1.2fr]">
