@@ -25,7 +25,7 @@ export default function IntroSplash() {
       onClick={() => setGone(true)}
       aria-hidden
     >
-      <Logo variant="scuro" live delay={250} className="intro-logo w-[min(78vw,520px)]" />
+      <Logo version="RL-completo-negativo" animate="intro" delay={150} className="intro-logo w-[min(80vw,560px)]" />
     </div>
   );
 }

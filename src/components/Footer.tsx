@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Logo from "./Logo";
 import { nav, site } from "@/data/site";
 
 export default function Footer() {
@@ -7,7 +6,8 @@ export default function Footer() {
     <footer className="bg-green-2 text-cream">
       <div className="mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-8 md:grid-cols-4">
         <div className="md:col-span-2 space-y-4">
-          <Logo variant="scuro" className="h-24 w-auto -ml-1" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/RL-completo-negativo.svg" alt="Roberto Landi Lab Watches" loading="lazy" className="h-28 w-auto" />
           <p className="max-w-sm text-sm leading-relaxed text-cream/65">{site.description}</p>
         </div>
         <div>

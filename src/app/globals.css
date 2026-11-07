@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Palette del marchio Roberto Landi Lab Watches (vedi src/brand/logo.ts): verde #083f22, oro #c29a45 */
+/* Palette del marchio (dal kit del logo, docs/brand): verde #00452a, fondo verde #003d27, oro #bd923c */
 @theme {
   --color-paper: #fbfaf7;
   --color-paper-2: #f3f1ea;
@@ -9,10 +9,10 @@
   --color-fg: #12201a;
   --color-mute: #626b65;
   --color-gold: #94742a; /* oro scurito per testi piccoli su bianco (leggibilità) */
-  --color-gold-2: #c29a45; /* oro del logo */
-  --color-gold-3: #d7b65e; /* oro del logo su fondo scuro */
-  --color-green: #083f22;
-  --color-green-2: #05301b;
+  --color-gold-2: #bd923c; /* oro del logo */
+  --color-gold-3: #d7b368; /* oro del logo su fondo scuro */
+  --color-green: #00452a;
+  --color-green-2: #003d27;
   --color-cream: #f5f1e8;
 
   --font-display: var(--font-cormorant), ui-serif, Georgia, serif;

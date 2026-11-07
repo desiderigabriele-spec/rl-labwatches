@@ -1,111 +1,74 @@
 "use client";
-import { useEffect, useId, useState } from "react";
-import {
-  GRADIENTS,
-  HAND_START,
-  HOUR_HAND,
-  MINUTE_HAND,
-  PIVOT,
-  PIVOT_RING,
-  SYMBOL,
-  VIEWBOX,
-  VARIANTS,
-  WORDMARK,
-  paint,
-  type Role,
-  type Shape,
-  type Variant,
-} from "@/brand/logo.ts";
+import { useEffect, useId, useMemo, useRef } from "react";
+import { LOGO_PARTS, type LogoVersion } from "@/brand/logo-parts";
+import { animateLogo, type LogoController } from "@/brand/logo-animation";
 
 /**
- * Logo ufficiale Roberto Landi · Lab Watches (geometria in src/brand/logo.ts).
- * SVG inline per animare le lancette, che ruotano intorno al perno.
+ * Logo ufficiale Roberto Landi · Lab Watches (kit vettoriale in /public/brand, note in docs/brand).
+ * Il quadrante con le lancette è inline (animabile), le scritte sono l'SVG del kit sovrapposto
+ * con le stesse coordinate: la composizione resta quella originale.
+ *
+ * animate:
+ *  - "intro": all'apertura le lancette girano, rallentano e si fermano nella posa originale
+ *  - "hover": la stessa animazione al passaggio del mouse (o al tocco)
+ *  - "none":  logo fermo nella posa originale
  */
-
-function timeAngles() {
-  const d = new Date();
-  const m = d.getMinutes() + d.getSeconds() / 60;
-  return { hour: (d.getHours() % 12) * 30 + m * 0.5, minute: m * 6 };
-}
-
 export default function Logo({
-  variant = "principale",
-  wordmark = true,
-  live = false,
+  version = "RL-orizzontale-metallo",
+  animate = "none",
   delay = 0,
   className = "",
 }: {
-  variant?: Variant;
-  /** false = solo il simbolo (icona) */
-  wordmark?: boolean;
-  /** lancette sull'ora reale (si aggiornano ogni minuto, non di continuo) */
-  live?: boolean;
-  /** ritardo in ms prima che le lancette si muovano; "afterIntro" aspetta la fine dell'intro se è in corso */
-  delay?: number | "afterIntro";
+  version?: LogoVersion;
+  animate?: "intro" | "hover" | "none";
+  delay?: number;
   className?: string;
 }) {
-  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
-  const gid = (r: Role) => `${uid}-${r}`;
-  const [angles, setAngles] = useState<{ hour: number; minute: number }>(HAND_START);
+  const part = LOGO_PARTS[version];
+  const svgRef = useRef<SVGSVGElement>(null);
+  const ctrl = useRef<LogoController | null>(null);
+  const prefix = useId().replace(/[^a-zA-Z0-9_-]/g, "");
+
+  // ID univoci per ogni copia (gradienti, maschera e gruppi delle lancette)
+  const markup = useMemo(
+    () => part.dial.replace(/id="([^"]+)"/g, `id="${prefix}-$1"`).replace(/url\(#([^)]+)\)/g, `url(#${prefix}-$1)`),
+    [part.dial, prefix]
+  );
+  const [, , w, h] = part.viewBox.split(" ").map(Number);
 
   useEffect(() => {
-    if (!live) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // le lancette girano sempre in avanti (mai all'indietro, anche al cambio d'ora)
-    const set = () => {
-      const t = timeAngles();
-      setAngles((prev) => {
-        let { hour, minute } = t;
-        while (hour < prev.hour) hour += 360;
-        while (minute < prev.minute) minute += 360;
-        return { hour, minute };
-      });
-    };
-    const introSeen = document.documentElement.dataset.intro === "seen";
-    const wait = delay === "afterIntro" ? (introSeen ? 400 : 2900) : delay;
-    const first = window.setTimeout(set, reduce ? 0 : wait);
-    const every = window.setInterval(set, 60_000);
+    if (!svgRef.current) return;
+    const c = animateLogo(svgRef.current, { mode: "static" });
+    ctrl.current = c;
+    const t = animate === "intro" ? window.setTimeout(() => c.intro(), delay) : 0;
     return () => {
-      window.clearTimeout(first);
-      window.clearInterval(every);
+      window.clearTimeout(t);
+      c.destroy();
+      ctrl.current = null;
     };
-  }, [live, delay]);
+  }, [animate, delay]);
 
-  const usesGradients = !VARIANTS[variant].color;
-  const draw = (shapes: Shape[]) =>
-    shapes.map((s, i) => <path key={i} d={s.d} fill={paint(variant, s.role, gid)} fillRule={s.evenodd ? "evenodd" : undefined} />);
-
-  const hand = (deg: number): React.CSSProperties => ({
-    transform: `rotate(${deg}deg)`,
-    transformOrigin: `${PIVOT.x}px ${PIVOT.y}px`,
-    transformBox: "view-box",
-    transition: "transform 1.8s cubic-bezier(.22,1,.36,1)",
-  });
+  const spin = animate === "hover" ? () => ctrl.current?.intro() : undefined;
 
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox={wordmark ? VIEWBOX.full : VIEWBOX.icon}
+    <span
       role="img"
       aria-label="Roberto Landi Lab Watches"
-      className={className}
+      className={`relative inline-block ${className}`}
+      style={{ aspectRatio: `${w} / ${h}` }}
+      onMouseEnter={spin}
+      onTouchStart={spin}
     >
-      {usesGradients && (
-        <defs>
-          {(Object.keys(GRADIENTS) as Role[]).map((r) => (
-            <linearGradient key={r} id={gid(r)} x1="0" y1="0" x2={GRADIENTS[r].x2} y2={GRADIENTS[r].y2}>
-              {GRADIENTS[r].stops.map(([c, o]) => (
-                <stop key={o} offset={o} stopColor={c} />
-              ))}
-            </linearGradient>
-          ))}
-        </defs>
-      )}
-      {draw(SYMBOL)}
-      <g style={hand(angles.hour)}>{draw(HOUR_HAND)}</g>
-      <g style={hand(angles.minute)}>{draw(MINUTE_HAND)}</g>
-      {draw([PIVOT_RING])}
-      {wordmark && draw(WORDMARK)}
-    </svg>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={part.words} alt="" aria-hidden className="absolute inset-0 h-full w-full" draggable={false} loading={animate === "intro" ? "lazy" : undefined} />
+      <svg
+        ref={svgRef}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox={part.viewBox}
+        aria-hidden
+        className="absolute inset-0 h-full w-full"
+        dangerouslySetInnerHTML={{ __html: markup }}
+      />
+    </span>
   );
 }

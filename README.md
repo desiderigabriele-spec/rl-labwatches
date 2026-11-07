@@ -20,10 +20,20 @@ npm run build    # build di produzione
 | Servizi | `src/data/services.ts` |
 | Prodotti dello shop | `src/data/products.ts` (foto in `public/prodotti/`) |
 | Colori e font | `src/app/globals.css` (blocco `@theme`) |
-| Logo | `src/components/Logo.tsx` |
+| Logo (kit vettoriale) | `public/brand/` · note e PDF in `docs/brand/` · componente `src/components/Logo.tsx` |
 | Orologio 3D della home | `src/components/WatchScene.tsx` |
 
 Le pagine sono in `src/app/` (una cartella per pagina).
+
+### Aggiornare il logo
+
+Se arriva una nuova versione del kit, scompattala e lancia:
+
+```bash
+node scripts/import-logo-kit.mjs <cartella Roberto_Landi_Vector_Kit>
+```
+
+Copia gli SVG in `public/brand/`, rigenera le parti animabili e la favicon.
 
 I vecchi indirizzi Wix (`/blank-7`, `/informativa-sulla-privacy`, …) reindirizzano alle nuove pagine: vedi `next.config.ts`.
 

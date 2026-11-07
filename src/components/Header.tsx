@@ -30,7 +30,7 @@ export default function Header() {
     >
       <div className={`mx-auto flex max-w-7xl items-center justify-between px-4 transition-all duration-500 sm:px-8 ${scrolled ? "h-16" : "h-24 sm:h-28"}`}>
         <Link href="/" aria-label="Roberto Landi Lab Watches – Home">
-          <Logo live delay="afterIntro" wordmark={!scrolled} className={`w-auto transition-[height] duration-500 ${scrolled ? "h-9" : "h-16 sm:h-20"}`} />
+          <Logo version="RL-orizzontale-metallo" animate="hover" className={`transition-[height] duration-500 ${scrolled ? "h-10" : "h-12 sm:h-14"}`} />
         </Link>
 
         <nav className="hidden md:flex items-center gap-9">
