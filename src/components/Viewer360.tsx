@@ -81,7 +81,7 @@ export default function Viewer360({ frames, alt }: { frames: string[]; alt: stri
         </div>
       )}
       {ready && !touched && (
-        <p className="pointer-events-none absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-paper/85 px-4 py-2 text-[0.65rem] uppercase tracking-[0.2em] text-fg/80 backdrop-blur">
+        <p className="pointer-events-none absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-paper/85 px-4 py-2 text-[0.7rem] uppercase tracking-[0.2em] text-fg/80 backdrop-blur">
           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
             <path d="M3 12c0 2.2 4 4 9 4s9-1.8 9-4-4-4-9-4" />
             <path d="M15 5l-3 3 3 3" />

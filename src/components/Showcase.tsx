@@ -120,8 +120,8 @@ function Slot({
       {/* etichetta sotto il ripiano */}
       <div className="mt-10 text-center">
         <p className={`font-display text-2xl transition-colors duration-500 ${light === "on" ? "text-cream" : "text-cream/45"}`}>{p.name}</p>
-        <p className={`mt-1 text-[0.65rem] uppercase tracking-[0.24em] transition-colors duration-500 ${light === "on" ? "text-gold-3" : "text-cream/30"}`}>
-          {p.brand === "Esempio" ? "Esempio" : `${p.brand} · ${p.year}`}
+        <p className={`tag-mono mt-2 text-xs transition-colors duration-500 ${light === "on" ? "text-gold-3" : "text-cream/35"}`}>
+          {p.brand === "Esempio" ? "Esempio" : p.brand} · {p.year}
         </p>
       </div>
     </div>
@@ -182,7 +182,7 @@ export default function Showcase({
   const sel = selected !== null ? items[selected] : null;
 
   return (
-    <section ref={ref} className="relative overflow-hidden bg-[#0b100d] py-24 text-cream sm:py-32" aria-labelledby="vetrina-titolo">
+    <section ref={ref} className="guilloche sheen relative overflow-hidden bg-[#0b100d] py-20 text-cream sm:py-32" aria-labelledby="vetrina-titolo">
       {/* parete e ripiano */}
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0,69,42,0.35),transparent_60%)]" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-8">
@@ -219,12 +219,16 @@ export default function Showcase({
               className="relative mt-14 grid gap-10 border-t border-cream/10 pt-10 md:grid-cols-[1.2fr_1fr]"
             >
               <div>
-                <p className="eyebrow !text-gold-3">{sel.brand === "Esempio" ? "Esempio" : `${sel.brand} · ${sel.ref}`}</p>
+                <p className="eyebrow !text-gold-3">{sel.brand}</p>
                 <h3 className="mt-3 font-display text-4xl font-light sm:text-5xl">{sel.name}</h3>
+                <div className="mt-4 flex flex-wrap gap-2 text-cream/60">
+                  <span className="chip">Ref. {sel.ref}</span>
+                  <span className="chip">{sel.year}</span>
+                </div>
                 <p className="mt-5 max-w-xl leading-relaxed text-cream/65">{sel.description}</p>
               </div>
               <div>
-                <p className="font-display text-3xl text-gold-3">{formatPrice(sel.price)}</p>
+                <p className="tag-mono text-2xl text-gold-3">{formatPrice(sel.price)}</p>
                 {sel.details && (
                   <dl className="mt-5 divide-y divide-cream/10 border-y border-cream/10 text-sm">
                     {sel.details.map(([k, v]) => (

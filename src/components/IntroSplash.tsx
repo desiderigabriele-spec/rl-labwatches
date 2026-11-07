@@ -20,7 +20,7 @@ export default function IntroSplash() {
 
   return (
     <div
-      className="intro-splash fixed inset-0 z-[70] flex items-center justify-center bg-green-2"
+      className="intro-splash guilloche sheen fixed inset-0 z-[70] flex items-center justify-center bg-green-2"
       onAnimationEnd={(e) => e.target === e.currentTarget && setGone(true)}
       onClick={() => setGone(true)}
       aria-hidden

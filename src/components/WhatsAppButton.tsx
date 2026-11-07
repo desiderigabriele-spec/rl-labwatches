@@ -8,17 +8,17 @@ export function WhatsAppIcon({ className = "h-5 w-5" }: { className?: string }) 
   );
 }
 
-// Pulsante WhatsApp fisso in basso a destra (come sul vecchio sito)
+// Pulsante WhatsApp su computer, con testo (su telefono c'è la barra delle azioni in basso)
 export default function WhatsAppButton() {
   return (
     <a
       href={whatsappLink("Buongiorno Roberto, vorrei un'informazione sul mio orologio.")}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Scrivi su WhatsApp"
-      className="fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-green text-cream shadow-lg shadow-green/30 transition-transform hover:scale-105 hover:bg-gold-2 hover:text-green-2"
+      className="group fixed bottom-6 right-6 z-40 hidden items-center gap-3 rounded-full bg-green py-3 pl-4 pr-5 text-cream shadow-lg shadow-green/30 transition-all hover:bg-gold-2 hover:text-green-2 lg:flex"
     >
-      <WhatsAppIcon className="h-7 w-7" />
+      <WhatsAppIcon className="h-5 w-5" />
+      <span className="text-xs font-medium uppercase tracking-[0.16em]">Ti serve aiuto?</span>
     </a>
   );
 }

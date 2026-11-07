@@ -6,13 +6,14 @@ import Gear from "@/components/Gear";
 import RestorationSection from "@/components/RestorationSection";
 import Reviews from "@/components/Reviews";
 import BrandStrip from "@/components/BrandStrip";
-import ContactForm from "@/components/ContactForm";
-import ContactInfo from "@/components/ContactInfo";
+import QuickContact from "@/components/QuickContact";
 import Showcase from "@/components/Showcase";
 import ServicesRail from "@/components/ServicesRail";
 import SplitText from "@/components/SplitText";
 import ParallaxImage from "@/components/ParallaxImage";
 import Stats from "@/components/Stats";
+import IrisReveal from "@/components/IrisReveal";
+import FeaturedWatch from "@/components/FeaturedWatch";
 import { products } from "@/data/products";
 import { site } from "@/data/site";
 import { pageMeta } from "@/lib/seo";
@@ -31,9 +32,9 @@ export default function Home() {
   return (
     <>
       {/* HERO */}
-      <section className="relative min-h-dvh overflow-hidden">
+      <section className="relative overflow-hidden lg:min-h-dvh">
         <div className="pointer-events-none absolute right-[-10%] top-1/4 h-[600px] w-[600px] rounded-full bg-gold/10 blur-[140px]" />
-        <div className="relative mx-auto grid min-h-dvh max-w-7xl items-center gap-4 px-4 pt-28 pb-12 sm:px-8 lg:grid-cols-2">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-2 px-4 pb-10 pt-20 sm:px-8 sm:pt-28 lg:min-h-dvh lg:grid-cols-2 lg:gap-4 lg:pb-12">
           <div className="order-2 lg:order-1">
             <Reveal>
               <p className="eyebrow">{site.owner} · Laboratorio di orologeria a Pistoia</p>
@@ -44,20 +45,20 @@ export default function Home() {
               <SplitText text="a Pistoia" className="mt-3 block text-3xl sm:text-4xl" delay={0.45} />
             </h1>
             <Reveal delay={0.5}>
-              <p className="mt-8 max-w-md text-lg leading-relaxed text-mute">
+              <p className="mt-6 max-w-md text-base leading-relaxed text-mute sm:mt-8 sm:text-lg">
                 Restauro, revisione e riparazione di orologi di pregio. Ogni pezzo che entra nel mio laboratorio ne esce con la bellezza e la precisione del primo giorno.
               </p>
             </Reveal>
-            <Reveal delay={0.6} className="mt-10 flex flex-wrap gap-4">
+            <Reveal delay={0.6} className="mt-8 flex flex-wrap gap-3 sm:mt-10 sm:gap-4">
               <Link href="/preventivo" className="btn btn-solid">Richiedi un preventivo gratuito</Link>
               <Link href="/shop" className="btn">Entra in vetrina</Link>
             </Reveal>
           </div>
-          <div className="order-1 h-[42vh] sm:h-[52vh] lg:order-2 lg:h-[78vh]">
+          <div className="order-1 h-[32vh] sm:h-[46vh] lg:order-2 lg:h-[78vh]">
             <WatchScene />
           </div>
         </div>
-        <div className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-3 text-[0.62rem] uppercase tracking-[0.3em] text-mute sm:flex">
+        <div className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-3 text-[0.7rem] uppercase tracking-[0.3em] text-mute sm:flex">
           Scorri
           <span className="h-10 w-px animate-pulse bg-gradient-to-b from-gold to-transparent" />
         </div>
@@ -66,10 +67,10 @@ export default function Home() {
       <Stats />
 
       {/* IL MIO MONDO */}
-      <section className="relative overflow-hidden py-24 sm:py-32">
+      <section className="relative overflow-hidden py-16 sm:py-32">
         <Gear className="absolute -left-40 top-1/2 h-[480px] w-[480px] -translate-y-1/2 text-gold/15" />
         <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-4 sm:px-8 lg:grid-cols-2">
-          <Reveal>
+          <IrisReveal>
             <ParallaxImage
               src="/images/roberto-landi-orologiaio-al-lavoro.jpg"
               alt="Roberto Landi al banco di lucidatura durante il restauro di un orologio di lusso"
@@ -77,7 +78,7 @@ export default function Home() {
               className="aspect-[16/11]"
               imgClassName="grayscale-[20%]"
             />
-          </Reveal>
+          </IrisReveal>
           <div>
             <Reveal>
               <p className="eyebrow">Il mio mondo</p>
@@ -100,9 +101,9 @@ export default function Home() {
       <RestorationSection />
 
       {/* CHI SONO */}
-      <section className="relative overflow-hidden py-24 sm:py-32">
+      <section className="relative overflow-hidden py-16 sm:py-32">
         <div className="mx-auto grid max-w-7xl items-center gap-14 px-4 sm:px-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <Reveal className="lg:order-2">
+          <IrisReveal className="lg:order-2">
             <ParallaxImage
               src="/images/roberto-landi-ritratto.jpg"
               alt="Ritratto di Roberto Landi, orologiaio a Pistoia"
@@ -110,7 +111,7 @@ export default function Home() {
               className="mx-auto aspect-[3/4] max-w-md bg-green"
               strength={6}
             />
-          </Reveal>
+          </IrisReveal>
           <div className="lg:order-1">
             <Reveal>
               <p className="eyebrow">Salve, sono</p>
@@ -132,6 +133,9 @@ export default function Home() {
       {/* SERVIZI: scorrimento orizzontale */}
       <ServicesRail />
 
+      {/* IL PEZZO DEL MESE */}
+      {products.find((p) => p.featured) && <FeaturedWatch p={products.find((p) => p.featured)!} />}
+
       {/* VETRINA con i faretti */}
       <Showcase items={products.slice(0, 5)} />
       <div className="bg-[#0b100d] pb-20 text-center">
@@ -141,21 +145,16 @@ export default function Home() {
       <BrandStrip />
       <Reviews />
 
-      {/* CONTATTI */}
-      <section className="relative overflow-hidden border-t border-line py-28" aria-labelledby="contattami">
+      {/* CONTATTI rapidi (il modulo completo è nelle pagine Contatti e Preventivo) */}
+      <section className="relative overflow-hidden border-t border-line py-16 sm:py-28" aria-labelledby="contattami">
         <Gear className="absolute -right-40 -top-20 h-[460px] w-[460px] text-gold/10" teeth={28} reverse />
-        <div className="relative mx-auto grid max-w-7xl gap-20 px-4 sm:px-8 lg:grid-cols-[1fr_1.3fr]">
-          <div>
-            <Reveal>
-              <p className="eyebrow">Contattami</p>
-            </Reveal>
-            <SplitText as="h2" text="Il tuo orologio merita *le mani giuste.*" className="mb-12 mt-4 block font-display text-4xl font-light sm:text-6xl" />
-            <Reveal delay={0.1}>
-              <ContactInfo />
-            </Reveal>
-          </div>
-          <Reveal delay={0.1} className="lg:pt-32">
-            <ContactForm />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-8">
+          <Reveal>
+            <p className="eyebrow">Contattami</p>
+          </Reveal>
+          <SplitText as="h2" id="contattami" text="Il tuo orologio merita *le mani giuste.*" className="mb-10 mt-4 block max-w-3xl font-display text-4xl font-light sm:mb-14 sm:text-6xl" />
+          <Reveal delay={0.1}>
+            <QuickContact />
           </Reveal>
         </div>
       </section>

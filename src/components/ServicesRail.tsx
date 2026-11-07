@@ -5,14 +5,14 @@ import { motion, useScroll, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { services } from "@/data/services";
 import SplitText from "./SplitText";
-import Reveal from "./Reveal";
+import SwipeRow from "./SwipeRow";
 
 function Card({ s, i }: { s: (typeof services)[number]; i: number }) {
   return (
     <Link href={`/servizi#${s.slug}`} className="group block">
       <div className="relative aspect-[4/3] overflow-hidden bg-paper-3">
         <Image src={s.image} alt={s.alt} fill sizes="(min-width: 1024px) 34vw, (min-width: 640px) 50vw, 100vw" className="object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-[1.06]" />
-        <span className="absolute left-5 top-5 bg-paper/90 px-3 py-1 font-display text-sm text-green">{String(i + 1).padStart(2, "0")}</span>
+        <span className="tag-mono absolute left-4 top-4 bg-paper/90 px-2.5 py-1 text-xs text-green">{String(i + 1).padStart(2, "0")} / {String(services.length).padStart(2, "0")}</span>
       </div>
       <h3 className="mt-6 font-display text-3xl transition-colors group-hover:text-gold">{s.title}</h3>
       <p className="mt-2 text-sm italic text-gold">{s.tagline}</p>
@@ -28,7 +28,7 @@ const Heading = () => (
   <>
     <p className="eyebrow">I miei servizi</p>
     <SplitText as="h2" text="Tutto ciò di cui il tuo *orologio* ha bisogno" className="mt-4 block font-display text-4xl font-light leading-tight sm:text-6xl" />
-    <p className="mt-6 max-w-md text-mute">Dalla revisione del movimento alla lucidatura della cassa, ogni intervento è eseguito a mano, con passione e precisione.</p>
+    <p className="mt-5 max-w-md text-mute">Dalla revisione del movimento alla lucidatura della cassa, ogni intervento è eseguito a mano, con passione e precisione.</p>
     <Link href="/servizi" className="btn mt-8">Tutti i servizi</Link>
   </>
 );
@@ -70,16 +70,16 @@ export default function ServicesRail() {
         </div>
       </section>
 
-      {/* telefono e tablet: griglia */}
-      <section className="border-t border-line bg-paper-2 py-24 lg:hidden">
+      {/* telefono e tablet: fila da scorrere col dito */}
+      <section className="border-t border-line bg-paper-2 py-16 lg:hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-8">
           <Heading />
-          <div className="mt-14 grid gap-x-8 gap-y-14 sm:grid-cols-2">
-            {services.map((s, i) => (
-              <Reveal key={s.slug} delay={(i % 2) * 0.08}>
-                <Card s={s} i={i} />
-              </Reveal>
-            ))}
+          <div className="mt-10">
+            <SwipeRow label="I miei servizi">
+              {services.map((s, i) => (
+                <Card key={s.slug} s={s} i={i} />
+              ))}
+            </SwipeRow>
           </div>
         </div>
       </section>

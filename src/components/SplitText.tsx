@@ -11,16 +11,18 @@ export default function SplitText({
   className = "",
   delay = 0,
   as: Tag = "span",
+  id,
 }: {
   text: string;
   className?: string;
   delay?: number;
   as?: "span" | "h1" | "h2" | "h3" | "p";
+  id?: string;
 }) {
   const words = text.split(" ");
   let gold = false;
   return (
-    <Tag className={className}>
+    <Tag className={className} id={id}>
       {words.map((w, i) => {
         const starts = w.startsWith("*");
         if (starts) gold = true;
@@ -34,7 +36,7 @@ export default function SplitText({
               className={`inline-block ${isGold ? "gold-text italic" : ""}`}
               initial={{ y: "110%", rotate: 4 }}
               whileInView={{ y: "0%", rotate: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
+              viewport={{ once: true, margin: "-40px 0px" }}
               transition={{ duration: 0.9, delay: delay + i * 0.06, ease: [0.22, 1, 0.36, 1] }}
             >
               {clean}

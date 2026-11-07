@@ -60,14 +60,19 @@ export default async function ProductPage({ params }: Props) {
           <ProductGallery name={`${p.brand} ${p.name}`} frames={frames} photos={photos} />
         </Reveal>
         <Reveal delay={0.1} className="lg:pt-8">
-          <p className="eyebrow">{p.brand} · {p.year}</p>
-          <h1 className="mt-4 font-display text-5xl font-light sm:text-6xl">{p.name}</h1>
-          <p className="mt-6 text-2xl text-gold">{formatPrice(p.price)}</p>
+          <p className="eyebrow">{p.brand}</p>
+          <h1 className="mt-4 font-display text-5xl font-light sm:text-7xl">{p.name}</h1>
+          <div className="mt-5 flex flex-wrap gap-2 text-fg/65">
+            <span className="chip">Ref. {p.ref}</span>
+            <span className="chip">{p.year}</span>
+            <span className="chip">{p.condition}</span>
+          </div>
+          <p className="tag-mono mt-6 text-3xl text-green">{formatPrice(p.price)}</p>
           <dl className="mt-10 divide-y divide-line border-y border-line text-sm">
-            {([["Marca", p.brand], ["Referenza", p.ref], ["Epoca", p.year], ["Condizioni", p.condition], ...(p.details ?? [])] as [string, string][]).map(([k, v]) => (
-              <div key={k} className="flex justify-between gap-6 py-4">
+            {([["Marca", p.brand], ["Referenza", p.ref], ["Anno", p.year], ["Condizioni", p.condition], ...(p.details ?? [])] as [string, string][]).map(([k, v]) => (
+              <div key={k} className="flex justify-between gap-6 py-3.5">
                 <dt className="text-mute">{k}</dt>
-                <dd className="text-right">{v}</dd>
+                <dd className="tag-mono text-right">{v}</dd>
               </div>
             ))}
           </dl>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
 import Gear from "@/components/Gear";
+import IrisReveal from "@/components/IrisReveal";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({
@@ -20,11 +21,11 @@ export default function ChiSonoPage() {
       <section className="relative overflow-hidden">
         <Gear className="absolute -right-48 top-10 h-[560px] w-[560px] text-gold/10" teeth={30} />
         <div className="relative mx-auto grid max-w-7xl gap-16 px-4 py-24 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-          <Reveal>
+          <IrisReveal>
             <div className="relative aspect-[4/5] overflow-hidden bg-fg">
               <Image src="/images/roberto-landi-artigiano-orologi-pistoia.jpg" alt="Roberto Landi, artigiano orologiaio a Pistoia" fill priority sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover transition-transform duration-[2s] hover:scale-105" />
             </div>
-          </Reveal>
+          </IrisReveal>
           <div className="space-y-6 text-lg leading-relaxed text-mute">
             <Reveal>
               <p>

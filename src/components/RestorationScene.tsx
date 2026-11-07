@@ -4,7 +4,8 @@ import { ContactShadows } from "@react-three/drei";
 import type { MotionValue } from "motion/react";
 import { useRef } from "react";
 import * as THREE from "three";
-import WatchModel, { type WatchState } from "./three/WatchModel";
+import Watch from "./three/Watch";
+import type { WatchState } from "./three/WatchModel";
 import StudioLights from "./three/StudioLights";
 
 const ss = THREE.MathUtils.smoothstep;
@@ -56,15 +57,15 @@ function Sequence({ progress }: { progress: MotionValue<number> }) {
     <>
       <pointLight ref={sweep} position={[-5, 1.5, 3]} intensity={0} color="#fff6df" distance={12} />
       <group ref={root}>
-        <WatchModel state={state} />
+        <Watch state={state} />
       </group>
     </>
   );
 }
 
-export default function RestorationScene({ progress }: { progress: MotionValue<number> }) {
+export default function RestorationScene({ progress, active = true }: { progress: MotionValue<number>; active?: boolean }) {
   return (
-    <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 7.4], fov: 35 }} gl={{ antialias: true, alpha: true }}>
+    <Canvas frameloop={active ? "always" : "never"} dpr={[1, 1.75]} camera={{ position: [0, 0, 7.4], fov: 35 }} gl={{ antialias: true, alpha: true }}>
       <StudioLights />
       <Sequence progress={progress} />
       <ContactShadows position={[0, -2.1, 0]} opacity={0.3} scale={9} blur={2.8} far={4} />

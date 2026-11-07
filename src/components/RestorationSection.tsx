@@ -1,7 +1,8 @@
 "use client";
 import dynamic from "next/dynamic";
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
-import { useRef } from "react";
+import useOnScreen from "@/lib/useOnScreen";
+import { useEffect, useRef, useState } from "react";
 
 const RestorationScene = dynamic(() => import("./RestorationScene"), { ssr: false });
 
@@ -33,9 +34,15 @@ export default function RestorationSection() {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const bar = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+  // la scena 3D si carica quando la sezione è vicina e si ferma quando esce dallo schermo
+  const near = useOnScreen(ref, "800px 0px");
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    if (near) setLoaded(true);
+  }, [near]);
 
   return (
-    <section ref={ref} className="relative h-[520vh] border-y border-line bg-paper-2" aria-label="Il restauro, passo dopo passo">
+    <section ref={ref} className="relative h-[340vh] border-y border-line bg-paper-2 lg:h-[520vh]" aria-label="Il restauro, passo dopo passo">
       <div className="sticky top-0 flex h-dvh flex-col overflow-hidden">
         <div className="mx-auto w-full max-w-7xl px-4 pt-24 sm:px-8">
           <p className="eyebrow">Il restauro, passo dopo passo</p>
@@ -47,7 +54,7 @@ export default function RestorationSection() {
             ))}
           </div>
           <div className="order-1 min-h-0 lg:order-2">
-            <RestorationScene progress={scrollYProgress} />
+            {loaded && <RestorationScene progress={scrollYProgress} active={near} />}
           </div>
         </div>
         <div className="absolute bottom-0 left-0 h-[2px] w-full bg-line">
