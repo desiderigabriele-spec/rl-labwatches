@@ -1,23 +1,23 @@
 @import "tailwindcss";
 
-/* Palette: modificare qui per il restyling (es. dopo aver ricevuto il logo) */
+/* Palette: modificare qui per il restyling */
 @theme {
-  --color-ink: #0b0b0c;
-  --color-ink-2: #141416;
-  --color-ink-3: #1d1d20;
-  --color-line: #2a2a2e;
-  --color-ivory: #ece6da;
-  --color-mute: #9a958c;
-  --color-gold: #c8a96a;
-  --color-gold-2: #e4cf9f;
+  --color-paper: #fbfaf7;
+  --color-paper-2: #f3f0ea;
+  --color-paper-3: #e9e5dc;
+  --color-line: #e2ddd2;
+  --color-fg: #141414;
+  --color-mute: #6f6a62;
+  --color-gold: #a8863f;
+  --color-gold-2: #c9a961;
 
   --font-display: var(--font-cormorant), ui-serif, Georgia, serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 html {
-  background: var(--color-ink);
-  color: var(--color-ivory);
+  background: var(--color-paper);
+  color: var(--color-fg);
   scroll-behavior: smooth;
 }
 
@@ -29,7 +29,7 @@ body {
 
 ::selection {
   background: var(--color-gold);
-  color: var(--color-ink);
+  color: var(--color-paper);
 }
 
 .eyebrow {
@@ -40,7 +40,7 @@ body {
 }
 
 .gold-text {
-  background: linear-gradient(100deg, var(--color-gold) 0%, var(--color-gold-2) 45%, var(--color-gold) 90%);
+  background: linear-gradient(100deg, #8a6a2c 0%, var(--color-gold-2) 45%, #8a6a2c 90%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -51,22 +51,23 @@ body {
   align-items: center;
   gap: 0.6rem;
   padding: 0.9rem 1.6rem;
-  border: 1px solid var(--color-gold);
+  border: 1px solid var(--color-fg);
   font-size: 0.78rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   transition: background-color 0.35s, color 0.35s;
 }
 .btn:hover {
-  background: var(--color-gold);
-  color: var(--color-ink);
+  background: var(--color-fg);
+  color: var(--color-paper);
 }
 .btn-solid {
-  background: var(--color-gold);
-  color: var(--color-ink);
+  background: var(--color-fg);
+  color: var(--color-paper);
 }
 .btn-solid:hover {
-  background: var(--color-gold-2);
+  background: var(--color-gold);
+  border-color: var(--color-gold);
 }
 
 /* grana leggera su tutto il sito */
@@ -76,7 +77,8 @@ body {
   inset: 0;
   pointer-events: none;
   z-index: 60;
-  opacity: 0.05;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 

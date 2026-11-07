@@ -4,7 +4,7 @@ import { nav, site } from "@/data/site";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-line bg-ink-2">
+    <footer className="border-t border-line bg-paper-2">
       <div className="mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-8 md:grid-cols-4">
         <div className="md:col-span-2 space-y-4">
           <Logo />
@@ -12,7 +12,7 @@ export default function Footer() {
         </div>
         <div>
           <p className="eyebrow mb-4">Laboratorio</p>
-          <address className="not-italic text-sm leading-7 text-ivory/80">
+          <address className="not-italic text-sm leading-7 text-fg/80">
             {site.address.street}
             <br />
             {site.address.zip} {site.address.city}
@@ -28,7 +28,7 @@ export default function Footer() {
         </div>
         <div>
           <p className="eyebrow mb-4">Naviga</p>
-          <ul className="space-y-2 text-sm text-ivory/80">
+          <ul className="space-y-2 text-sm text-fg/80">
             {nav.map((n) => (
               <li key={n.href}><Link href={n.href} className="hover:text-gold">{n.label}</Link></li>
             ))}

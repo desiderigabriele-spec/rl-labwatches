@@ -21,7 +21,7 @@ export default function ServiziPage() {
               </div>
               <ul className="space-y-3 self-center">
                 {s.details.map((d) => (
-                  <li key={d} className="flex items-center gap-4 text-ivory/85">
+                  <li key={d} className="flex items-center gap-4 text-fg/85">
                     <span className="h-px w-6 bg-gold" />
                     {d}
                   </li>

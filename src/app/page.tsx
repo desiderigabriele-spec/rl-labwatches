@@ -2,6 +2,7 @@ import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import WatchScene from "@/components/WatchSceneLazy";
 import Gear from "@/components/Gear";
+import RestorationSection from "@/components/RestorationSection";
 import ProductCard from "@/components/ProductCard";
 import { services } from "@/data/services";
 import { products } from "@/data/products";
@@ -38,7 +39,7 @@ export default function Home() {
               <Link href="/shop" className="btn">Scopri lo shop</Link>
             </Reveal>
           </div>
-          <div className="order-1 h-[46vh] sm:h-[56vh] lg:order-2 lg:h-[80vh] [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)]">
+          <div className="order-1 h-[46vh] sm:h-[56vh] lg:order-2 lg:h-[80vh]">
             <WatchScene />
           </div>
         </div>
@@ -49,7 +50,7 @@ export default function Home() {
       </section>
 
       {/* MANIFESTO */}
-      <section className="relative overflow-hidden border-y border-line bg-ink-2 py-28 sm:py-36">
+      <section className="relative overflow-hidden border-t border-line py-28 sm:py-36">
         <Gear className="absolute -left-40 top-1/2 h-[480px] w-[480px] -translate-y-1/2 text-gold/15" />
         <Gear className="absolute -right-24 -bottom-24 h-[300px] w-[300px] text-gold/10" teeth={16} reverse />
         <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-8">
@@ -63,6 +64,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* RESTAURO: sequenza 3D guidata dallo scroll */}
+      <RestorationSection />
+
       {/* SERVIZI */}
       <section className="mx-auto max-w-7xl px-4 py-28 sm:px-8">
         <Reveal className="flex flex-wrap items-end justify-between gap-6">
@@ -75,7 +79,7 @@ export default function Home() {
         <div className="mt-16 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2">
           {services.map((s, i) => (
             <Reveal key={s.slug} delay={i * 0.08} className="h-full">
-              <div className="group h-full bg-ink p-8 transition-colors duration-500 hover:bg-ink-2 sm:p-12">
+              <div className="group h-full bg-paper p-8 transition-colors duration-500 hover:bg-paper-2 sm:p-12">
                 <p className="font-display text-sm text-gold">0{i + 1}</p>
                 <h3 className="mt-6 font-display text-3xl">{s.title}</h3>
                 <p className="mt-4 leading-relaxed text-mute">{s.summary}</p>
@@ -87,7 +91,7 @@ export default function Home() {
       </section>
 
       {/* SHOP */}
-      <section className="border-t border-line bg-ink-2 py-28">
+      <section className="border-t border-line bg-paper-2 py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-8">
           <Reveal className="flex flex-wrap items-end justify-between gap-6">
             <div>

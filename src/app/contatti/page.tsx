@@ -31,7 +31,7 @@ export default function ContattiPage() {
           </div>
           <div>
             <p className="eyebrow">Orari</p>
-            <ul className="mt-3 space-y-1 text-ivory/85">
+            <ul className="mt-3 space-y-1 text-fg/85">
               {site.hours.map((h) => (
                 <li key={h.days} className="flex gap-6"><span className="w-20 text-mute">{h.days}</span>{h.time}</li>
               ))}

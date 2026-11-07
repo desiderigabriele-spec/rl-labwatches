@@ -16,7 +16,7 @@ export default function ContactForm() {
     window.location.href = `mailto:${site.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
-  const field = "w-full border-b border-line bg-transparent py-3 text-ivory outline-none transition-colors placeholder:text-mute/60 focus:border-gold";
+  const field = "w-full border-b border-line bg-transparent py-3 text-fg outline-none transition-colors placeholder:text-mute/60 focus:border-gold";
 
   return (
     <form onSubmit={onSubmit} className="space-y-8">

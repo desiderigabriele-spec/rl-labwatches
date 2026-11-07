@@ -31,7 +31,7 @@ export default async function ProductPage({ params }: Props) {
       <Link href="/shop" className="text-xs uppercase tracking-[0.24em] text-mute hover:text-gold">← Torna allo shop</Link>
       <div className="mt-10 grid gap-14 lg:grid-cols-2">
         <Reveal>
-          <div className="relative flex aspect-square items-center justify-center border border-line bg-ink-2">
+          <div className="relative flex aspect-square items-center justify-center border border-line bg-paper-2">
             {p.image ? <Image src={p.image} alt={p.name} fill priority sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" /> : <WatchPlaceholder />}
           </div>
         </Reveal>

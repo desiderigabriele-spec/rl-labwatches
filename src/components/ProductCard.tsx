@@ -22,7 +22,7 @@ export function WatchPlaceholder() {
 export default function ProductCard({ product }: { product: Product }) {
   return (
     <Link href={`/shop/${product.slug}`} className="group block">
-      <div className="relative flex aspect-[4/5] items-center justify-center overflow-hidden border border-line bg-ink-2 transition-colors duration-500 group-hover:border-gold/50">
+      <div className="relative flex aspect-[4/5] items-center justify-center overflow-hidden border border-line bg-paper-2 transition-colors duration-500 group-hover:border-gold/50">
         {product.image ? (
           <Image src={product.image} alt={product.name} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
         ) : (
@@ -30,7 +30,7 @@ export default function ProductCard({ product }: { product: Product }) {
             <WatchPlaceholder />
           </div>
         )}
-        {product.sold && <span className="absolute left-4 top-4 bg-ivory px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-ink">Venduto</span>}
+        {product.sold && <span className="absolute left-4 top-4 bg-fg px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-paper">Venduto</span>}
       </div>
       <div className="mt-5 flex items-start justify-between gap-4">
         <div>

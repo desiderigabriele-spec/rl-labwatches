@@ -25,7 +25,7 @@ export default function Header() {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        scrolled || open ? "bg-ink/85 backdrop-blur-md border-b border-line" : "bg-transparent"
+        scrolled || open ? "bg-paper/85 backdrop-blur-md border-b border-line" : "bg-transparent"
       }`}
     >
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-8">
@@ -39,7 +39,7 @@ export default function Header() {
               key={item.href}
               href={item.href}
               className={`relative text-[0.74rem] tracking-[0.24em] uppercase transition-colors ${
-                isActive(item.href) ? "text-gold" : "text-ivory/75 hover:text-ivory"
+                isActive(item.href) ? "text-gold" : "text-fg/75 hover:text-fg"
               }`}
             >
               {item.label}
@@ -56,8 +56,8 @@ export default function Header() {
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
         >
-          <span className={`block h-px w-6 bg-ivory transition-transform ${open ? "translate-y-[3.5px] rotate-45" : ""}`} />
-          <span className={`mt-1.5 block h-px w-6 bg-ivory transition-transform ${open ? "-translate-y-[3.5px] -rotate-45" : ""}`} />
+          <span className={`block h-px w-6 bg-fg transition-transform ${open ? "translate-y-[3.5px] rotate-45" : ""}`} />
+          <span className={`mt-1.5 block h-px w-6 bg-fg transition-transform ${open ? "-translate-y-[3.5px] -rotate-45" : ""}`} />
         </button>
       </div>
 
@@ -72,7 +72,7 @@ export default function Header() {
             <ul className="px-4 py-6 space-y-5">
               {nav.map((item, i) => (
                 <motion.li key={item.href} initial={{ x: -12, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.05 * i }}>
-                  <Link href={item.href} className={`font-display text-3xl ${isActive(item.href) ? "text-gold" : "text-ivory"}`}>
+                  <Link href={item.href} className={`font-display text-3xl ${isActive(item.href) ? "text-gold" : "text-fg"}`}>
                     {item.label}
                   </Link>
                 </motion.li>
