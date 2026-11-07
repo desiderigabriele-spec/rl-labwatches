@@ -1,24 +1,25 @@
 "use client";
 import dynamic from "next/dynamic";
-import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
+import { motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "motion/react";
 import useOnScreen from "@/lib/useOnScreen";
 import { useEffect, useRef, useState } from "react";
+import RestorationStage from "./restauro/RestorationStage";
+import { ARRIVE_END, CHAPTERS, CH_LEN, CH_START, FINAL_START } from "./restauro/chapters";
 
-const RestorationScene = dynamic(() => import("./RestorationScene"), { ssr: false });
+const WorkshopScene = dynamic(() => import("./restauro/WorkshopScene"), { ssr: false });
 
+// i passaggi seguono i tempi di restauro/chapters.ts (con un piccolo stacco tra uno e l'altro)
 const steps = [
-  { range: [0, 0.13], title: "Arriva in laboratorio", text: "Graffi, sporco, un vetro ingiallito dal tempo. È fermo da anni, ma ha ancora molto da raccontare." },
-  { range: [0.16, 0.34], title: "Lo smonto", text: "Ogni componente viene separato, pulito e ispezionato. Nulla sfugge allo sguardo." },
-  { range: [0.37, 0.59], title: "Lo restauro", text: "Lucidatura e satinatura della cassa, recupero del quadrante, revisione del movimento." },
-  { range: [0.62, 0.8], title: "Lo rimonto", text: "Pezzo dopo pezzo, con la lubrificazione e la regolazione che il movimento richiede." },
-  { range: [0.84, 1], title: "Torna a battere", text: "Collaudato e pronto a misurare il tempo per altre generazioni." },
-] as const;
+  { range: [0, ARRIVE_END], title: "Arriva in laboratorio", text: "Graffi, sporco, un vetro ingiallito dal tempo. È fermo da anni, ma ha ancora molto da raccontare." },
+  ...CHAPTERS.map((c, i) => ({ range: [CH_START + i * CH_LEN + 0.004, CH_START + (i + 1) * CH_LEN - 0.006], title: c.title, text: c.text })),
+  { range: [FINAL_START, 1], title: "Torna a battere", text: "Rimontato, regolato e collaudato: pronto a misurare il tempo per altre generazioni." },
+];
 
 function Step({ i, progress }: { i: number; progress: MotionValue<number> }) {
   const [a, b] = steps[i].range;
   const first = i === 0, last = i === steps.length - 1;
-  // gli offset devono restare tra 0 e 1 (animazioni accelerate dallo scroll del browser)
-  const input = [Math.max(0, a - 0.03), a + 0.01, b - 0.01, Math.min(1, b + 0.03)];
+  // dissolvenze brevi: un passaggio esce prima che entri il successivo
+  const input = [Math.max(0, a - 0.005), a + 0.012, b - 0.012, Math.min(1, b + 0.005)];
   const opacity = useTransform(progress, input, [first ? 1 : 0, 1, 1, last ? 1 : 0]);
   const y = useTransform(progress, input, [first ? 0 : 24, 0, 0, last ? 0 : -24]);
   return (
@@ -34,7 +35,12 @@ export default function RestorationSection() {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const bar = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  // la scena 3D si carica quando la sezione è vicina e si ferma quando esce dallo schermo
+  // il 3D si vede all'arrivo e alla fine, il banco di lavoro nel mezzo
+  const show3d = useTransform(scrollYProgress, [0, ARRIVE_END, CH_START, FINAL_START - 0.01, FINAL_START + 0.01, 1], [1, 1, 0, 0, 1, 1]);
+  const [threeOn, setThreeOn] = useState(true);
+  useMotionValueEvent(show3d, "change", (v) => setThreeOn(v > 0.01));
+
+  // si carica quando la sezione è vicina e si ferma quando esce dallo schermo
   const near = useOnScreen(ref, "800px 0px");
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
@@ -42,7 +48,7 @@ export default function RestorationSection() {
   }, [near]);
 
   return (
-    <section ref={ref} className="relative h-[340vh] border-y border-line bg-paper-2 lg:h-[520vh]" aria-label="Il restauro, passo dopo passo">
+    <section ref={ref} className="relative h-[620vh] border-y border-line bg-paper-2 lg:h-[840vh]" aria-label="Il restauro, passo dopo passo">
       <div className="sticky top-0 flex h-dvh flex-col overflow-hidden">
         <div className="mx-auto w-full max-w-7xl px-4 pt-24 sm:px-8">
           <p className="eyebrow">Il restauro, passo dopo passo</p>
@@ -53,8 +59,15 @@ export default function RestorationSection() {
               <Step key={i} i={i} progress={scrollYProgress} />
             ))}
           </div>
-          <div className="order-1 min-h-0 lg:order-2">
-            {loaded && <RestorationScene progress={scrollYProgress} active={near} />}
+          <div className="relative order-1 min-h-0 lg:order-2">
+            {/* lampada sul banco */}
+            <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_50%_at_50%_45%,rgba(255,236,196,0.55),transparent_70%)]" />
+            <motion.div style={{ opacity: show3d }} className="absolute inset-0">
+              {loaded && <WorkshopScene progress={scrollYProgress} active={near && threeOn} />}
+            </motion.div>
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-2 sm:p-6">
+              <RestorationStage progress={scrollYProgress} active={loaded && near} />
+            </div>
           </div>
         </div>
         <div className="absolute bottom-0 left-0 h-[2px] w-full bg-line">

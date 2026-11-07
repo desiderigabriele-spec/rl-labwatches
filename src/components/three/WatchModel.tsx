@@ -14,7 +14,19 @@ import * as THREE from "three";
  *  - wear:    0 = come nuovo, 1 = usurato (graffi, macchie, luminescente ingiallito, vetro opaco)
  *  - run:     0 = fermo, 1 = in marcia
  */
-export type WatchState = { explode: number; wear: number; run: number };
+export type WatchPart = "movement" | "back" | "dial" | "bezel" | "case" | "crystal";
+export type WatchState = {
+  explode: number;
+  wear: number;
+  run: number;
+  /** restauro pezzo per pezzo (0 = usurato, 1 = restaurato): lo sporco viene "spazzato via" da sinistra a destra
+   *  (o lungo la circonferenza per la cassa), seguendo l'attrezzo. Se manca, vale `wear` per tutto l'orologio. */
+  restored?: Partial<Record<WatchPart, number>>;
+  /** pezzi appoggiati di lato sul banco mentre si lavora sugli altri (spostamento x, y) */
+  aside?: Partial<Record<"crystal" | "bezel" | "hands" | "dial" | "movement" | "case" | "back", [number, number]>>;
+  /** rotazione di cassa e lunetta sotto la pulitrice (radianti) */
+  spin?: { case?: number; bezel?: number };
+};
 
 const lerp = THREE.MathUtils.lerp;
 const TEX = "/models/daytona-6239/";
@@ -231,8 +243,38 @@ function applyWear(s: MatSpec, w: number) {
   if (s.newE !== undefined) s.mat.emissiveIntensity = lerp(s.newE, s.oldE ?? 0, w);
 }
 
+/**
+ * Strato di sporco che si può "spazzare via" seguendo l'attrezzo, con un bordo morbido e irregolare.
+ *  - mode "linear":   sparisce da un lato all'altro (pennello, oliatore)
+ *  - mode "ring":     anello con UV planari che gira sotto la pulitrice: sparisce l'arco già passato
+ *                     dal punto di contatto (angolo 0 = ore 3)
+ *  - mode "cylinder": come "ring", per il fianco cilindrico della cassa
+ */
+type WipeMode = "linear" | "ring" | "cylinder";
+function wipeable(mat: THREE.MeshStandardMaterial, mode: WipeMode = "linear") {
+  const wipe = { value: -1 };
+  mat.userData.wipe = wipe;
+  const m = mode === "linear" ? "0.0" : mode === "ring" ? "1.0" : "2.0";
+  mat.onBeforeCompile = (sh) => {
+    sh.uniforms.uWipe = wipe;
+    sh.fragmentShader = "uniform float uWipe;\n" + sh.fragmentShader.replace(
+      "#include <map_fragment>",
+      `#include <map_fragment>
+      float wipeMode = ${m};
+      float wipeA = vMapUv.x;
+      if (wipeMode > 0.5) {
+        float phi = wipeMode > 1.5 ? 6.2831853 * vMapUv.x - 1.5707963 : atan(vMapUv.y - 0.5, vMapUv.x - 0.5);
+        wipeA = fract(-phi / 6.2831853);
+      }
+      float wipeEdge = uWipe + (fract(sin((vMapUv.y + vMapUv.x) * 91.7) * 437.5) - 0.5) * 0.035;
+      diffuseColor.a *= smoothstep(wipeEdge - 0.01, wipeEdge + 0.04, wipeA);`
+    );
+  };
+  return mat;
+}
+
 // posizione Z montata e spostamento in vista esplosa
-const LAYERS = {
+export const LAYERS = {
   crystal: [0.26, 2.3],
   bezel: [CASE_TOP, 1.75],
   hands: [0.19, 1.25],
@@ -296,8 +338,10 @@ export default function WatchModel({
   const clock = useRef({ sec: 37, min: 8.6, hr: 10.14, t: 0 }); // ora "ferma" dell'orologio usurato
 
   const m = useMemo(() => {
-    const overlay = (map: THREE.Texture) =>
-      new THREE.MeshStandardMaterial({ map, transparent: true, depthWrite: false, roughness: 1, metalness: 0, polygonOffset: true, polygonOffsetFactor: -2 });
+    const overlay = (map: THREE.Texture, mode?: WipeMode) =>
+      wipeable(new THREE.MeshStandardMaterial({ map, transparent: true, depthWrite: false, roughness: 1, metalness: 0, polygonOffset: true, polygonOffsetFactor: -2 }), mode);
+    const grime = makeDirtTexture(7, "grime");
+    const light = makeDirtTexture(13, "patina");
 
     // il quadrante è anche leggermente emissivo, così la crema resta calda con qualsiasi luce
     const dial = spec("#ffffff", "#cdb98c", 0.6, 0.9, 0.05, "#ffffff", 0.32, 0.12);
@@ -328,9 +372,12 @@ export default function WatchModel({
       chrono: spec("#202020", "#2b2823", 0.4, 0.8, 0.5),
       plate: spec("#c9c7c2", "#6f6455", 0.35, 0.8, 0.9),
       crystal: new THREE.MeshPhysicalMaterial({ transparent: true, opacity: 0.1, roughness: 0, metalness: 0, clearcoat: 1, color: "#ffffff", depthWrite: false }),
-      grimeOverlay: overlay(makeDirtTexture(7, "grime")),
-      grimeLight: overlay(makeDirtTexture(13, "patina")),
-      patinaOverlay: overlay(makeDirtTexture(31, "patina")),
+      // sporco di ogni pezzo (materiali separati, così ognuno si pulisce per conto suo)
+      caseGrime: overlay(grime, "cylinder"),
+      bezelGrime: overlay(grime, "ring"),
+      backGrime: overlay(light),
+      mvGrime: overlay(light),
+      dialPatina: overlay(makeDirtTexture(31, "patina")),
     };
   }, []);
 
@@ -350,17 +397,44 @@ export default function WatchModel({
 
     (Object.keys(g) as (keyof typeof g)[]).forEach((k) => {
       const grp = g[k].current;
-      if (grp) grp.position.z = LAYERS[k][0] + LAYERS[k][1] * explode;
+      if (!grp) return;
+      grp.position.z = LAYERS[k][0] + LAYERS[k][1] * explode;
+      const off = state.current.aside?.[k];
+      grp.position.x = off?.[0] ?? 0;
+      grp.position.y = off?.[1] ?? 0;
     });
 
-    // usura
-    [m.steel, m.brushed, m.bezel, m.dial, m.caseback, m.crownFace, m.mvDial, m.mvBridges, m.rehaut, m.lume, m.subHand, m.chrono, m.plate].forEach((s) => applyWear(s, wear));
-    m.grimeOverlay.opacity = wear;
-    m.grimeLight.opacity = wear * 0.6;
-    m.patinaOverlay.opacity = wear * 0.85;
-    m.crystal.opacity = lerp(0.1, 0.4, wear);
-    m.crystal.roughness = lerp(0, 0.55, wear);
-    m.crystal.color.set("#ffffff").lerp(new THREE.Color("#b9a46b"), wear);
+    // usura, pezzo per pezzo
+    const restored = state.current.restored;
+    const partWear = (p: WatchPart) => (restored?.[p] !== undefined ? 1 - restored[p]! : wear);
+    const parts: [WatchPart, MatSpec[], THREE.MeshStandardMaterial[], number][] = [
+      ["case", [m.steel, m.brushed, m.crownFace], [m.caseGrime], 1],
+      ["bezel", [m.bezel], [m.bezelGrime], 1],
+      ["back", [m.caseback], [m.backGrime], 0.6],
+      ["movement", [m.mvDial, m.mvBridges, m.plate], [m.mvGrime], 0.6],
+      ["dial", [m.dial, m.rehaut, m.lume, m.subHand, m.chrono], [m.dialPatina], 0.85],
+    ];
+    for (const [part, specs, overlays, strength] of parts) {
+      const w = partWear(part);
+      specs.forEach((s) => applyWear(s, w));
+      for (const o of overlays) {
+        const wipe = o.userData.wipe as { value: number };
+        if (restored?.[part] !== undefined) {
+          // lo sporco resta pieno e viene spazzato via dove passa l'attrezzo
+          o.opacity = strength;
+          wipe.value = lerp(-0.08, 1.08, restored[part]!);
+        } else {
+          o.opacity = w * strength;
+          wipe.value = -1;
+        }
+      }
+    }
+    const cw = partWear("crystal");
+    m.crystal.opacity = lerp(0.1, 0.4, cw);
+    m.crystal.roughness = lerp(0, 0.55, cw);
+    m.crystal.color.set("#ffffff").lerp(new THREE.Color("#b9a46b"), cw);
+    if (g.case.current) g.case.current.rotation.z = state.current.spin?.case ?? 0;
+    if (g.bezel.current) g.bezel.current.rotation.z = state.current.spin?.bezel ?? 0;
 
     // ore e minuti al centro, secondi nel contatore a ore 9
     const c = clock.current;
@@ -389,7 +463,7 @@ export default function WatchModel({
         <mesh position={[0, 0, (CASE_TOP + CASE_BOTTOM) / 2]} rotation={[Math.PI / 2, 0, 0]} material={m.steel.mat}>
           <cylinderGeometry args={[CASE_R, CASE_R - 0.05, CASE_TOP - CASE_BOTTOM, 128, 1, true]} />
         </mesh>
-        <mesh position={[0, 0, (CASE_TOP + CASE_BOTTOM) / 2]} rotation={[Math.PI / 2, 0, 0]} material={m.grimeOverlay}>
+        <mesh position={[0, 0, (CASE_TOP + CASE_BOTTOM) / 2]} rotation={[Math.PI / 2, 0, 0]} material={m.caseGrime}>
           <cylinderGeometry args={[CASE_R + 0.005, CASE_R - 0.045, CASE_TOP - CASE_BOTTOM, 96, 1, true]} />
         </mesh>
         <mesh position={[0, 0, CASE_TOP - 0.005]} material={m.steel.mat}>
@@ -443,7 +517,7 @@ export default function WatchModel({
         <mesh position={[0, 0, -0.0455]} rotation={[0, Math.PI, 0]} material={m.caseback.mat}>
           <circleGeometry args={[1.01, 96]} />
         </mesh>
-        <mesh position={[0, 0, -0.046]} rotation={[0, Math.PI, 0]} material={m.grimeLight}>
+        <mesh position={[0, 0, -0.046]} rotation={[0, Math.PI, 0]} material={m.backGrime}>
           <circleGeometry args={[1.01, 64]} />
         </mesh>
       </group>
@@ -457,14 +531,14 @@ export default function WatchModel({
         <mesh position={[0, 0, 0.06]} material={m.mvDial.mat}>
           <circleGeometry args={[0.98, 96]} />
         </mesh>
-        <mesh position={[0, 0, 0.061]} material={m.grimeLight}>
+        <mesh position={[0, 0, 0.061]} material={m.mvGrime}>
           <circleGeometry args={[0.98, 64]} />
         </mesh>
         {/* lato ponti, con bilanciere e ruote (verso il fondello) */}
         <mesh position={[0, 0, -0.06]} rotation={[0, Math.PI, 0]} material={m.mvBridges.mat}>
           <circleGeometry args={[0.98, 96]} />
         </mesh>
-        <mesh position={[0, 0, -0.061]} rotation={[0, Math.PI, 0]} material={m.grimeLight}>
+        <mesh position={[0, 0, -0.061]} rotation={[0, Math.PI, 0]} material={m.mvGrime}>
           <circleGeometry args={[0.98, 64]} />
         </mesh>
       </group>
@@ -477,7 +551,7 @@ export default function WatchModel({
         <mesh position={[0, 0, 0.0105]} material={m.dial.mat}>
           <circleGeometry args={[DIAL_R, 128]} />
         </mesh>
-        <mesh position={[0, 0, 0.011]} material={m.patinaOverlay}>
+        <mesh position={[0, 0, 0.011]} material={m.dialPatina}>
           <circleGeometry args={[DIAL_R, 64]} />
         </mesh>
         {/* réhaut: anello scuro tra quadrante e lunetta */}
@@ -513,7 +587,7 @@ export default function WatchModel({
       {/* ---------------- LUNETTA TACHIMETRICA ---------------- */}
       <group ref={g.bezel} name="lunetta">
         <mesh geometry={geos.bezel} material={m.bezel.mat} />
-        <mesh geometry={geos.bezel} material={m.grimeOverlay} />
+        <mesh geometry={geos.bezel} material={m.bezelGrime} />
         <mesh position={[0, 0, -0.03]} rotation={[Math.PI / 2, 0, 0]} material={m.steel.mat}>
           <cylinderGeometry args={[BEZEL_OUT, BEZEL_OUT, 0.06, 128, 1, true]} />
         </mesh>
