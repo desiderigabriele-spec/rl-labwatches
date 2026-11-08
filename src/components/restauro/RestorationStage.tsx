@@ -5,6 +5,8 @@ import { CHAPTERS, CH_LEN, CH_START, TOOLS, workOf } from "./chapters";
 import type { FxCtx, Img, Tools } from "./effects";
 
 const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+/** l'area di disegno è più grande del pezzo, così gli attrezzi che escono dal pezzo si vedono interi */
+const BLEED = 1.8;
 const ss = (a: number, b: number, x: number) => {
   const t = clamp((x - a) / (b - a));
   return t * t * (3 - 2 * t);
@@ -40,9 +42,15 @@ export default function RestorationStage({ progress, active }: { progress: Motio
     const layer = document.createElement("canvas");
     const lg = layer.getContext("2d")!;
     let raf = 0;
+    // risoluzione del pezzo (S) e del foglio intero (S * BLEED)
+    let S = 0;
     const size = () => {
-      const s = Math.min(1100, Math.round(cv.clientWidth * Math.min(2, window.devicePixelRatio || 1)));
-      if (s > 0 && cv.width !== s) cv.width = cv.height = layer.width = layer.height = s;
+      const piece = Math.min(1000, Math.round((cv.clientWidth / BLEED) * Math.min(2, window.devicePixelRatio || 1)));
+      if (piece > 0 && piece !== S) {
+        S = piece;
+        layer.width = layer.height = S;
+        cv.width = cv.height = Math.round(S * BLEED);
+      }
     };
     const ro = new ResizeObserver(size);
     ro.observe(cv);
@@ -50,17 +58,22 @@ export default function RestorationStage({ progress, active }: { progress: Motio
     const frame = (time: number) => {
       raf = requestAnimationFrame(frame);
       const v = progress.get();
-      const S = cv.width;
       const i = Math.min(CHAPTERS.length - 1, Math.max(0, Math.floor((v - CH_START) / CH_LEN)));
       const local = (v - CH_START - i * CH_LEN) / CH_LEN;
       // il lavoro occupa la parte centrale del capitolo; ai bordi il pezzo appare e scompare
       const p = workOf(local);
       cv.style.opacity = String(ss(0, 0.07, local) * (1 - ss(0.93, 1, local)));
-      g.clearRect(0, 0, S, S);
+      g.setTransform(1, 0, 0, 1, 0, 0);
+      g.clearRect(0, 0, cv.width, cv.height);
       const im = imgs.current?.[i];
       const ch = CHAPTERS[i];
       if (!im || (ch.worn && !im.worn) || (ch.frames && !im.frames[0])) return;
+      // il pezzo sta al centro del foglio; gli attrezzi possono uscire dai suoi bordi
+      const off = (cv.width - S) / 2;
+      g.save();
+      g.translate(off, off);
       CHAPTERS[i].fx({ g, lg, layer, S, p, t: time / 1000, clean: im.clean, worn: im.worn, frames: im.frames, tools: tools.current });
+      g.restore();
       cv.setAttribute("aria-label", CHAPTERS[i].label);
     };
     raf = requestAnimationFrame(frame);
@@ -70,5 +83,17 @@ export default function RestorationStage({ progress, active }: { progress: Motio
     };
   }, [active, progress]);
 
-  return <canvas ref={ref} role="img" aria-label={CHAPTERS[0].label} className="mx-auto block aspect-square" style={{ opacity: 0, width: "min(100cqw, 100cqh)" }} />;
+  // il riquadro è grande quanto il pezzo; il foglio lo supera su tutti i lati
+  const pad = `${(-(BLEED - 1) / 2) * 100}%`;
+  return (
+    <div className="relative mx-auto aspect-square" style={{ width: "min(100cqw, 100cqh)" }}>
+      <canvas
+        ref={ref}
+        role="img"
+        aria-label={CHAPTERS[0].label}
+        className="absolute block"
+        style={{ opacity: 0, left: pad, top: pad, width: `${BLEED * 100}%`, height: `${BLEED * 100}%` }}
+      />
+    </div>
+  );
 }
