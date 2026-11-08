@@ -8,8 +8,10 @@ const C = 2 * Math.PI * R;
 /**
  * Ghiera di lettura: una piccola lunetta che si riempie mentre scorri la pagina.
  * Compare solo nelle pagine lunghe; toccandola torni in cima.
+ *  - "floating": su computer, in basso a sinistra
+ *  - "header":   su telefono, nell'intestazione accanto al menu, così non copre mai il testo
  */
-export default function ReadingBezel() {
+export default function ReadingBezel({ variant = "floating" }: { variant?: "floating" | "header" }) {
   const pathname = usePathname();
   const [p, setP] = useState(0);
   const [show, setShow] = useState(false);
@@ -42,7 +44,11 @@ export default function ReadingBezel() {
       onClick={toTop}
       aria-label={`Torna in cima (letto il ${Math.round(p * 100)}%)`}
       tabIndex={show ? 0 : -1}
-      className={`fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-4 z-40 grid h-12 w-12 place-items-center rounded-full border border-line bg-paper/90 shadow-lg backdrop-blur transition-all duration-500 lg:bottom-6 lg:left-6 lg:right-auto lg:h-14 lg:w-14 ${show ? "opacity-100" : "pointer-events-none translate-y-3 opacity-0"}`}
+      className={`${
+        variant === "header"
+          ? "relative grid h-10 w-10 lg:hidden"
+          : "fixed bottom-6 left-6 z-40 hidden h-14 w-14 border border-line bg-paper/90 shadow-lg backdrop-blur lg:grid"
+      } place-items-center rounded-full transition-all duration-500 ${show ? "opacity-100" : `pointer-events-none opacity-0 ${variant === "header" ? "scale-75" : "translate-y-3"}`}`}
     >
       <svg viewBox="0 0 48 48" className="absolute inset-0.5 -rotate-90" aria-hidden>
         <circle cx="24" cy="24" r={R} fill="none" className="stroke-line" strokeWidth="2" />
@@ -52,7 +58,7 @@ export default function ReadingBezel() {
         ))}
         <circle cx="24" cy="24" r={R} fill="none" className="stroke-gold-2" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - p)} />
       </svg>
-      <span className="tag-mono relative text-[0.7rem] text-fg">{p > 0.97 ? "↑" : `${Math.round(p * 100)}`}</span>
+      <span className={`tag-mono relative text-fg ${variant === "header" ? "text-[0.62rem]" : "text-[0.7rem]"}`}>{p > 0.97 ? "↑" : `${Math.round(p * 100)}`}</span>
     </button>
   );
 }
