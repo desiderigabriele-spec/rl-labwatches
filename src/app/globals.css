@@ -245,19 +245,20 @@ html[data-intro="seen"] .intro-splash {
   mix-blend-mode: multiply;
 }
 .intake-stamp.is-on { opacity: 0.85; transform: rotate(-10deg) scale(1); }
-.verb-backdrop { container-type: inline-size; height: 100%; }
-.verb-word {
-  position: absolute;
-  inset-inline: 0;
-  top: 2%;
+.verb-backdrop { container-type: inline-size; }
+/* larghezza piena per le parole corte, mai più alta di un decimo dello schermo */
+.verb-line {
+  position: relative;
   text-align: center;
   white-space: nowrap;
   font-family: var(--font-display), serif;
   font-weight: 500;
-  line-height: 1;
+  line-height: 1.02;
   letter-spacing: -0.02em;
-  font-size: calc(165cqw / var(--len, 6));
+  font-size: min(calc(165cqw / var(--len, 6)), 11vh);
 }
+.verb-word { display: block; }
+.verb-fill { position: absolute; inset: 0; }
 .verb-outline { color: transparent; -webkit-text-stroke: 1.5px rgba(148, 116, 42, 0.5); }
 .verb-fill { color: var(--color-gold); clip-path: inset(0 100% 0 0); }
 @media (prefers-reduced-motion: reduce) { .defect-pin::after { animation: none; } }
