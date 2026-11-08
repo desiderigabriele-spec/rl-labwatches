@@ -45,7 +45,7 @@ export default function Home() {
             </h1>
             {/* su telefono il testo sta a sinistra, accanto al ritratto */}
             <div className="relative mt-4 flex min-h-[50svh] items-end sm:mt-8 lg:block lg:min-h-0">
-              <Reveal delay={0.45} className="relative z-10 max-w-[64%] bg-[linear-gradient(90deg,var(--color-paper)_75%,transparent)] pb-6 pr-3 sm:max-w-none sm:bg-none lg:pb-0">
+              <Reveal delay={0.45} className="relative z-10 max-w-[64%] pb-6 pr-3 sm:max-w-none lg:pb-0">
                 <p className="max-w-md text-[0.95rem] leading-relaxed text-mute sm:text-lg">
                   Restauro e revisione di Rolex, Patek Philippe, Audemars Piguet e Omega. Ogni orologio lo apro io, e ti rispondo di persona.
                 </p>
@@ -74,7 +74,8 @@ export default function Home() {
                   fill
                   priority
                   sizes="50vw"
-                  className="object-contain object-bottom [mask-image:linear-gradient(to_bottom,black_80%,transparent)]"
+                  // la foto sfuma verso sinistra e in basso: niente riquadro dietro al testo
+                  className="object-contain object-bottom [mask-composite:intersect] [mask-image:linear-gradient(90deg,transparent,black_38%),linear-gradient(to_bottom,black_80%,transparent)] [-webkit-mask-composite:source-in]"
                 />
               </div>
             </div>
