@@ -288,3 +288,14 @@ html[data-intro="seen"] .intro-splash {
 .verb-outline { color: transparent; -webkit-text-stroke: 1.5px rgba(148, 116, 42, 0.5); }
 .verb-fill { color: var(--color-gold); clip-path: inset(0 100% 0 0); }
 @media (prefers-reduced-motion: reduce) { .defect-pin::after { animation: none; } }
+
+/* recensioni: due nastri che scorrono in direzioni opposte, si fermano al passaggio o al tocco */
+.reviews-track { animation: reviews-scroll 46s linear infinite; }
+.reviews-track.is-reverse { animation-direction: reverse; }
+.reviews-lane:hover .reviews-track,
+.reviews-lane:active .reviews-track { animation-play-state: paused; }
+@keyframes reviews-scroll { to { transform: translateX(calc(-50% - 0.625rem)); } }
+@media (prefers-reduced-motion: reduce) {
+  .reviews-track { animation: none; }
+  .reviews-lane { overflow-x: auto; }
+}
