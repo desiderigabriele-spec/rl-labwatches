@@ -22,14 +22,14 @@ const load = (src?: string) =>
 /** Il banco di restauro: un canvas che, seguendo lo scroll, mostra un lavoro alla volta */
 export default function RestorationStage({ progress, active }: { progress: MotionValue<number>; active: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
-  const imgs = useRef<{ clean: Img; worn: Img }[] | null>(null);
+  const imgs = useRef<{ clean: Img; worn: Img; frames: Img[] }[] | null>(null);
   const brush = useRef<Img>(null);
 
   // immagini caricate solo quando la sezione si avvicina
   useEffect(() => {
     if (!active || imgs.current) return;
     imgs.current = [];
-    Promise.all(CHAPTERS.map(async (c) => ({ clean: await load(c.clean), worn: await load(c.worn) }))).then((r) => (imgs.current = r));
+    Promise.all(CHAPTERS.map(async (c) => ({ clean: await load(c.clean), worn: await load(c.worn), frames: await Promise.all((c.frames ?? []).map(load)) }))).then((r) => (imgs.current = r));
     load(BRUSH).then((b) => (brush.current = b));
   }, [active]);
 
@@ -58,9 +58,9 @@ export default function RestorationStage({ progress, active }: { progress: Motio
       cv.style.opacity = String(ss(0, 0.07, local) * (1 - ss(0.93, 1, local)));
       g.clearRect(0, 0, S, S);
       const im = imgs.current?.[i];
-      const needsImages = !!CHAPTERS[i].worn;
-      if (needsImages && (!im || !im.worn)) return;
-      CHAPTERS[i].fx({ g, lg, layer, S, p, t: time / 1000, clean: im?.clean ?? null, worn: im?.worn ?? null, tools: { brush: brush.current } });
+      const ch = CHAPTERS[i];
+      if (!im || (ch.worn && !im.worn) || (ch.frames && !im.frames[0])) return;
+      CHAPTERS[i].fx({ g, lg, layer, S, p, t: time / 1000, clean: im.clean, worn: im.worn, frames: im.frames, tools: { brush: brush.current } });
       cv.setAttribute("aria-label", CHAPTERS[i].label);
     };
     raf = requestAnimationFrame(frame);

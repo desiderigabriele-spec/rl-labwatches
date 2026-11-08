@@ -15,6 +15,8 @@ export type FxCtx = {
   clean: Img;
   worn: Img;
   tools: { brush: Img };
+  /** fotogrammi di un lavoro in più fasi (sbreccatura) */
+  frames?: Img[];
 };
 
 const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -385,191 +387,92 @@ export function steel(c: FxCtx) {
   }
 }
 
-// ---------- sbreccatura: riporto di materiale, limatura, lucidatura ----------
-type ChipGeo = { S: number; bite: [number, number][]; scratches: number[][]; beads: number[][] };
-let chipGeo: ChipGeo | null = null;
-function chipGeometry(S: number): ChipGeo {
-  if (chipGeo && chipGeo.S === S) return chipGeo;
-  const W = S, H = S * 0.62, EDGE = H * 0.36, bx0 = W * 0.33, bx1 = W * 0.67;
-  let rs = 5;
-  const rnd = () => (rs = (rs * 16807) % 2147483647) / 2147483647;
-  const bite: [number, number][] = [];
-  for (let i = 0; i <= 24; i++) {
-    const u = i / 24;
-    bite.push([bx0 + (bx1 - bx0) * u, EDGE + Math.sin(Math.PI * u) ** 0.8 * H * 0.15 * (1 + 0.18 * Math.sin(u * 23) + 0.1 * Math.sin(u * 61))]);
-  }
-  const scratches = Array.from({ length: 140 }, () => {
-    const x = rnd() * W, y = EDGE + rnd() * (H - EDGE), a = rnd() * Math.PI, l = (20 + rnd() * 120) * (S / 1200);
-    return [x, y, x + Math.cos(a) * l, y + Math.sin(a) * l, 0.2 + rnd() * 0.5];
-  });
-  const beads = Array.from({ length: 70 }, (_, i) => [bx0 + (bx1 - bx0) * (i / 69) + (rnd() - 0.5) * S * 0.012, EDGE - H * 0.03 + rnd() * H * 0.12, S * (0.008 + rnd() * 0.008)]);
-  return (chipGeo = { S, bite, scratches, beads });
+// ---------- sbreccatura: saldatura laser, limatura, lucidatura (4 foto sovrapposte) ----------
+/** centro della sbreccatura nelle foto, in frazione del lato */
+const CHIP = { x: 0.53, y: 0.435, r: 0.075 };
+/** disegna la foto f dentro il riquadro del pezzo, ritagliata da una maschera */
+function frameThrough(c: FxCtx, f: Img, mask: (lg: CanvasRenderingContext2D) => void) {
+  const { g, lg, layer, S } = c;
+  if (!f) return;
+  lg.globalCompositeOperation = "source-over";
+  lg.clearRect(0, 0, S, S);
+  mask(lg);
+  lg.globalCompositeOperation = "source-in";
+  lg.drawImage(f, 0, 0, S, S);
+  lg.globalCompositeOperation = "source-over";
+  g.drawImage(layer, 0, 0);
+}
+function softCircle(lg: CanvasRenderingContext2D, x: number, y: number, r: number) {
+  const gr = lg.createRadialGradient(x, y, 0, x, y, r);
+  gr.addColorStop(0, "rgba(0,0,0,1)");
+  gr.addColorStop(0.7, "rgba(0,0,0,1)");
+  gr.addColorStop(1, "rgba(0,0,0,0)");
+  lg.fillStyle = gr;
+  lg.fillRect(x - r, y - r, 2 * r, 2 * r);
 }
 export function chip(c: FxCtx) {
   const { g, S, p, t } = c;
-  const W = S, H = S * 0.62, EDGE = H * 0.36, bx0 = W * 0.33, bx1 = W * 0.67;
-  const { bite, scratches, beads } = chipGeometry(S);
-  const weld = clamp((p - 0.15) / 0.38), file = clamp((p - 0.56) / 0.22), polish = clamp((p - 0.8) / 0.2);
+  const [f0, f1, f2, f3] = c.frames ?? [];
+  if (!f0) return;
+  const cx = CHIP.x * S, cy = CHIP.y * S;
+  const weld = clamp((p - 0.12) / 0.33), file = clamp((p - 0.5) / 0.22), polish = clamp((p - 0.76) / 0.24);
   g.save();
-  g.translate(0, S * 0.19);
   g.beginPath();
-  g.roundRect(0, 0, W, H, S * 0.03);
+  g.roundRect(S * 0.02, S * 0.02, S * 0.96, S * 0.96, S * 0.05);
   g.clip();
-  g.fillStyle = "#e9e5dc";
-  g.fillRect(0, 0, W, H);
-  // corpo d'acciaio dell'ansa, con i graffi finché non è lucidato
-  const gr = g.createLinearGradient(0, EDGE, 0, H);
-  gr.addColorStop(0, "#f4f5f6");
-  gr.addColorStop(0.08, "#9ea3a8");
-  gr.addColorStop(0.35, "#dfe2e4");
-  gr.addColorStop(0.6, "#7f8489");
-  gr.addColorStop(1, "#c9ccd0");
-  g.fillStyle = gr;
-  g.fillRect(0, EDGE, W, H - EDGE);
-  g.strokeStyle = "rgba(255,255,255,0.9)";
-  g.lineWidth = S * 0.003;
-  g.beginPath();
-  g.moveTo(0, EDGE + 1.5);
-  g.lineTo(W, EDGE + 1.5);
-  g.stroke();
-  const sa = 1 - polish;
-  if (sa > 0)
-    scratches.forEach(([x0, y0, x1, y1, a]) => {
-      g.strokeStyle = `rgba(70,70,72,${a * 0.5 * sa})`;
-      g.lineWidth = 1.2;
-      g.beginPath();
-      g.moveTo(x0, y0);
-      g.lineTo(x1, y1);
-      g.stroke();
-      g.strokeStyle = `rgba(255,255,255,${a * 0.6 * sa})`;
-      g.beginPath();
-      g.moveTo(x0, y0 + 1.5);
-      g.lineTo(x1, y1 + 1.5);
-      g.stroke();
+  g.drawImage(f0, 0, 0, S, S);
+  // 1. saldatura laser: il metallo riportato cresce nel vuoto della sbreccatura
+  if (weld > 0) frameThrough(c, f1, (lg) => softCircle(lg, cx, cy, S * CHIP.r * 1.6 * ease(weld)));
+  // 2. limatura: l'eccesso sparisce, la forma torna quella originale
+  if (file > 0) frameThrough(c, f2, (lg) => softCircle(lg, cx, cy, S * CHIP.r * 2.2 * ease(file)));
+  // 3. lucidatura: tutta l'ansa torna a specchio, con un riflesso che la attraversa
+  if (polish > 0) {
+    const x = (ease(polish) * 1.3 - 0.15) * S;
+    frameThrough(c, f3, (lg) => {
+      const gr = lg.createLinearGradient(x - S * 0.12, 0, x + S * 0.02, 0);
+      gr.addColorStop(0, "rgba(0,0,0,1)");
+      gr.addColorStop(1, "rgba(0,0,0,0)");
+      lg.fillStyle = gr;
+      lg.fillRect(0, 0, S, S);
     });
-  const bitePath = () => {
-    g.beginPath();
-    g.moveTo(bite[0][0], EDGE - 2);
-    bite.forEach(([x, y]) => g.lineTo(x, y));
-    g.lineTo(bite[bite.length - 1][0], EDGE - 2);
-    g.closePath();
-  };
-  if (weld < 1) {
-    g.save();
-    bitePath();
-    g.clip();
-    g.fillStyle = "#e9e5dc";
-    g.fillRect(0, 0, W, H);
-    g.restore();
-    g.strokeStyle = "#5b5f63";
-    g.lineWidth = S * 0.0035;
-    g.beginPath();
-    bite.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y)));
-    g.stroke();
-  }
-  const front = bx0 - S * 0.017 + (bx1 - bx0 + S * 0.034) * weld;
-  const over = H * 0.045 * (1 - ease(file));
-  if (weld > 0) {
-    g.save();
-    g.beginPath();
-    g.rect(0, 0, front, H);
-    g.clip();
-    g.beginPath();
-    g.moveTo(bx0 - 10, EDGE);
-    g.quadraticCurveTo((bx0 + bx1) / 2, EDGE - over * 2, bx1 + 10, EDGE);
-    bite.slice().reverse().forEach(([x, y]) => g.lineTo(x, y));
-    g.closePath();
-    g.clip();
-    const mg = g.createLinearGradient(0, EDGE - over, 0, EDGE + H * 0.16);
-    mg.addColorStop(0, `rgb(${168 + 76 * polish},${166 + 79 * polish},${160 + 86 * polish})`);
-    mg.addColorStop(1, `rgb(${120 + 100 * polish},${118 + 102 * polish},${114 + 108 * polish})`);
-    g.fillStyle = mg;
-    g.fillRect(0, 0, W, H);
-    const ba = (1 - file) * 0.6;
-    if (ba > 0)
-      beads.forEach(([x, y, r]) => {
-        const bg = g.createRadialGradient(x - r * 0.3, y - r * 0.3, 1, x, y, r);
-        bg.addColorStop(0, `rgba(240,240,236,${ba})`);
-        bg.addColorStop(1, `rgba(90,88,84,${ba})`);
-        g.fillStyle = bg;
-        g.beginPath();
-        g.arc(x, y, r, 0, TAU);
-        g.fill();
-      });
-    if (file > 0 && polish < 1) {
-      g.strokeStyle = `rgba(255,255,255,${0.35 * (1 - polish)})`;
-      g.lineWidth = 1;
-      for (let i = 0; i < 40; i++) {
-        const y = EDGE - over + i * S * 0.0035;
-        g.beginPath();
-        g.moveTo(bx0 - 20, y);
-        g.lineTo(bx1 + 20, y + 6);
-        g.stroke();
-      }
+    if (polish < 1) {
+      const sh = g.createLinearGradient(x - S * 0.08, 0, x + S * 0.08, 0);
+      sh.addColorStop(0, "rgba(255,255,255,0)");
+      sh.addColorStop(0.5, "rgba(255,255,255,0.55)");
+      sh.addColorStop(1, "rgba(255,255,255,0)");
+      g.fillStyle = sh;
+      g.fillRect(0, 0, S, S);
     }
-    g.restore();
   }
-  // luce del laser e scintille sul fronte di saldatura
+  g.restore();
+  // luce del laser e scintille sul punto di saldatura
   if (weld > 0 && weld < 1) {
-    const fy = EDGE + H * 0.04 + Math.sin(t * 30) * H * 0.02;
-    const fl = g.createRadialGradient(front, fy, 0, front, fy, H * 0.22);
+    const fx = cx + Math.cos(t * 9) * S * 0.025, fy = cy + Math.sin(t * 13) * S * 0.02;
+    const fl = g.createRadialGradient(fx, fy, 0, fx, fy, S * 0.14);
     fl.addColorStop(0, "rgba(255,255,255,0.95)");
-    fl.addColorStop(0.15, "rgba(200,225,255,0.75)");
+    fl.addColorStop(0.18, "rgba(200,225,255,0.7)");
     fl.addColorStop(1, "rgba(160,200,255,0)");
     g.fillStyle = fl;
-    g.fillRect(front - H * 0.25, fy - H * 0.25, H * 0.5, H * 0.5);
-    for (let i = 0; i < 26; i++) {
-      const r1 = Math.abs(Math.sin(i * 12.9 + 3) * 4375.5) % 1, life = (t * 2.2 + i / 26) % 1;
-      const a = -Math.PI / 2 + (r1 - 0.5) * 2.4, d = life * H * (0.12 + r1 * 0.15);
-      g.fillStyle = `rgba(255,${(180 + r1 * 60) | 0},90,${1 - life})`;
-      g.fillRect(front + Math.cos(a) * d, fy + Math.sin(a) * d + life * life * 30, S * 0.003, S * 0.003);
-    }
+    g.fillRect(fx - S * 0.15, fy - S * 0.15, S * 0.3, S * 0.3);
+    sparks(g, fx, fy, 0.2, -0.9, t, S, 5);
   }
-  // lima
+  // polvere di metallo mentre si lima
   if (file > 0 && file < 1) {
-    const fx = (bx0 + bx1) / 2 + Math.sin(t * 7) * (bx1 - bx0) * 0.45, fy = EDGE - over - S * 0.014;
-    g.save();
-    g.translate(fx, fy);
-    g.rotate(-0.04);
-    const fw = W * 0.3, fh = S * 0.027;
-    g.fillStyle = "rgba(0,0,0,0.2)";
-    g.fillRect(-fw + 8, -fh * 0.6, fw * 2, fh * 1.1);
-    const fgr = g.createLinearGradient(0, -fh, 0, fh * 0.3);
-    fgr.addColorStop(0, "#9aa0a5");
-    fgr.addColorStop(0.5, "#5d6267");
-    fgr.addColorStop(1, "#3c4044");
-    g.fillStyle = fgr;
-    g.fillRect(-fw, -fh, fw * 2, fh * 1.3);
-    g.strokeStyle = "rgba(255,255,255,0.18)";
-    g.lineWidth = 1;
-    for (let x = -fw; x < fw; x += S * 0.006) {
-      g.beginPath();
-      g.moveTo(x, -fh);
-      g.lineTo(x + S * 0.008, fh * 0.3);
-      g.stroke();
+    for (let i = 0; i < 30; i++) {
+      const r1 = Math.abs(Math.sin(i * 12.9 + 7) * 4375.5) % 1, life = (t * 1.2 + i / 30) % 1;
+      g.fillStyle = `rgba(90,92,96,${(1 - life) * 0.8})`;
+      g.fillRect(cx + (r1 - 0.5) * S * 0.18 + Math.sin(t * 8) * S * 0.03, cy + life * S * 0.22, S * 0.003, S * 0.003);
     }
-    g.restore();
   }
-  // lucidatura: riflesso che attraversa il pezzo
-  if (polish > 0 && polish < 1) {
-    const sx = -W * 0.2 + W * 1.4 * polish;
-    const sh = g.createLinearGradient(sx - S * 0.1, 0, sx + S * 0.1, 0);
-    sh.addColorStop(0, "rgba(255,255,255,0)");
-    sh.addColorStop(0.5, "rgba(255,255,255,0.75)");
-    sh.addColorStop(1, "rgba(255,255,255,0)");
-    g.fillStyle = sh;
-    g.fillRect(0, EDGE, W, H - EDGE);
-  }
-  // segno rosso sulla sbreccatura all'inizio
-  const mark = p < 0.16 ? Math.min(1, p / 0.05) : 0;
+  // all'inizio la sbreccatura viene segnata
+  const mark = p < 0.13 ? Math.min(1, p / 0.04) : 0;
   if (mark > 0) {
     g.strokeStyle = `rgba(184,50,31,${mark})`;
     g.lineWidth = S * 0.004;
     g.setLineDash([S * 0.012, S * 0.008]);
     g.beginPath();
-    g.ellipse((bx0 + bx1) / 2, EDGE + H * 0.05, (bx1 - bx0) * 0.68, H * 0.18, 0, 0, TAU);
+    g.arc(cx, cy, S * CHIP.r * 1.5, 0, TAU);
     g.stroke();
     g.setLineDash([]);
   }
-  g.restore();
 }
