@@ -93,7 +93,6 @@ export default function RestorationSection() {
           <div className="relative order-1 min-h-0 lg:order-2">
             {/* lampada sul banco */}
             <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_50%_at_50%_50%,rgba(255,236,196,0.55),transparent_70%)]" />
-            <VerbBackdrop progress={scrollYProgress} />
             <IntakeStage progress={scrollYProgress} />
             <motion.div style={{ opacity: showDone }} className="pointer-events-none absolute inset-0 p-2 sm:p-6">
               <div className="flex h-full w-full items-center justify-center" style={{ containerType: "size" }}>
@@ -102,9 +101,13 @@ export default function RestorationSection() {
                 </motion.div>
               </div>
             </motion.div>
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-2 pb-0 pt-[17%] sm:p-6 sm:pt-[14%]">
-              <div className="flex h-full w-full items-center justify-center" style={{ containerType: "size" }}>
-                <RestorationStage progress={scrollYProgress} active={loaded && near} />
+            {/* il verbo ha la sua riga in alto; il pezzo usa solo lo spazio che resta sotto, su qualsiasi schermo */}
+            <div className="pointer-events-none absolute inset-0 flex flex-col">
+              <VerbBackdrop progress={scrollYProgress} />
+              <div className="min-h-0 flex-1 px-2 pb-1 pt-2 sm:px-6 sm:pb-4">
+                <div className="flex h-full w-full items-center justify-center" style={{ containerType: "size" }}>
+                  <RestorationStage progress={scrollYProgress} active={loaded && near} />
+                </div>
               </div>
             </div>
           </div>

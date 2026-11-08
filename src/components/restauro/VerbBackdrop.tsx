@@ -31,9 +31,15 @@ export default function VerbBackdrop({ progress }: { progress: MotionValue<numbe
   });
 
   return (
-    <div ref={box} aria-hidden className="verb-backdrop pointer-events-none absolute inset-x-0 top-0 select-none" style={{ opacity: 0 }}>
-      <span ref={outline} className="verb-word verb-outline" />
-      <span ref={fill} className="verb-word verb-fill" />
+    <div ref={box} aria-hidden className="verb-backdrop pointer-events-none w-full shrink-0 select-none" style={{ opacity: 0, ["--len" as string]: CHAPTERS[0].verb.length }}>
+      <div className="verb-line">
+        <span ref={outline} className="verb-word verb-outline">
+          {CHAPTERS[0].verb}
+        </span>
+        <span ref={fill} className="verb-word verb-fill" aria-hidden>
+          {CHAPTERS[0].verb}
+        </span>
+      </div>
     </div>
   );
 }
