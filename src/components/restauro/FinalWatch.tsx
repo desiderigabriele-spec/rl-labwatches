@@ -3,7 +3,9 @@ import { useEffect, useRef } from "react";
 
 /**
  * L'orologio restaurato alla fine della sezione: foto frontale vera, con sopra il quadrante senza lancette
- * e lancette disegnate che segnano l'ora reale (i piccoli secondi a ore 9 scorrono come sul 6239).
+ * e lancette disegnate che segnano l'ora reale. I piccoli secondi a ore 9 scattano 5 volte al secondo
+ * (18.000 alternanze, come il calibro 722) e il cronografo parte quando l'orologio compare:
+ * la lancetta centrale gira e il contatore dei 30 minuti a ore 3 avanza.
  * Posizioni misurate sulle foto: quadrante centrato a (47.4%, 47.4%) con diametro 59.8% della foto.
  */
 const PHOTO = "/models/daytona-6239/fronte.webp";
@@ -27,18 +29,28 @@ export default function FinalWatch({ active }: { active: boolean }) {
   const hour = useRef<SVGGElement>(null);
   const minute = useRef<SVGGElement>(null);
   const second = useRef<SVGGElement>(null);
+  const chrono = useRef<SVGGElement>(null);
+  const chronoMin = useRef<SVGGElement>(null);
+  const chronoHr = useRef<SVGGElement>(null);
 
   useEffect(() => {
     if (!active) return;
     let raf = 0;
+    const start = performance.now();
     const tick = () => {
       const now = new Date();
-      const s = now.getSeconds() + now.getMilliseconds() / 1000;
-      const m = now.getMinutes() + s / 60;
+      // piccoli secondi a scatti di 1/5 di secondo
+      const s = now.getSeconds() + Math.floor(now.getMilliseconds() / 200) / 5;
+      const m = now.getMinutes() + now.getSeconds() / 60;
       const h = (now.getHours() % 12) + m / 60;
       hour.current?.setAttribute("transform", `rotate(${h * 30})`);
       minute.current?.setAttribute("transform", `rotate(${m * 6})`);
       second.current?.setAttribute("transform", `rotate(${s * 6})`);
+      // cronografo avviato quando l'orologio compare
+      const c = Math.floor(((performance.now() - start) / 1000) * 5) / 5;
+      chrono.current?.setAttribute("transform", `rotate(${c * 6})`);
+      chronoMin.current?.setAttribute("transform", `rotate(${(c / 60) * 12})`);
+      chronoHr.current?.setAttribute("transform", `rotate(${(c / 3600) * 30})`);
       raf = requestAnimationFrame(tick);
     };
     tick();
@@ -79,8 +91,12 @@ export default function FinalWatch({ active }: { active: boolean }) {
           <g transform={at(SUB.seconds)}>
             <g ref={second}>{sub(0.25)}</g>
           </g>
-          <g transform={at(SUB.minutes)}>{sub(0.25)}</g>
-          <g transform={at(SUB.hours)}>{sub(0.25)}</g>
+          <g transform={at(SUB.minutes)}>
+            <g ref={chronoMin}>{sub(0.25)}</g>
+          </g>
+          <g transform={at(SUB.hours)}>
+            <g ref={chronoHr}>{sub(0.25)}</g>
+          </g>
           <g transform={at(PIVOT)} style={{ filter: "drop-shadow(0.012px 0.02px 0.012px rgba(0,0,0,0.45))" }}>
             <g ref={hour}>
               <Baton len={0.5} w={0.058} />
@@ -88,9 +104,11 @@ export default function FinalWatch({ active }: { active: boolean }) {
             <g ref={minute}>
               <Baton len={0.84} w={0.046} />
             </g>
-            {/* lancetta del cronografo ferma a ore 12 */}
-            <rect x={-0.006} y={-0.94} width={0.012} height={1.14} fill="#1f1f1f" />
-            <path d="M -0.032 -0.86 L 0.032 -0.86 L 0 -0.95 Z" fill="#f1ead6" />
+            {/* lancetta del cronografo, in marcia */}
+            <g ref={chrono}>
+              <rect x={-0.007} y={-0.94} width={0.014} height={1.14} fill="#1f1f1f" />
+              <path d="M -0.034 -0.86 L 0.034 -0.86 L 0 -0.96 Z" fill="#f1ead6" stroke="#1f1f1f" strokeWidth={0.004} />
+            </g>
             <circle r={0.035} fill="url(#steel)" stroke="rgba(0,0,0,0.3)" strokeWidth={0.004} />
           </g>
           {/* riflesso del vetro bombato */}
