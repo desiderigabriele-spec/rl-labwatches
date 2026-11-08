@@ -79,6 +79,15 @@ function useWatchScene(url: string, wornUrl?: string) {
     const scene = fresh.scene.clone(true);
     const overlays = attachWorn(scene, wornUrl ? worn.scene : undefined);
 
+    // vetro: il materiale "a trasmissione" del GLB rende il quadrante lattiginoso; uso un vetro trasparente leggero
+    const glass = new THREE.MeshPhysicalMaterial({ color: "#ffffff", transparent: true, opacity: 0.08, roughness: 0, metalness: 0, clearcoat: 1, clearcoatRoughness: 0, depthWrite: false });
+    scene.traverse((o) => {
+      if ((o as THREE.Mesh).isMesh && /^vetro/i.test(o.name)) {
+        (o as THREE.Mesh).material = glass;
+        o.renderOrder = 2;
+      }
+    });
+
     // scala: la cassa (o tutto l'orologio) deve avere il diametro del modello a codice
     const caseObj = scene.getObjectByProperty("name", scene.children.find((c) => /^cassa/i.test(c.name))?.name ?? "") ?? scene;
     const size = new THREE.Box3().setFromObject(caseObj).getSize(new THREE.Vector3());
