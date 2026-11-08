@@ -1,7 +1,7 @@
 "use client";
 import type { MotionValue } from "motion/react";
 import { useEffect, useRef } from "react";
-import { BRUSH, CHAPTERS, CH_LEN, CH_START } from "./chapters";
+import { BRUSH, CHAPTERS, CH_LEN, CH_START, workOf } from "./chapters";
 import type { FxCtx, Img } from "./effects";
 
 const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -54,12 +54,13 @@ export default function RestorationStage({ progress, active }: { progress: Motio
       const i = Math.min(CHAPTERS.length - 1, Math.max(0, Math.floor((v - CH_START) / CH_LEN)));
       const local = (v - CH_START - i * CH_LEN) / CH_LEN;
       // il lavoro occupa la parte centrale del capitolo; ai bordi il pezzo appare e scompare
-      const p = clamp((local - 0.12) / 0.72);
+      const p = workOf(local);
       cv.style.opacity = String(ss(0, 0.07, local) * (1 - ss(0.93, 1, local)));
       g.clearRect(0, 0, S, S);
       const im = imgs.current?.[i];
-      if (!im || !im.worn) return;
-      CHAPTERS[i].fx({ g, lg, layer, S, p, t: time / 1000, clean: im.clean, worn: im.worn, tools: { brush: brush.current } });
+      const needsImages = !!CHAPTERS[i].worn;
+      if (needsImages && (!im || !im.worn)) return;
+      CHAPTERS[i].fx({ g, lg, layer, S, p, t: time / 1000, clean: im?.clean ?? null, worn: im?.worn ?? null, tools: { brush: brush.current } });
       cv.setAttribute("aria-label", CHAPTERS[i].label);
     };
     raf = requestAnimationFrame(frame);
