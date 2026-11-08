@@ -80,5 +80,6 @@ export const DEFECTS = [
   { x: 50, y: 10, text: "Coroncina applicata opaca" },
 ];
 
-export const BRUSH = "/models/attrezzi/pennello.png";
+const A = "/models/attrezzi/";
+export const TOOLS = { brush: A + "pennello.png", oiler: A + "oliatore.png", pegwood: A + "pegwood.png", polisher: A + "pulitrice.png", disc: A + "disco.png" };
 export const DIAL_WORN = M + "quadrante-usurato.webp";

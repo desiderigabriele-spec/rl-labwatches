@@ -5,6 +5,8 @@
  */
 
 export type Img = HTMLImageElement | null;
+/** attrezzi fotografati dai modelli 3D (public/models/attrezzi) */
+export type Tools = { brush: Img; oiler: Img; pegwood: Img; polisher: Img; disc: Img };
 export type FxCtx = {
   g: CanvasRenderingContext2D;
   lg: CanvasRenderingContext2D;
@@ -14,7 +16,7 @@ export type FxCtx = {
   t: number;
   clean: Img;
   worn: Img;
-  tools: { brush: Img };
+  tools: Tools;
   /** fotogrammi di un lavoro in più fasi (sbreccatura) */
   frames?: Img[];
 };
@@ -52,6 +54,33 @@ function compose(c: FxCtx, mask: (lg: CanvasRenderingContext2D) => void, transfo
 }
 
 // ---------- attrezzi ----------
+/** attrezzo con la punta in basso al centro dell'immagine, appoggiato in (x, y) */
+function drawTool(g: CanvasRenderingContext2D, img: Img, x: number, y: number, ang: number, h: number, S: number) {
+  if (!img) return;
+  const w = (h * img.width) / img.height;
+  g.save();
+  g.translate(x, y);
+  g.rotate(ang);
+  g.shadowColor = "rgba(0,0,0,0.4)";
+  g.shadowBlur = S * 0.025;
+  g.shadowOffsetX = S * 0.018;
+  g.shadowOffsetY = S * 0.03;
+  g.drawImage(img, -w / 2, -h + S * 0.006, w, h);
+  g.restore();
+}
+/** pulitrice vista di lato: il disco di cotone a sinistra tocca il punto (x, y), il motore esce a destra */
+function drawPolisher(g: CanvasRenderingContext2D, img: Img, x: number, y: number, h: number, t: number, S: number) {
+  if (!img) return;
+  const w = (h * img.width) / img.height;
+  g.save();
+  g.shadowColor = "rgba(0,0,0,0.35)";
+  g.shadowBlur = S * 0.03;
+  g.shadowOffsetX = S * 0.02;
+  g.shadowOffsetY = S * 0.035;
+  // vibrazione leggerissima del motore acceso
+  g.drawImage(img, x, y - h / 2 + Math.sin(t * 90) * S * 0.0012, w, h);
+  g.restore();
+}
 function drawBrush(g: CanvasRenderingContext2D, img: Img, x: number, y: number, ang: number, S: number) {
   if (!img) return;
   const h = S * 0.62, w = (h * img.width) / img.height;
@@ -232,7 +261,9 @@ export function wash(c: FxCtx) {
     JEWELS.forEach(([jx, jy], i) => drawDrop(g, S / 2 + (jx * S) / 2, S / 2 + (jy * S) / 2, clamp(o * n - i), S));
     if (o < 1) {
       const [jx, jy] = JEWELS[cur], [px, py] = JEWELS[Math.max(0, cur - 1)], k = ease(clamp((o * n - cur) * 2.2));
-      drawOiler(g, S / 2 + ((px + (jx - px) * k) * S) / 2, S / 2 + ((py + (jy - py) * k) * S) / 2, S);
+      const ox = S / 2 + ((px + (jx - px) * k) * S) / 2, oy = S / 2 + ((py + (jy - py) * k) * S) / 2;
+      if (c.tools.oiler) drawTool(g, c.tools.oiler, ox, oy, -0.45, S * 0.6, S);
+      else drawOiler(g, ox, oy, S);
     }
   }
 }
@@ -294,7 +325,9 @@ export function swab(c: FxCtx) {
   });
   if (p > 0 && p < 1) {
     const [x, y] = DABS[Math.min(DABS.length - 1, n)];
-    drawSwab(g, x * S, y * S, Math.abs(Math.sin((f - n) * Math.PI)), S);
+    const press = Math.abs(Math.sin((f - n) * Math.PI));
+    if (c.tools.pegwood) drawTool(g, c.tools.pegwood, x * S, y * S - (1 - press) * S * 0.012, -0.5, S * 0.62, S);
+    else drawSwab(g, x * S, y * S, press, S);
   }
 }
 
@@ -324,8 +357,9 @@ export function caseback(c: FxCtx) {
     }
   );
   if (p > 0 && p < 1) {
-    drawWheel(g, S * 0.93, S * 0.5, S * 0.12, S * 0.36, t, S);
-    sparks(g, S * 0.88, S * 0.6, -0.4, 0.6, t, S, 3);
+    if (c.tools.polisher) drawPolisher(g, c.tools.polisher, S * 0.9, S * 0.5, S * 0.4, t, S);
+    else drawWheel(g, S * 0.93, S * 0.5, S * 0.12, S * 0.36, t, S);
+    sparks(g, S * 0.9, S * 0.6, -0.4, 0.6, t, S, 3);
   }
 }
 
@@ -382,7 +416,16 @@ export function steel(c: FxCtx) {
   }
   g.restore();
   if (p > 0 && p < 1) {
-    drawWheel(g, x * S, S * 0.5, S * 0.14, S * 0.98, t, S);
+    const disc = c.tools.disc;
+    if (disc) {
+      const h = S * 0.98, w = (h * disc.width) / disc.height;
+      g.save();
+      g.shadowColor = "rgba(0,0,0,0.35)";
+      g.shadowBlur = S * 0.03;
+      g.shadowOffsetX = S * 0.02;
+      g.drawImage(disc, x * S - w / 2, S * 0.01 + Math.sin(t * 90) * S * 0.0012, w, h);
+      g.restore();
+    } else drawWheel(g, x * S, S * 0.5, S * 0.14, S * 0.98, t, S);
     sparks(g, x * S + S * 0.05, S * 0.62, 0.7, 0.3, t, S, 9);
   }
 }
