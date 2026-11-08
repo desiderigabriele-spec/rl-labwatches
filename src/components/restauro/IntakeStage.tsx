@@ -40,6 +40,7 @@ export default function IntakeStage({ progress }: { progress: MotionValue<number
             className="defect-pin"
           >
             {i + 1}
+            <span className={`defect-label ${d.side === "left" ? "is-left" : ""}`}>{d.short}</span>
           </span>
         ))}
         <span ref={stamp} className="intake-stamp">
