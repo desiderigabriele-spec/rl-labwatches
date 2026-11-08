@@ -81,5 +81,5 @@ export const DEFECTS = [
 ];
 
 const A = "/models/attrezzi/";
-export const TOOLS = { brush: A + "pennello.png", oiler: A + "oliatore.png", pegwood: A + "pegwood.png", polisher: A + "pulitrice.png", disc: A + "disco.png" };
+export const TOOLS = { brush: A + "pennello.png", oiler: A + "oliatore.png", pegwood: A + "pegwood.png", polisher: A + "pulitrice.png", disc: A + "disco.png", file: A + "lima.png", tweezers: A + "pinzette.png" };
 export const DIAL_WORN = M + "quadrante-usurato.webp";
