@@ -6,8 +6,7 @@ import Reveal from "./Reveal";
 import SplitText from "./SplitText";
 import { WhatsAppIcon } from "./WhatsAppButton";
 
-const WORN = "/models/daytona-6239/quadrante-usurato.webp";
-const NEW = "/models/daytona-6239/quadrante.webp";
+import { works } from "@/data/works";
 
 const steps = [
   { n: "1", title: "Mi mandi una foto", text: "Su WhatsApp, anche dal telefono." },
@@ -15,21 +14,28 @@ const steps = [
   { n: "3", title: "Ritiro assicurato", text: "Lo restauro e te lo riconsegno, ovunque tu sia." },
 ];
 
-/** Prima e dopo sul quadrante vero: la linea scorre da sola la prima volta, poi si trascina col dito */
+/** Prima e dopo su lavori veri: la linea scorre da sola, si trascina col dito, sotto si sceglie il lavoro */
 export default function BeforeAfter() {
   const box = useRef<HTMLDivElement>(null);
   const inView = useInView(box, { once: true, amount: 0.5 });
   const pos = useMotionValue(50); // percentuale da sinistra: a sinistra il "prima"
   const [x, setX] = useState(50);
+  const [i, setI] = useState(0);
+  const w = works[i];
   const touched = useRef(false);
   useMotionValueEvent(pos, "change", setX);
 
+  // a ogni lavoro (e all'ingresso) la linea mostra da sola prima e dopo
   useEffect(() => {
     if (!inView || touched.current) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const a = animate(pos, [50, 88, 12, 50], { duration: 4.2, ease: "easeInOut" });
     return () => a.stop();
-  }, [inView, pos]);
+  }, [inView, pos, i]);
+  const pick = (k: number) => {
+    touched.current = false;
+    setI(k);
+  };
 
   const drag = (e: React.PointerEvent) => {
     const r = box.current!.getBoundingClientRect();
@@ -43,19 +49,19 @@ export default function BeforeAfter() {
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
         <div
           ref={box}
-          className="relative mx-auto aspect-square w-full max-w-[min(100%,34rem)] cursor-ew-resize touch-pan-y select-none"
+          className="relative mx-auto aspect-square w-full min-w-0 max-w-[min(100%,34rem)] cursor-ew-resize touch-pan-y select-none"
           onPointerDown={(e) => {
             (e.target as Element).setPointerCapture?.(e.pointerId);
             drag(e);
           }}
           onPointerMove={(e) => e.buttons && drag(e)}
           role="img"
-          aria-label="Quadrante del Daytona 6239 prima e dopo il restauro"
+          aria-label={`${w.watch}: ${w.job}, prima e dopo`}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={NEW} alt="" draggable={false} className="absolute inset-[6%] h-[88%] w-[88%] rounded-full shadow-[0_30px_60px_rgba(0,0,0,0.18)]" />
+          <img key={w.after} src={w.after} alt="" draggable={false} className={`absolute inset-[6%] h-[88%] w-[88%] object-cover shadow-[0_30px_60px_rgba(0,0,0,0.18)] ${w.round ? "rounded-full" : "rounded-2xl"}`} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={WORN} alt="" draggable={false} className="absolute inset-[6%] h-[88%] w-[88%] rounded-full" style={{ clipPath: `inset(0 ${100 - ((x - 6) / 88) * 100}% 0 0)` }} />
+          <img key={w.before} src={w.before} alt="" draggable={false} className={`absolute inset-[6%] h-[88%] w-[88%] object-cover ${w.round ? "rounded-full" : "rounded-2xl"}`} style={{ clipPath: `inset(0 ${Math.min(100, Math.max(0, 100 - ((x - 6) / 88) * 100))}% 0 0)` }} />
           <span aria-hidden className="absolute bottom-0 top-0 w-px bg-fg" style={{ left: `${x}%` }}>
             <span className="absolute left-1/2 top-1/2 grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-fg text-paper shadow-lg">↔</span>
           </span>
@@ -67,15 +73,35 @@ export default function BeforeAfter() {
           </span>
         </div>
 
-        <div>
+        <div className="min-w-0">
           <Reveal>
             <p className="eyebrow">Prima e dopo</p>
           </Reveal>
           <SplitText as="h2" id="prima-dopo" text="Com'era. *Com'è tornato.*" className="mt-4 block font-display text-4xl font-light leading-tight sm:text-6xl" />
           <Reveal delay={0.1}>
             <p className="mt-5 max-w-md leading-relaxed text-mute">
-              Un quadrante originale del 1968, ripulito senza perdere la sua storia. Trascina la linea per vedere la differenza.
+              Lavori veri del mio laboratorio. Trascina la linea per vedere la differenza.
             </p>
+            {/* i lavori: si sceglie quale vedere */}
+            <div className="-mx-4 mt-6 flex snap-x gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden" role="tablist" aria-label="Lavori">
+              {works.map((wk, k) => (
+                <button
+                  key={wk.slug}
+                  type="button"
+                  role="tab"
+                  aria-selected={k === i}
+                  onClick={() => pick(k)}
+                  className={`flex shrink-0 snap-start items-center gap-3 rounded-full border py-1.5 pl-1.5 pr-4 text-left transition ${k === i ? "border-gold-2 bg-paper shadow-sm" : "border-line hover:border-gold-2/60"}`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={wk.after} alt="" className="h-10 w-10 rounded-full object-cover" />
+                  <span className="text-xs leading-tight">
+                    <b className="block font-semibold text-fg">{wk.watch}</b>
+                    <span className="text-mute">{wk.job}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
           </Reveal>
           <Reveal delay={0.2}>
             <ol className="mt-8 grid gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
