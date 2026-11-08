@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import Logo from "./Logo";
+import ReadingBezel from "./ReadingBezel";
 import { nav, site } from "@/data/site";
 
 // Centro del cerchio da cui si apre il menu "a iride" (la posizione dell'icona del menu)
@@ -58,6 +59,11 @@ export default function Header() {
           <Link href="/preventivo" className="btn btn-solid !px-4 !py-2.5 !text-[0.7rem]">Preventivo</Link>
         </nav>
 
+        <div className="flex items-center gap-1 lg:hidden">
+        {/* ghiera di lettura su telefono: qui non copre mai il testo */}
+        <span className={`transition-opacity duration-300 ${open ? "pointer-events-none opacity-0" : ""}`}>
+          <ReadingBezel variant="header" />
+        </span>
         <button
           className="-mr-2 flex h-12 w-12 flex-col items-center justify-center gap-1.5 lg:hidden"
           aria-label={open ? "Chiudi il menu" : "Apri il menu"}
@@ -68,6 +74,7 @@ export default function Header() {
           <span className={`block h-px w-6 transition-all duration-500 ${open ? "translate-y-[3.5px] rotate-45 bg-cream" : "bg-fg"}`} />
           <span className={`block h-px w-6 transition-all duration-500 ${open ? "-translate-y-[3.5px] -rotate-45 bg-cream" : "bg-fg"}`} />
         </button>
+        </div>
       </div>
 
       {/* Menu da telefono: si apre "a iride" dall'icona, come un otturatore o un fondello che si svita */}
