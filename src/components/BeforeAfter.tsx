@@ -62,13 +62,15 @@ export default function BeforeAfter() {
           <img key={w.after} src={w.after} alt="" draggable={false} className={`absolute inset-[6%] h-[88%] w-[88%] object-cover shadow-[0_30px_60px_rgba(0,0,0,0.18)] ${w.round ? "rounded-full" : "rounded-2xl"}`} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img key={w.before} src={w.before} alt="" draggable={false} className={`absolute inset-[6%] h-[88%] w-[88%] object-cover ${w.round ? "rounded-full" : "rounded-2xl"}`} style={{ clipPath: `inset(0 ${Math.min(100, Math.max(0, 100 - ((x - 6) / 88) * 100))}% 0 0)` }} />
-          <span aria-hidden className="absolute bottom-0 top-0 w-px bg-fg" style={{ left: `${x}%` }}>
-            <span className="absolute left-1/2 top-1/2 grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-fg text-paper shadow-lg">↔</span>
+          {/* la linea resta dentro la foto */}
+          <span aria-hidden className="absolute bottom-[6%] top-[6%] w-px bg-paper shadow-[0_0_0_1px_rgba(0,0,0,0.25)]" style={{ left: `${Math.min(94, Math.max(6, x))}%` }}>
+            <span className="absolute left-1/2 top-1/2 grid h-10 w-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-fg text-paper shadow-lg">↔</span>
           </span>
-          <span aria-hidden className="absolute left-0 top-0 font-display text-3xl text-[#8a7350] sm:text-5xl" style={{ opacity: 0.35 + 0.65 * Math.min(1, x / 50) }}>
+          {/* etichette piccole dentro la foto, in basso: non coprono il lavoro */}
+          <span aria-hidden className="pointer-events-none absolute bottom-[9%] left-[9%] rounded-full bg-paper/85 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-[#8a7350] shadow-sm backdrop-blur transition-opacity" style={{ opacity: x > 14 ? 1 : 0 }}>
             Prima
           </span>
-          <span aria-hidden className="absolute right-0 top-0 font-display text-3xl text-green sm:text-5xl" style={{ opacity: 0.35 + 0.65 * Math.min(1, (100 - x) / 50) }}>
+          <span aria-hidden className="pointer-events-none absolute bottom-[9%] right-[9%] rounded-full bg-paper/85 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-green shadow-sm backdrop-blur transition-opacity" style={{ opacity: x < 86 ? 1 : 0 }}>
             Dopo
           </span>
         </div>
