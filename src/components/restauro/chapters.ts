@@ -73,15 +73,13 @@ export const CHAPTERS: Chapter[] = [
 
 /** difetti segnati sul quadrante all'arrivo (posizione in % sulla foto) */
 export const DEFECTS = [
-  { x: 73, y: 15, short: "Indici ossidati", side: "right", text: "Luminescente degli indici ossidato" },
-  { x: 27, y: 33, short: "Macchie d'umidità", side: "right", text: "Macchie di umidità sul quadrante" },
-  { x: 11, y: 72, short: "Ossido sul bordo", side: "right", text: "Ossido sulla fascia esterna" },
-  { x: 62, y: 83, short: "Contatori sbiaditi", side: "right", text: "Contatori sbiaditi" },
-  { x: 50, y: 10, short: "Coroncina opaca", side: "left", text: "Coroncina applicata opaca" },
+  { x: 73, y: 15, text: "Luminescente degli indici ossidato" },
+  { x: 27, y: 33, text: "Macchie di umidità sul quadrante" },
+  { x: 11, y: 72, text: "Ossido sulla fascia esterna" },
+  { x: 62, y: 83, text: "Contatori sbiaditi" },
+  { x: 50, y: 10, text: "Coroncina applicata opaca" },
 ] as const;
 
 const A = "/models/attrezzi/";
 export const TOOLS = { brush: A + "pennello.png", oiler: A + "oliatore.png", pegwood: A + "pegwood.png", polisher: A + "pulitrice.png", disc: A + "disco.png", file: A + "lima.png", tweezers: A + "pinzette.png" };
 export const DIAL_WORN = M + "quadrante-usurato.webp";
-/** foto dell'orologio restaurato per il passaggio finale */
-export const WATCH_DONE = M + "tre-quarti.webp";

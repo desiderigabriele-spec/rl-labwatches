@@ -1,11 +1,12 @@
 "use client";
-import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
+import { motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "motion/react";
 import useOnScreen from "@/lib/useOnScreen";
 import { useEffect, useRef, useState } from "react";
 import RestorationStage from "./restauro/RestorationStage";
 import IntakeStage, { defectAt } from "./restauro/IntakeStage";
 import VerbBackdrop from "./restauro/VerbBackdrop";
-import { CHAPTERS, CH_LEN, CH_START, DEFECTS, FINAL_START, INTAKE_END, WATCH_DONE } from "./restauro/chapters";
+import { CHAPTERS, CH_LEN, CH_START, DEFECTS, FINAL_START, INTAKE_END } from "./restauro/chapters";
+import FinalWatch from "./restauro/FinalWatch";
 
 
 // i passaggi seguono i tempi di restauro/chapters.ts (con un piccolo stacco tra uno e l'altro)
@@ -19,7 +20,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
 function Defect({ i, progress }: { i: number; progress: MotionValue<number> }) {
   const opacity = useTransform(progress, [defectAt(i) - 0.002, defectAt(i) + 0.004], [0.2, 1]);
   return (
-    <motion.li style={{ opacity }} className="grid grid-cols-[2rem_1fr] items-baseline gap-2">
+    <motion.li style={{ opacity }} className="grid grid-cols-[1.4rem_1fr] items-baseline gap-1 sm:grid-cols-[2rem_1fr] sm:gap-2">
       <span className="font-mono text-xs font-semibold text-[#b8321f]">{pad(i + 1)}</span>
       <span>{DEFECTS[i].text}</span>
     </motion.li>
@@ -47,9 +48,9 @@ function Step({ i, progress }: { i: number; progress: MotionValue<number> }) {
           steps[i].title
         )}
       </h3>
-      <p className="mt-2 max-w-sm text-[0.95rem] leading-snug text-mute sm:text-base sm:leading-relaxed lg:mt-4">{steps[i].text}</p>
+      <p className={`mt-2 max-w-sm text-[0.95rem] leading-snug text-mute sm:text-base sm:leading-relaxed lg:mt-4 ${first ? "hidden sm:block" : ""}`}>{steps[i].text}</p>
       {first && (
-        <ol className="mt-6 hidden max-w-sm gap-2 text-sm lg:grid">
+        <ol className="mt-3 grid max-w-md grid-cols-2 gap-x-4 gap-y-1.5 text-xs sm:mt-5 sm:text-sm lg:grid-cols-1 lg:gap-2">
           {DEFECTS.map((_, k) => (
             <Defect key={k} i={k} progress={progress} />
           ))}
@@ -66,6 +67,9 @@ export default function RestorationSection() {
   // alla fine compare l'orologio restaurato
   const showDone = useTransform(scrollYProgress, [FINAL_START - 0.012, FINAL_START + 0.008], [0, 1]);
   const doneScale = useTransform(scrollYProgress, [FINAL_START - 0.012, 1], [0.92, 1.04]);
+  // le lancette girano solo quando l'orologio finale è visibile
+  const [finalOn, setFinalOn] = useState(false);
+  useMotionValueEvent(scrollYProgress, "change", (v) => setFinalOn(v > FINAL_START - 0.015));
 
   // si carica quando la sezione è vicina e si ferma quando esce dallo schermo
   const near = useOnScreen(ref, "800px 0px");
@@ -93,14 +97,8 @@ export default function RestorationSection() {
             <IntakeStage progress={scrollYProgress} />
             <motion.div style={{ opacity: showDone }} className="pointer-events-none absolute inset-0 p-2 sm:p-6">
               <div className="flex h-full w-full items-center justify-center" style={{ containerType: "size" }}>
-                <motion.div style={{ scale: doneScale, width: "min(100cqw, 100cqh)" }} className="relative aspect-square">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={WATCH_DONE}
-                    alt="Il Daytona 6239 dopo il restauro"
-                    loading="lazy"
-                    className="watch-done h-full w-full mix-blend-multiply [mask-image:radial-gradient(circle,black_62%,transparent_72%)]"
-                  />
+                <motion.div style={{ scale: doneScale, width: "min(100cqw, 100cqh)" }} className="watch-done relative aspect-square">
+                  <FinalWatch active={finalOn && near} />
                 </motion.div>
               </div>
             </motion.div>
