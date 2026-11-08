@@ -83,7 +83,7 @@ export default function RestorationSection() {
         <div className="mx-auto w-full max-w-7xl px-4 pt-24 sm:px-8">
           <p className="eyebrow">Il restauro, passo dopo passo</p>
         </div>
-        <div className="relative mx-auto grid w-full max-w-7xl flex-1 grid-rows-[1fr_auto] px-4 pb-10 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:grid-rows-1">
+        <div className="relative mx-auto grid w-full max-w-7xl flex-1 grid-rows-[1fr_auto] px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:px-8 lg:pb-10 lg:grid-cols-[0.8fr_1.2fr] lg:grid-rows-1">
           <div className="relative order-2 h-44 lg:order-1 lg:h-auto">
             {steps.map((_, i) => (
               <Step key={i} i={i} progress={scrollYProgress} />
@@ -98,7 +98,9 @@ export default function RestorationSection() {
               {loaded && threeOn && <WorkshopScene progress={scrollYProgress} active={near} />}
             </motion.div>
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6 pb-1 pt-[24%] sm:p-6 sm:pt-[14%]">
-              <RestorationStage progress={scrollYProgress} active={loaded && near} />
+              <div className="flex h-full w-full items-center justify-center" style={{ containerType: "size" }}>
+                <RestorationStage progress={scrollYProgress} active={loaded && near} />
+              </div>
             </div>
           </div>
         </div>

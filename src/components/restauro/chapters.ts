@@ -47,7 +47,7 @@ export const CHAPTERS: Chapter[] = [
   {
     verb: "RICOSTRUIRE",
     title: "Le sbreccature",
-    text: "Lo spigolo scheggiato di un'ansa o della lunetta: il metallo mancante si riporta, si lima alla forma originale e si lucida finché la riparazione non si vede più.",
+    text: "Lo spigolo scheggiato di un'ansa o della lunetta si ricostruisce con la saldatura laser: il metallo riportato si lima alla forma originale e si lucida finché la riparazione non si vede più.",
     fx: chip,
     label: "Spigolo di un'ansa scheggiato, ricostruito, limato e lucidato",
   },

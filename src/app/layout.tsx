@@ -33,7 +33,8 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", images: [OG_IMAGE.url] },
 };
 
-export const viewport: Viewport = { themeColor: "#003d27" };
+// viewport-fit=cover: la barra in basso arriva fino al bordo dello schermo (iPhone)
+export const viewport: Viewport = { themeColor: "#003d27", viewportFit: "cover" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

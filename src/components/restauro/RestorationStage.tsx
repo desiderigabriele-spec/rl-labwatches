@@ -70,5 +70,5 @@ export default function RestorationStage({ progress, active }: { progress: Motio
     };
   }, [active, progress]);
 
-  return <canvas ref={ref} role="img" aria-label={CHAPTERS[0].label} className="mx-auto block aspect-square w-full max-w-[min(100%,62vh)]" style={{ opacity: 0 }} />;
+  return <canvas ref={ref} role="img" aria-label={CHAPTERS[0].label} className="mx-auto block aspect-square" style={{ opacity: 0, width: "min(100cqw, 100cqh)" }} />;
 }
