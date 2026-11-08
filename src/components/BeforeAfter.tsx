@@ -84,23 +84,26 @@ export default function BeforeAfter() {
             <p className="mt-5 max-w-md leading-relaxed text-mute">
               Lavori veri del mio laboratorio. Trascina la linea per vedere la differenza.
             </p>
-            {/* i lavori: si sceglie quale vedere */}
-            <div className="-mx-4 mt-6 flex snap-x gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden" role="tablist" aria-label="Lavori">
+            {/* il lavoro mostrato */}
+            <p className="mt-6 text-sm" aria-live="polite">
+              <b className="font-semibold text-fg">{w.watch}</b>
+              <span className="text-mute"> · {w.job}</span>
+            </p>
+            {/* i lavori: miniature tonde, si sceglie quale vedere */}
+            <div className="-mx-4 mt-3 flex gap-2.5 overflow-x-auto px-4 pb-2 pt-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden" role="tablist" aria-label="Lavori">
               {works.map((wk, k) => (
                 <button
                   key={wk.slug}
                   type="button"
                   role="tab"
                   aria-selected={k === i}
+                  aria-label={`${wk.watch}: ${wk.job}`}
+                  title={`${wk.watch} · ${wk.job}`}
                   onClick={() => pick(k)}
-                  className={`flex shrink-0 snap-start items-center gap-3 rounded-full border py-1.5 pl-1.5 pr-4 text-left transition ${k === i ? "border-gold-2 bg-paper shadow-sm" : "border-line hover:border-gold-2/60"}`}
+                  className={`h-12 w-12 shrink-0 overflow-hidden rounded-full ring-offset-2 ring-offset-paper transition ${k === i ? "ring-2 ring-gold-2" : "opacity-70 ring-1 ring-line hover:opacity-100"}`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={wk.after} alt="" className="h-10 w-10 rounded-full object-cover" />
-                  <span className="text-xs leading-tight">
-                    <b className="block font-semibold text-fg">{wk.watch}</b>
-                    <span className="text-mute">{wk.job}</span>
-                  </span>
+                  <img src={wk.after} alt="" className="h-full w-full object-cover" />
                 </button>
               ))}
             </div>
