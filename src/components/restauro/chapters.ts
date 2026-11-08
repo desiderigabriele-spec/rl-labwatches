@@ -14,7 +14,7 @@ export const workOf = (local: number) => Math.min(1, Math.max(0, (local - 0.12) 
 
 const M = "/models/daytona-6239/";
 
-export type Chapter = { verb: string; title: string; text: string; clean?: string; worn?: string; fx: (c: FxCtx) => void; label: string };
+export type Chapter = { verb: string; title: string; text: string; clean?: string; worn?: string; frames?: string[]; fx: (c: FxCtx) => void; label: string };
 
 export const CHAPTERS: Chapter[] = [
   {
@@ -48,6 +48,7 @@ export const CHAPTERS: Chapter[] = [
     verb: "RICOSTRUIRE",
     title: "Le sbreccature",
     text: "Lo spigolo scheggiato di un'ansa o della lunetta si ricostruisce con la saldatura laser: il metallo riportato si lima alla forma originale e si lucida finché la riparazione non si vede più.",
+    frames: ["1-sbreccatura", "2-saldatura", "3-limatura", "4-lucidatura"].map((n) => `/models/sbreccatura/${n}.webp`),
     fx: chip,
     label: "Spigolo di un'ansa scheggiato, ricostruito, limato e lucidato",
   },
