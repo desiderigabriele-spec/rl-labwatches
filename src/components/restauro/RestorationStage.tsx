@@ -1,8 +1,8 @@
 "use client";
 import type { MotionValue } from "motion/react";
 import { useEffect, useRef } from "react";
-import { BRUSH, CHAPTERS, CH_LEN, CH_START, workOf } from "./chapters";
-import type { FxCtx, Img } from "./effects";
+import { CHAPTERS, CH_LEN, CH_START, TOOLS, workOf } from "./chapters";
+import type { FxCtx, Img, Tools } from "./effects";
 
 const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const ss = (a: number, b: number, x: number) => {
@@ -23,14 +23,14 @@ const load = (src?: string) =>
 export default function RestorationStage({ progress, active }: { progress: MotionValue<number>; active: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const imgs = useRef<{ clean: Img; worn: Img; frames: Img[] }[] | null>(null);
-  const brush = useRef<Img>(null);
+  const tools = useRef<Tools>({ brush: null, oiler: null, pegwood: null, polisher: null, disc: null });
 
   // immagini caricate solo quando la sezione si avvicina
   useEffect(() => {
     if (!active || imgs.current) return;
     imgs.current = [];
     Promise.all(CHAPTERS.map(async (c) => ({ clean: await load(c.clean), worn: await load(c.worn), frames: await Promise.all((c.frames ?? []).map(load)) }))).then((r) => (imgs.current = r));
-    load(BRUSH).then((b) => (brush.current = b));
+    (Object.keys(TOOLS) as (keyof Tools)[]).forEach((k) => load(TOOLS[k]).then((img) => (tools.current[k] = img)));
   }, [active]);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export default function RestorationStage({ progress, active }: { progress: Motio
       const im = imgs.current?.[i];
       const ch = CHAPTERS[i];
       if (!im || (ch.worn && !im.worn) || (ch.frames && !im.frames[0])) return;
-      CHAPTERS[i].fx({ g, lg, layer, S, p, t: time / 1000, clean: im.clean, worn: im.worn, frames: im.frames, tools: { brush: brush.current } });
+      CHAPTERS[i].fx({ g, lg, layer, S, p, t: time / 1000, clean: im.clean, worn: im.worn, frames: im.frames, tools: tools.current });
       cv.setAttribute("aria-label", CHAPTERS[i].label);
     };
     raf = requestAnimationFrame(frame);
