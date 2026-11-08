@@ -9,13 +9,12 @@ import type { WatchState } from "../three/WatchModel";
 import StudioLights from "../three/StudioLights";
 import { FINAL_START } from "./chapters";
 
-/** Il Daytona 3D della sezione restauro: usurato quando arriva, restaurato e in marcia alla fine */
+/** Il Daytona 3D alla fine della sezione restauro: restaurato, riparte */
 function Daytona({ progress }: { progress: MotionValue<number> }) {
   const root = useRef<THREE.Group>(null);
-  const state = useRef<WatchState>({ explode: 0, wear: 1, run: 0 });
+  const state = useRef<WatchState>({ explode: 0, wear: 0, run: 0 });
   useFrame((st, delta) => {
     const v = progress.get();
-    state.current.wear = v < 0.5 ? 1 : 0;
     state.current.run = THREE.MathUtils.smoothstep(v, FINAL_START, FINAL_START + 0.06);
     if (!root.current) return;
     const idle = Math.sin(st.clock.elapsedTime * 0.35) * 0.2;

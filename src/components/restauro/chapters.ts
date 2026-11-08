@@ -1,28 +1,33 @@
-import { brush, caseback, steel, swab, wash, type FxCtx } from "./effects";
+import { brush, caseback, chip, steel, swab, wash, type FxCtx } from "./effects";
 
 /**
  * La sezione "Il restauro" in tempi di scroll (0 = inizio sezione, 1 = fine):
- * l'orologio 3D arriva usurato, poi cinque lavori al banco, poi il 3D restaurato che riparte.
+ * la scheda d'ingresso con i difetti, sei lavori al banco (ognuno con il suo verbo), il Daytona 3D che riparte.
  */
-export const ARRIVE_END = 0.085;
-export const CH_START = 0.1;
-export const CH_LEN = 0.15;
-export const FINAL_START = 0.865;
+export const INTAKE_END = 0.13;
+export const CH_START = 0.14;
+export const CH_LEN = 0.12;
+export const FINAL_START = 0.875;
+
+/** avanzamento del lavoro dentro un capitolo: il pezzo appare, si lavora, resta un attimo finito */
+export const workOf = (local: number) => Math.min(1, Math.max(0, (local - 0.12) / 0.72));
 
 const M = "/models/daytona-6239/";
 
-export type Chapter = { title: string; text: string; clean?: string; worn: string; fx: (c: FxCtx) => void; label: string };
+export type Chapter = { verb: string; title: string; text: string; clean?: string; worn?: string; fx: (c: FxCtx) => void; label: string };
 
 export const CHAPTERS: Chapter[] = [
   {
+    verb: "LAVARE",
     title: "Il movimento",
-    text: "Smontato pezzo per pezzo, passa nella vasca a ultrasuoni che scioglie olio seccato e ossido. Poi, rubino per rubino, una goccia d'olio con l'oliatore.",
+    text: "Smontato pezzo per pezzo, passa nella vasca a ultrasuoni che scioglie olio seccato e ossido. Poi, rubino per rubino, una goccia d'olio.",
     clean: M + "movimento-ponti.webp",
     worn: M + "movimento-ponti-usurato.webp",
     fx: wash,
     label: "Movimento calibro 722, lato ponti, durante il lavaggio e la lubrificazione",
   },
   {
+    verb: "PULIRE",
     title: "La platina",
     text: "Il lato del quadrante, con la perlage e la firma ROLEX GENEVE, si pulisce a mano con un pennello morbido.",
     clean: M + "movimento-lato-quadrante.webp",
@@ -31,6 +36,7 @@ export const CHAPTERS: Chapter[] = [
     label: "Movimento lato quadrante pulito a pennello",
   },
   {
+    verb: "SALVARE",
     title: "Il quadrante",
     text: "La parte più preziosa: un tampone di cotone appena inumidito, appoggiato e sollevato. Via lo sporco, intatti stampa e indici.",
     clean: M + "quadrante.webp",
@@ -39,6 +45,14 @@ export const CHAPTERS: Chapter[] = [
     label: "Quadrante Paul Newman pulito a tamponi",
   },
   {
+    verb: "RICOSTRUIRE",
+    title: "Le sbreccature",
+    text: "Lo spigolo scheggiato di un'ansa o della lunetta: il metallo mancante si riporta, si lima alla forma originale e si lucida finché la riparazione non si vede più.",
+    fx: chip,
+    label: "Spigolo di un'ansa scheggiato, ricostruito, limato e lucidato",
+  },
+  {
+    verb: "LUCIDARE",
     title: "Il fondello",
     text: "Gira contro il disco di cotone della pulitrice: i graffi spariscono giro dopo giro, l'incisione DRIVE CAREFULLY ME resta intatta.",
     clean: M + "fondello.webp",
@@ -47,6 +61,7 @@ export const CHAPTERS: Chapter[] = [
     label: "Fondello inciso lucidato alla pulitrice",
   },
   {
+    verb: "RIFINIRE",
     title: "La cassa",
     text: "Il disco porta via graffi e colpi, poi la lucidatura a specchio, rispettando gli spigoli originali.",
     worn: M + "acciaio-usurato.webp",
@@ -55,4 +70,14 @@ export const CHAPTERS: Chapter[] = [
   },
 ];
 
+/** difetti segnati sul quadrante all'arrivo (posizione in % sulla foto) */
+export const DEFECTS = [
+  { x: 73, y: 15, text: "Luminescente degli indici ossidato" },
+  { x: 27, y: 33, text: "Macchie di umidità sul quadrante" },
+  { x: 11, y: 72, text: "Ossido sulla fascia esterna" },
+  { x: 62, y: 83, text: "Contatori sbiaditi" },
+  { x: 50, y: 10, text: "Coroncina applicata opaca" },
+];
+
 export const BRUSH = "/models/attrezzi/pennello.png";
+export const DIAL_WORN = M + "quadrante-usurato.webp";
