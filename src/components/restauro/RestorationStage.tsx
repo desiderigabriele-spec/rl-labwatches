@@ -23,7 +23,7 @@ const load = (src?: string) =>
 export default function RestorationStage({ progress, active }: { progress: MotionValue<number>; active: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const imgs = useRef<{ clean: Img; worn: Img; frames: Img[] }[] | null>(null);
-  const tools = useRef<Tools>({ brush: null, oiler: null, pegwood: null, polisher: null, disc: null });
+  const tools = useRef<Tools>({ brush: null, oiler: null, pegwood: null, polisher: null, disc: null, file: null, tweezers: null });
 
   // immagini caricate solo quando la sezione si avvicina
   useEffect(() => {

@@ -6,7 +6,7 @@
 
 export type Img = HTMLImageElement | null;
 /** attrezzi fotografati dai modelli 3D (public/models/attrezzi) */
-export type Tools = { brush: Img; oiler: Img; pegwood: Img; polisher: Img; disc: Img };
+export type Tools = { brush: Img; oiler: Img; pegwood: Img; polisher: Img; disc: Img; file: Img; tweezers: Img };
 export type FxCtx = {
   g: CanvasRenderingContext2D;
   lg: CanvasRenderingContext2D;
@@ -233,11 +233,31 @@ export function wash(c: FxCtx) {
   }
   const mc = maskCanvas.getContext("2d")!;
   const img = mc.createImageData(N, N);
-  const w = clamp(p / 0.7);
+  // prima lo smontaggio con le pinzette, poi il bagno a ultrasuoni
+  const w = clamp((p - 0.2) / 0.52);
   for (let i = 0; i < N * N; i++) img.data[i * 4 + 3] = clamp((w * 1.25 - 0.1 - f[i]) / 0.06) * 255;
   mc.putImageData(img, 0, 0);
   compose(c, (lg) => lg.drawImage(maskCanvas!, 0, 0, S, S));
 
+  // smontaggio: le pinzette scendono su una vite e la portano via, prima del lavaggio
+  const tw = clamp(p / 0.2);
+  if (tw > 0 && tw < 1 && c.tools.tweezers) {
+    const tx = S * 0.75, ty = S * 0.47;
+    const k = Math.sin(Math.PI * tw); // scende, stringe, risale
+    const lift = (1 - k) * S * 0.25;
+    g.save();
+    // acciaio un po' più scuro, così le pinzette si staccano dal movimento grigio
+    g.filter = "brightness(0.62) contrast(1.4)";
+    drawTool(g, c.tools.tweezers, tx + lift * 0.6, ty - lift, -0.6, S * 0.9, S);
+    g.restore();
+    if (tw > 0.5) {
+      // la vite sollevata tra le punte
+      g.fillStyle = "#3d4a6b";
+      g.beginPath();
+      g.arc(tx + lift * 0.6, ty - lift - S * 0.004, S * 0.013, 0, TAU);
+      g.fill();
+    }
+  }
   const bath = w > 0 && w < 1 ? Math.sin(Math.PI * w) : 0;
   if (bath > 0)
     disc(g, S, () => {
@@ -498,6 +518,14 @@ export function chip(c: FxCtx) {
     g.fillStyle = fl;
     g.fillRect(fx - S * 0.15, fy - S * 0.15, S * 0.3, S * 0.3);
     sparks(g, fx, fy, 0.2, -0.9, t, S, 5);
+  }
+  // lima che va avanti e indietro lungo lo spigolo, sopra la riparazione
+  if (file > 0 && file < 1 && c.tools.file) {
+    const d = Math.sin(t * 7) * S * 0.04;
+    const ang = 0.78; // lama allineata allo spigolo dell'ansa
+    const ux = Math.sin(ang), uy = -Math.cos(ang);
+    // la punta sta prima della sbreccatura, così la lama ci passa sopra
+    drawTool(g, c.tools.file, cx - ux * S * 0.2 + ux * d, cy - uy * S * 0.2 + uy * d, ang, S * 0.75, S);
   }
   // polvere di metallo mentre si lima
   if (file > 0 && file < 1) {
