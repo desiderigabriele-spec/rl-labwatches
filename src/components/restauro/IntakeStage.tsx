@@ -19,8 +19,10 @@ export default function IntakeStage({ progress }: { progress: MotionValue<number
   });
 
   return (
-    <motion.div style={{ opacity }} className="pointer-events-none absolute inset-0 flex items-center justify-center p-2 sm:p-6">
-      <div className="relative aspect-square w-full max-w-[min(100%,58vh)]">
+    <motion.div style={{ opacity }} className="pointer-events-none absolute inset-0 p-2 sm:p-6">
+      {/* il quadrante si adatta al lato più corto dello spazio disponibile */}
+      <div className="flex h-full w-full items-center justify-center" style={{ containerType: "size" }}>
+      <div className="relative aspect-square" style={{ width: "min(100cqw, 100cqh)" }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={DIAL_WORN} alt="Quadrante del Daytona 6239 com'è arrivato in laboratorio" className="h-full w-full rounded-full shadow-[0_30px_60px_rgba(0,0,0,0.18)]" />
         <motion.span
@@ -43,6 +45,7 @@ export default function IntakeStage({ progress }: { progress: MotionValue<number
         <span ref={stamp} className="intake-stamp">
           Preso in carico
         </span>
+      </div>
       </div>
     </motion.div>
   );
