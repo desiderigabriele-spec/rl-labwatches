@@ -8,11 +8,32 @@ export type Work = { slug: string; watch: string; job: string; before: string; a
 
 export const works: Work[] = [
   {
+    slug: "daytona-acciaio-oro",
+    watch: "Rolex Daytona acciaio e oro",
+    job: "Lucidatura di cassa, lunetta e bracciale",
+    before: "/lavori/daytona-acciaio-oro-prima.webp",
+    after: "/lavori/daytona-acciaio-oro-dopo.webp",
+  },
+  {
+    slug: "gmt-ansa",
+    watch: "Rolex GMT-Master II",
+    job: "Ripristino di anse e cassa",
+    before: "/lavori/gmt-ansa-prima.webp",
+    after: "/lavori/gmt-ansa-dopo.webp",
+  },
+  {
     slug: "oro-rosa-cassa",
     watch: "Rolex in oro rosa",
     job: "Lucidatura di cassa e bracciale",
     before: "/lavori/oro-rosa-cassa-prima.webp",
     after: "/lavori/oro-rosa-cassa-dopo.webp",
+  },
+  {
+    slug: "daytona-fondello",
+    watch: "Rolex Daytona",
+    job: "Satinatura del fondello e della cassa",
+    before: "/lavori/daytona-fondello-prima.webp",
+    after: "/lavori/daytona-fondello-dopo.webp",
   },
   {
     slug: "datejust-lunetta",
@@ -29,11 +50,25 @@ export const works: Work[] = [
     after: "/lavori/explorer-dopo.webp",
   },
   {
+    slug: "acciaio-chiusura",
+    watch: "Rolex in acciaio",
+    job: "Satinatura e lucidatura della chiusura",
+    before: "/lavori/acciaio-chiusura-prima.webp",
+    after: "/lavori/acciaio-chiusura-dopo.webp",
+  },
+  {
     slug: "date-oro",
     watch: "Rolex Oyster Perpetual Date",
     job: "Satinatura del bracciale in oro giallo",
     before: "/lavori/date-oro-prima.webp",
     after: "/lavori/date-oro-dopo.webp",
+  },
+  {
+    slug: "daytona-bracciale",
+    watch: "Rolex Daytona acciaio e oro",
+    job: "Ripristino del bracciale Oyster",
+    before: "/lavori/daytona-bracciale-prima.webp",
+    after: "/lavori/daytona-bracciale-dopo.webp",
   },
   {
     slug: "datejust-ansa",
@@ -48,13 +83,5 @@ export const works: Work[] = [
     job: "Satinatura e lucidatura della chiusura",
     before: "/lavori/oro-rosa-chiusura-prima.webp",
     after: "/lavori/oro-rosa-chiusura-dopo.webp",
-  },
-  {
-    slug: "daytona-quadrante",
-    watch: "Rolex Daytona 6239",
-    job: "Pulizia conservativa del quadrante",
-    before: "/models/daytona-6239/quadrante-usurato.webp",
-    after: "/models/daytona-6239/quadrante.webp",
-    round: true,
   },
 ];
