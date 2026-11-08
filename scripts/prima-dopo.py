@@ -19,6 +19,7 @@ ap.add_argument("out")
 ap.add_argument("name")
 ap.add_argument("--top", type=int, default=0)
 ap.add_argument("--sep", type=int, default=None)
+ap.add_argument("--center", action="store_true", help="ritaglio al centro, senza cercare il soggetto (foto in mano, sfondi molto mossi)")
 a = ap.parse_args()
 
 img = cv2.imread(a.src, cv2.IMREAD_COLOR)
@@ -56,8 +57,21 @@ if M is not None and n_in >= 40:
         aligned = True
 print(f"{a.name}: separatore x={a.sep}  punti coerenti={n_in}  allineata={'sì' if aligned else 'no, solo ritaglio'}")
 
-side = min(mw, h)
-x0, y0 = (mw - side) // 2, (h - side) // 2
+# ritaglio quadrato centrato sul soggetto: il baricentro dei contorni di ogni metà
+def subject_crop(im, zoom):
+    hh, ww = im.shape[:2]
+    gray = cv2.GaussianBlur(cv2.cvtColor(im, cv2.COLOR_BGR2GRAY), (5, 5), 0)
+    edges = cv2.Canny(gray, 40, 120).astype(np.float32)
+    ys, xs = np.nonzero(edges)
+    cx, cy = (xs.mean(), ys.mean()) if len(xs) > 500 and not a.center else (ww / 2, hh / 2)
+    # a metà strada verso il centro: evita tagli troppo spinti
+    cx, cy = (cx + ww / 2) / 2, (cy + hh / 2) / 2
+    side = int(min(ww, hh) * zoom)
+    x0 = int(min(max(cx - side / 2, 0), ww - side))
+    y0 = int(min(max(cy - side / 2, 0), hh - side))
+    return im[y0 : y0 + side, x0 : x0 + side]
+
+zoom = 1.0 if aligned or a.center else 0.9
 for tag, im in (("prima", A), ("dopo", B)):
-    crop = cv2.resize(im[y0 : y0 + side, x0 : x0 + side], (900, 900), interpolation=cv2.INTER_AREA)
+    crop = cv2.resize(subject_crop(im, zoom), (900, 900), interpolation=cv2.INTER_AREA)
     cv2.imwrite(f"{a.out}/{a.name}-{tag}.webp", crop, [cv2.IMWRITE_WEBP_QUALITY, 86])

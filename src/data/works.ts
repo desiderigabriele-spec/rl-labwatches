@@ -15,18 +15,18 @@ export const works: Work[] = [
     after: "/lavori/daytona-acciaio-oro-dopo.webp",
   },
   {
+    slug: "daytona-bracciale",
+    watch: "Rolex Daytona acciaio e oro",
+    job: "Ripristino del bracciale Oyster",
+    before: "/lavori/daytona-bracciale-prima.webp",
+    after: "/lavori/daytona-bracciale-dopo.webp",
+  },
+  {
     slug: "gmt-ansa",
     watch: "Rolex GMT-Master II",
     job: "Ripristino di anse e cassa",
     before: "/lavori/gmt-ansa-prima.webp",
     after: "/lavori/gmt-ansa-dopo.webp",
-  },
-  {
-    slug: "oro-rosa-cassa",
-    watch: "Rolex in oro rosa",
-    job: "Lucidatura di cassa e bracciale",
-    before: "/lavori/oro-rosa-cassa-prima.webp",
-    after: "/lavori/oro-rosa-cassa-dopo.webp",
   },
   {
     slug: "daytona-fondello",
@@ -36,18 +36,25 @@ export const works: Work[] = [
     after: "/lavori/daytona-fondello-dopo.webp",
   },
   {
-    slug: "datejust-lunetta",
-    watch: "Rolex Datejust",
-    job: "Lucidatura di cassa e lunetta zigrinata",
-    before: "/lavori/datejust-lunetta-prima.webp",
-    after: "/lavori/datejust-lunetta-dopo.webp",
-  },
-  {
     slug: "explorer",
     watch: "Rolex Explorer II",
     job: "Sostituzione del vetro zaffiro rotto",
     before: "/lavori/explorer-prima.webp",
     after: "/lavori/explorer-dopo.webp",
+  },
+  {
+    slug: "oro-rosa-cassa",
+    watch: "Rolex in oro rosa",
+    job: "Lucidatura di cassa e bracciale",
+    before: "/lavori/oro-rosa-cassa-prima.webp",
+    after: "/lavori/oro-rosa-cassa-dopo.webp",
+  },
+  {
+    slug: "datejust-lunetta",
+    watch: "Rolex Datejust",
+    job: "Lucidatura di cassa e lunetta zigrinata",
+    before: "/lavori/datejust-lunetta-prima.webp",
+    after: "/lavori/datejust-lunetta-dopo.webp",
   },
   {
     slug: "acciaio-chiusura",
@@ -62,13 +69,6 @@ export const works: Work[] = [
     job: "Satinatura del bracciale in oro giallo",
     before: "/lavori/date-oro-prima.webp",
     after: "/lavori/date-oro-dopo.webp",
-  },
-  {
-    slug: "daytona-bracciale",
-    watch: "Rolex Daytona acciaio e oro",
-    job: "Ripristino del bracciale Oyster",
-    before: "/lavori/daytona-bracciale-prima.webp",
-    after: "/lavori/daytona-bracciale-dopo.webp",
   },
   {
     slug: "datejust-ansa",
