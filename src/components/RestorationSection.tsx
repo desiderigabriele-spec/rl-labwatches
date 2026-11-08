@@ -1,20 +1,18 @@
 "use client";
-import dynamic from "next/dynamic";
-import { motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "motion/react";
+import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
 import useOnScreen from "@/lib/useOnScreen";
 import { useEffect, useRef, useState } from "react";
 import RestorationStage from "./restauro/RestorationStage";
 import IntakeStage, { defectAt } from "./restauro/IntakeStage";
 import VerbBackdrop from "./restauro/VerbBackdrop";
-import { CHAPTERS, CH_LEN, CH_START, DEFECTS, FINAL_START, INTAKE_END } from "./restauro/chapters";
+import { CHAPTERS, CH_LEN, CH_START, DEFECTS, FINAL_START, INTAKE_END, WATCH_DONE } from "./restauro/chapters";
 
-const WorkshopScene = dynamic(() => import("./restauro/WorkshopScene"), { ssr: false });
 
 // i passaggi seguono i tempi di restauro/chapters.ts (con un piccolo stacco tra uno e l'altro)
 const steps = [
   { range: [0, INTAKE_END - 0.006], title: "Com'è arrivato", text: "Fermo da anni. Prima di toccarlo lo guardo sotto la lente e segno ogni difetto." },
   ...CHAPTERS.map((c, i) => ({ range: [CH_START + i * CH_LEN + 0.004, CH_START + (i + 1) * CH_LEN - 0.006], title: c.title, text: c.text })),
-  { range: [FINAL_START, 1], title: "Torna a battere", text: "Rimontato, regolato e collaudato: pronto a misurare il tempo per altre generazioni." },
+  { range: [FINAL_START, 1], title: "Torna a battere", text: "Rimontato, regolato e collaudato: pronto per altre generazioni." },
 ];
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -49,7 +47,7 @@ function Step({ i, progress }: { i: number; progress: MotionValue<number> }) {
           steps[i].title
         )}
       </h3>
-      <p className="mt-3 max-w-sm leading-relaxed text-mute lg:mt-4">{steps[i].text}</p>
+      <p className="mt-2 max-w-sm text-[0.95rem] leading-snug text-mute sm:text-base sm:leading-relaxed lg:mt-4">{steps[i].text}</p>
       {first && (
         <ol className="mt-6 hidden max-w-sm gap-2 text-sm lg:grid">
           {DEFECTS.map((_, k) => (
@@ -65,10 +63,9 @@ export default function RestorationSection() {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const bar = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  // il Daytona 3D compare solo alla fine, quando torna a battere
-  const show3d = useTransform(scrollYProgress, [FINAL_START - 0.012, FINAL_START + 0.008], [0, 1]);
-  const [threeOn, setThreeOn] = useState(false);
-  useMotionValueEvent(show3d, "change", (v) => setThreeOn(v > 0.01));
+  // alla fine compare l'orologio restaurato
+  const showDone = useTransform(scrollYProgress, [FINAL_START - 0.012, FINAL_START + 0.008], [0, 1]);
+  const doneScale = useTransform(scrollYProgress, [FINAL_START - 0.012, 1], [0.92, 1.04]);
 
   // si carica quando la sezione è vicina e si ferma quando esce dallo schermo
   const near = useOnScreen(ref, "800px 0px");
@@ -84,7 +81,7 @@ export default function RestorationSection() {
           <p className="eyebrow">Il restauro, passo dopo passo</p>
         </div>
         <div className="relative mx-auto grid w-full max-w-7xl flex-1 grid-rows-[1fr_auto] px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:px-8 lg:pb-10 lg:grid-cols-[0.8fr_1.2fr] lg:grid-rows-1">
-          <div className="relative order-2 h-44 lg:order-1 lg:h-auto">
+          <div className="relative order-2 h-52 lg:order-1 lg:h-auto">
             {steps.map((_, i) => (
               <Step key={i} i={i} progress={scrollYProgress} />
             ))}
@@ -94,8 +91,18 @@ export default function RestorationSection() {
             <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_50%_at_50%_50%,rgba(255,236,196,0.55),transparent_70%)]" />
             <VerbBackdrop progress={scrollYProgress} />
             <IntakeStage progress={scrollYProgress} />
-            <motion.div style={{ opacity: show3d }} className="absolute inset-0">
-              {loaded && threeOn && <WorkshopScene progress={scrollYProgress} active={near} />}
+            <motion.div style={{ opacity: showDone }} className="pointer-events-none absolute inset-0 p-2 sm:p-6">
+              <div className="flex h-full w-full items-center justify-center" style={{ containerType: "size" }}>
+                <motion.div style={{ scale: doneScale, width: "min(100cqw, 100cqh)" }} className="relative aspect-square">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={WATCH_DONE}
+                    alt="Il Daytona 6239 dopo il restauro"
+                    loading="lazy"
+                    className="watch-done h-full w-full mix-blend-multiply [mask-image:radial-gradient(circle,black_62%,transparent_72%)]"
+                  />
+                </motion.div>
+              </div>
             </motion.div>
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6 pb-1 pt-[24%] sm:p-6 sm:pt-[14%]">
               <div className="flex h-full w-full items-center justify-center" style={{ containerType: "size" }}>

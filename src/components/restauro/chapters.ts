@@ -20,7 +20,7 @@ export const CHAPTERS: Chapter[] = [
   {
     verb: "LAVARE",
     title: "Il movimento",
-    text: "Smontato pezzo per pezzo, passa nella vasca a ultrasuoni che scioglie olio seccato e ossido. Poi, rubino per rubino, una goccia d'olio.",
+    text: "Smontato pezzo per pezzo, va nella vasca a ultrasuoni. Poi una goccia d'olio su ogni rubino.",
     clean: M + "movimento-ponti.webp",
     worn: M + "movimento-ponti-usurato.webp",
     fx: wash,
@@ -29,7 +29,7 @@ export const CHAPTERS: Chapter[] = [
   {
     verb: "PULIRE",
     title: "La platina",
-    text: "Il lato del quadrante, con la perlage e la firma ROLEX GENEVE, si pulisce a mano con un pennello morbido.",
+    text: "La perlage e la firma ROLEX GENEVE si puliscono a mano, con un pennello morbido.",
     clean: M + "movimento-lato-quadrante.webp",
     worn: M + "movimento-lato-quadrante-usurato.webp",
     fx: brush,
@@ -38,7 +38,7 @@ export const CHAPTERS: Chapter[] = [
   {
     verb: "SALVARE",
     title: "Il quadrante",
-    text: "La parte più preziosa: un tampone di cotone appena inumidito, appoggiato e sollevato. Via lo sporco, intatti stampa e indici.",
+    text: "Un bastoncino con il cotone, appoggiato e sollevato: via lo sporco, intatti stampa e indici.",
     clean: M + "quadrante.webp",
     worn: M + "quadrante-usurato.webp",
     fx: swab,
@@ -47,7 +47,7 @@ export const CHAPTERS: Chapter[] = [
   {
     verb: "RICOSTRUIRE",
     title: "Le sbreccature",
-    text: "Lo spigolo scheggiato di un'ansa o della lunetta si ricostruisce con la saldatura laser: il metallo riportato si lima alla forma originale e si lucida finché la riparazione non si vede più.",
+    text: "Lo spigolo scheggiato si ricostruisce con la saldatura laser, poi si lima e si lucida finché non si vede più.",
     frames: ["1-sbreccatura", "2-saldatura", "3-limatura", "4-lucidatura"].map((n) => `/models/sbreccatura/${n}.webp`),
     fx: chip,
     label: "Spigolo di un'ansa scheggiato, ricostruito, limato e lucidato",
@@ -55,7 +55,7 @@ export const CHAPTERS: Chapter[] = [
   {
     verb: "LUCIDARE",
     title: "Il fondello",
-    text: "Gira contro il disco di cotone della pulitrice: i graffi spariscono giro dopo giro, l'incisione DRIVE CAREFULLY ME resta intatta.",
+    text: "Gira contro il disco di cotone della pulitrice: via i graffi, l'incisione resta intatta.",
     clean: M + "fondello.webp",
     worn: M + "fondello-usurato.webp",
     fx: caseback,
@@ -64,7 +64,7 @@ export const CHAPTERS: Chapter[] = [
   {
     verb: "RIFINIRE",
     title: "La cassa",
-    text: "Il disco porta via graffi e colpi, poi la lucidatura a specchio, rispettando gli spigoli originali.",
+    text: "Il disco porta via graffi e colpi e lascia l'acciaio a specchio, spigoli originali compresi.",
     worn: M + "acciaio-usurato.webp",
     fx: steel,
     label: "Acciaio della cassa lucidato a specchio",
@@ -73,13 +73,15 @@ export const CHAPTERS: Chapter[] = [
 
 /** difetti segnati sul quadrante all'arrivo (posizione in % sulla foto) */
 export const DEFECTS = [
-  { x: 73, y: 15, text: "Luminescente degli indici ossidato" },
-  { x: 27, y: 33, text: "Macchie di umidità sul quadrante" },
-  { x: 11, y: 72, text: "Ossido sulla fascia esterna" },
-  { x: 62, y: 83, text: "Contatori sbiaditi" },
-  { x: 50, y: 10, text: "Coroncina applicata opaca" },
-];
+  { x: 73, y: 15, short: "Indici ossidati", side: "right", text: "Luminescente degli indici ossidato" },
+  { x: 27, y: 33, short: "Macchie d'umidità", side: "right", text: "Macchie di umidità sul quadrante" },
+  { x: 11, y: 72, short: "Ossido sul bordo", side: "right", text: "Ossido sulla fascia esterna" },
+  { x: 62, y: 83, short: "Contatori sbiaditi", side: "right", text: "Contatori sbiaditi" },
+  { x: 50, y: 10, short: "Coroncina opaca", side: "left", text: "Coroncina applicata opaca" },
+] as const;
 
 const A = "/models/attrezzi/";
 export const TOOLS = { brush: A + "pennello.png", oiler: A + "oliatore.png", pegwood: A + "pegwood.png", polisher: A + "pulitrice.png", disc: A + "disco.png", file: A + "lima.png", tweezers: A + "pinzette.png" };
 export const DIAL_WORN = M + "quadrante-usurato.webp";
+/** foto dell'orologio restaurato per il passaggio finale */
+export const WATCH_DONE = M + "tre-quarti.webp";

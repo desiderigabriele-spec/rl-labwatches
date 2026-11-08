@@ -453,9 +453,9 @@ export function steel(c: FxCtx) {
 // ---------- sbreccatura: saldatura laser, limatura, lucidatura (4 foto sovrapposte) ----------
 /** centro della sbreccatura nelle foto, in frazione del lato */
 const CHIP = { x: 0.53, y: 0.435, r: 0.075 };
-/** disegna la foto f dentro il riquadro del pezzo, ritagliata da una maschera */
-function frameThrough(c: FxCtx, f: Img, mask: (lg: CanvasRenderingContext2D) => void) {
-  const { g, lg, layer, S } = c;
+/** disegna la foto f su ctx, ritagliata da una maschera (lg/layer fanno da appoggio) */
+function frameThrough(c: FxCtx, ctx: CanvasRenderingContext2D, f: Img, mask: (lg: CanvasRenderingContext2D) => void) {
+  const { lg, layer, S } = c;
   if (!f) return;
   lg.globalCompositeOperation = "source-over";
   lg.clearRect(0, 0, S, S);
@@ -463,7 +463,7 @@ function frameThrough(c: FxCtx, f: Img, mask: (lg: CanvasRenderingContext2D) => 
   lg.globalCompositeOperation = "source-in";
   lg.drawImage(f, 0, 0, S, S);
   lg.globalCompositeOperation = "source-over";
-  g.drawImage(layer, 0, 0);
+  ctx.drawImage(layer, 0, 0);
 }
 function softCircle(lg: CanvasRenderingContext2D, x: number, y: number, r: number) {
   const gr = lg.createRadialGradient(x, y, 0, x, y, r);
@@ -473,41 +473,64 @@ function softCircle(lg: CanvasRenderingContext2D, x: number, y: number, r: numbe
   lg.fillStyle = gr;
   lg.fillRect(x - r, y - r, 2 * r, 2 * r);
 }
+/** colore del fondo della sezione: il bianco delle foto diventa questo e i bordi sfumano nella pagina */
+const PAPER = "#f3f0ea";
+let chipCanvas: HTMLCanvasElement | null = null;
+
 export function chip(c: FxCtx) {
   const { g, S, p, t } = c;
   const [f0, f1, f2, f3] = c.frames ?? [];
   if (!f0) return;
   const cx = CHIP.x * S, cy = CHIP.y * S;
   const weld = clamp((p - 0.12) / 0.33), file = clamp((p - 0.5) / 0.22), polish = clamp((p - 0.76) / 0.24);
-  g.save();
-  g.beginPath();
-  g.roundRect(S * 0.02, S * 0.02, S * 0.96, S * 0.96, S * 0.05);
-  g.clip();
-  g.drawImage(f0, 0, 0, S, S);
-  // 1. saldatura laser: il metallo riportato cresce nel vuoto della sbreccatura
-  if (weld > 0) frameThrough(c, f1, (lg) => softCircle(lg, cx, cy, S * CHIP.r * 1.6 * ease(weld)));
-  // 2. limatura: l'eccesso sparisce, la forma torna quella originale
-  if (file > 0) frameThrough(c, f2, (lg) => softCircle(lg, cx, cy, S * CHIP.r * 2.2 * ease(file)));
-  // 3. lucidatura: tutta l'ansa torna a specchio, con un riflesso che la attraversa
-  if (polish > 0) {
-    const x = (ease(polish) * 1.3 - 0.15) * S;
-    frameThrough(c, f3, (lg) => {
-      const gr = lg.createLinearGradient(x - S * 0.12, 0, x + S * 0.02, 0);
+
+  // 1. le foto, una sopra l'altra, su un foglio a parte
+  if (!chipCanvas) chipCanvas = document.createElement("canvas");
+  if (chipCanvas.width !== S) chipCanvas.width = chipCanvas.height = S;
+  const o = chipCanvas.getContext("2d")!;
+  o.globalCompositeOperation = "source-over";
+  o.clearRect(0, 0, S, S);
+  o.drawImage(f0, 0, 0, S, S);
+  if (weld > 0) frameThrough(c, o, f1, (lg) => softCircle(lg, cx, cy, S * CHIP.r * 1.6 * ease(weld)));
+  if (file > 0) frameThrough(c, o, f2, (lg) => softCircle(lg, cx, cy, S * CHIP.r * 2.2 * ease(file)));
+  const px = (ease(polish) * 1.3 - 0.15) * S;
+  if (polish > 0)
+    frameThrough(c, o, f3, (lg) => {
+      const gr = lg.createLinearGradient(px - S * 0.12, 0, px + S * 0.02, 0);
       gr.addColorStop(0, "rgba(0,0,0,1)");
       gr.addColorStop(1, "rgba(0,0,0,0)");
       lg.fillStyle = gr;
       lg.fillRect(0, 0, S, S);
     });
-    if (polish < 1) {
-      const sh = g.createLinearGradient(x - S * 0.08, 0, x + S * 0.08, 0);
-      sh.addColorStop(0, "rgba(255,255,255,0)");
-      sh.addColorStop(0.5, "rgba(255,255,255,0.55)");
-      sh.addColorStop(1, "rgba(255,255,255,0)");
-      g.fillStyle = sh;
-      g.fillRect(0, 0, S, S);
-    }
-  }
+
+  // 2. fondo della pagina + foto in "moltiplica" (il bianco sparisce), poi bordi sfumati in cerchio
+  g.save();
+  g.fillStyle = PAPER;
+  g.fillRect(0, 0, S, S);
+  g.globalCompositeOperation = "multiply";
+  g.drawImage(chipCanvas, 0, 0);
+  g.globalCompositeOperation = "destination-in";
+  const fade = g.createRadialGradient(S / 2, S / 2, S * 0.34, S / 2, S / 2, S * 0.5);
+  fade.addColorStop(0, "rgba(0,0,0,1)");
+  fade.addColorStop(1, "rgba(0,0,0,0)");
+  g.fillStyle = fade;
+  g.fillRect(0, 0, S, S);
   g.restore();
+
+  // 3. sopra: riflesso della lucidatura, luce del laser, lima, polvere, segno
+  if (polish > 0 && polish < 1) {
+    g.save();
+    g.beginPath();
+    g.arc(S / 2, S / 2, S * 0.46, 0, TAU);
+    g.clip();
+    const sh = g.createLinearGradient(px - S * 0.08, 0, px + S * 0.08, 0);
+    sh.addColorStop(0, "rgba(255,255,255,0)");
+    sh.addColorStop(0.5, "rgba(255,255,255,0.5)");
+    sh.addColorStop(1, "rgba(255,255,255,0)");
+    g.fillStyle = sh;
+    g.fillRect(0, 0, S, S);
+    g.restore();
+  }
   // luce del laser e scintille sul punto di saldatura
   if (weld > 0 && weld < 1) {
     const fx = cx + Math.cos(t * 9) * S * 0.025, fy = cy + Math.sin(t * 13) * S * 0.02;
