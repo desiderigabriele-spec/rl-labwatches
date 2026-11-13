@@ -1,6 +1,6 @@
 /**
  * Lavori reali per il "prima e dopo" della home.
- * Per aggiungerne uno: python3 scripts/prima-dopo.py <foto-affiancata.jpg> public/lavori <nome>
+ * Per aggiungerne uno: python3 scripts/prima-dopo.py "LAVORI PRIMA-DOPO/<foto>.png" public/lavori <nome> --top 80
  * (divide la foto a metà, allinea il "dopo" sul "prima" e salva <nome>-prima.webp e <nome>-dopo.webp),
  * poi aggiungi una riga qui sotto.
  */
@@ -22,18 +22,18 @@ export const works: Work[] = [
     after: "/lavori/daytona-bracciale-dopo.webp",
   },
   {
-    slug: "gmt-ansa",
-    watch: "Rolex GMT-Master II",
-    job: "Ripristino di anse e cassa",
-    before: "/lavori/gmt-ansa-prima.webp",
-    after: "/lavori/gmt-ansa-dopo.webp",
+    slug: "daytona-bianco",
+    watch: "Rolex Daytona",
+    job: "Lucidatura di cassa, lunetta e bracciale",
+    before: "/lavori/daytona-bianco-prima.webp",
+    after: "/lavori/daytona-bianco-dopo.webp",
   },
   {
-    slug: "daytona-fondello",
+    slug: "daytona-lunetta",
     watch: "Rolex Daytona",
-    job: "Satinatura del fondello e della cassa",
-    before: "/lavori/daytona-fondello-prima.webp",
-    after: "/lavori/daytona-fondello-dopo.webp",
+    job: "Ripristino della lunetta tachimetrica",
+    before: "/lavori/daytona-lunetta-prima.webp",
+    after: "/lavori/daytona-lunetta-dopo.webp",
   },
   {
     slug: "explorer",
@@ -43,11 +43,53 @@ export const works: Work[] = [
     after: "/lavori/explorer-dopo.webp",
   },
   {
-    slug: "oro-rosa-cassa",
-    watch: "Rolex in oro rosa",
+    slug: "ansa-ricostruita",
+    watch: "Ansa sbreccata",
+    job: "Ricostruzione dello spigolo e lucidatura",
+    before: "/lavori/ansa-ricostruita-prima.webp",
+    after: "/lavori/ansa-ricostruita-dopo.webp",
+  },
+  {
+    slug: "daytona-fondello",
+    watch: "Rolex Daytona",
+    job: "Satinatura del fondello e della cassa",
+    before: "/lavori/daytona-fondello-prima.webp",
+    after: "/lavori/daytona-fondello-dopo.webp",
+  },
+  {
+    slug: "gmt-ansa",
+    watch: "Rolex GMT-Master II",
+    job: "Ripristino di anse e cassa",
+    before: "/lavori/gmt-ansa-prima.webp",
+    after: "/lavori/gmt-ansa-dopo.webp",
+  },
+  {
+    slug: "gmt-oro-rosa",
+    watch: "Rolex GMT-Master II in oro rosa",
+    job: "Lucidatura di anse e cassa",
+    before: "/lavori/gmt-oro-rosa-prima.webp",
+    after: "/lavori/gmt-oro-rosa-dopo.webp",
+  },
+  {
+    slug: "daytona-corona",
+    watch: "Rolex Daytona acciaio e oro",
+    job: "Ripristino del fianco della cassa",
+    before: "/lavori/daytona-corona-prima.webp",
+    after: "/lavori/daytona-corona-dopo.webp",
+  },
+  {
+    slug: "datejust-bicolore",
+    watch: "Rolex Datejust acciaio e oro",
     job: "Lucidatura di cassa e bracciale",
-    before: "/lavori/oro-rosa-cassa-prima.webp",
-    after: "/lavori/oro-rosa-cassa-dopo.webp",
+    before: "/lavori/datejust-bicolore-prima.webp",
+    after: "/lavori/datejust-bicolore-dopo.webp",
+  },
+  {
+    slug: "oro-giallo-cassa",
+    watch: "Rolex in oro giallo",
+    job: "Lucidatura del fianco della cassa",
+    before: "/lavori/oro-giallo-cassa-prima.webp",
+    after: "/lavori/oro-giallo-cassa-dopo.webp",
   },
   {
     slug: "datejust-lunetta",
@@ -57,11 +99,39 @@ export const works: Work[] = [
     after: "/lavori/datejust-lunetta-dopo.webp",
   },
   {
+    slug: "oro-rosa-cassa",
+    watch: "Rolex in oro rosa",
+    job: "Lucidatura di cassa e bracciale",
+    before: "/lavori/oro-rosa-cassa-prima.webp",
+    after: "/lavori/oro-rosa-cassa-dopo.webp",
+  },
+  {
+    slug: "oro-rosa-chiusura",
+    watch: "Rolex in oro rosa",
+    job: "Satinatura e lucidatura della chiusura",
+    before: "/lavori/oro-rosa-chiusura-prima.webp",
+    after: "/lavori/oro-rosa-chiusura-dopo.webp",
+  },
+  {
     slug: "acciaio-chiusura",
     watch: "Rolex in acciaio",
     job: "Satinatura e lucidatura della chiusura",
     before: "/lavori/acciaio-chiusura-prima.webp",
     after: "/lavori/acciaio-chiusura-dopo.webp",
+  },
+  {
+    slug: "chiusura-oysterlock",
+    watch: "Chiusura Oysterlock",
+    job: "Satinatura e lucidatura",
+    before: "/lavori/chiusura-oysterlock-prima.webp",
+    after: "/lavori/chiusura-oysterlock-dopo.webp",
+  },
+  {
+    slug: "gmt-cassa",
+    watch: "Rolex GMT-Master II",
+    job: "Lucidatura della cassa",
+    before: "/lavori/gmt-cassa-prima.webp",
+    after: "/lavori/gmt-cassa-dopo.webp",
   },
   {
     slug: "date-oro",
@@ -76,12 +146,5 @@ export const works: Work[] = [
     job: "Ripristino dell'ansa e lucidatura",
     before: "/lavori/datejust-ansa-prima.webp",
     after: "/lavori/datejust-ansa-dopo.webp",
-  },
-  {
-    slug: "oro-rosa-chiusura",
-    watch: "Rolex in oro rosa",
-    job: "Satinatura e lucidatura della chiusura",
-    before: "/lavori/oro-rosa-chiusura-prima.webp",
-    after: "/lavori/oro-rosa-chiusura-dopo.webp",
   },
 ];
