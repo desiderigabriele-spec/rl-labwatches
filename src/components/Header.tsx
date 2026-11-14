@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import Logo from "./Logo";
+import ThemeToggle from "./ThemeToggle";
 import ReadingBezel from "./ReadingBezel";
 import { nav, site } from "@/data/site";
 
@@ -44,7 +45,8 @@ export default function Header() {
     >
       <div className={`relative z-10 mx-auto flex max-w-7xl items-center justify-between px-4 transition-all duration-500 sm:px-8 ${scrolled ? "h-16" : "h-20 sm:h-28"}`}>
         <Link href="/" aria-label="Roberto Landi Lab Watches – Home" className={`transition-opacity duration-300 ${open ? "pointer-events-none opacity-0" : ""}`}>
-          <Logo version="RL-orizzontale-metallo" animate="hover" className={`transition-[height] duration-500 ${scrolled ? "h-9 sm:h-10" : "h-11 sm:h-14"}`} />
+          <Logo version="RL-orizzontale-metallo" animate="hover" className={`solo-chiaro transition-[height] duration-500 ${scrolled ? "h-9 sm:h-10" : "h-11 sm:h-14"}`} />
+          <Logo version="RL-orizzontale-negativo" animate="hover" className={`solo-nero transition-[height] duration-500 ${scrolled ? "h-9 sm:h-10" : "h-11 sm:h-14"}`} />
         </Link>
 
         <nav className="hidden items-center gap-6 lg:flex xl:gap-8" aria-label="Menu principale">
@@ -58,12 +60,14 @@ export default function Header() {
               {isActive(item.href) && <motion.span layoutId="nav-underline" className="absolute -bottom-2 left-0 right-0 h-px bg-gold" />}
             </Link>
           ))}
+          <ThemeToggle />
           <Link href="/preventivo" className="btn btn-solid !px-4 !py-2.5 !text-[0.7rem]">Preventivo</Link>
         </nav>
 
         <div className="flex items-center gap-1 lg:hidden">
         {/* ghiera di lettura su telefono: qui non copre mai il testo */}
-        <span className={`transition-opacity duration-300 ${open ? "pointer-events-none opacity-0" : ""}`}>
+        <span className={`flex items-center gap-1 transition-opacity duration-300 ${open ? "pointer-events-none opacity-0" : ""}`}>
+          <ThemeToggle className="!h-9 !w-9" />
           <ReadingBezel variant="header" />
         </span>
         <button

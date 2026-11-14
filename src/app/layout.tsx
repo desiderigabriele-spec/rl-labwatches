@@ -42,6 +42,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="grain min-h-dvh flex flex-col">
         {/* salta l'intro se già vista in questa sessione (prima del render, senza sfarfallio) */}
         <script dangerouslySetInnerHTML={{ __html: `try{if(sessionStorage.getItem("rl-intro"))document.documentElement.dataset.intro="seen"}catch(e){}` }} />
+        {/* tema "nero luxury" scelto in una visita precedente, applicato prima di disegnare la pagina */}
+        <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem("rl-tema")==="nero")document.documentElement.dataset.tema="nero"}catch(e){}` }} />
         <IntroSplash />
         <JsonLd data={localBusinessLd} />
         <JsonLd data={websiteLd} />
