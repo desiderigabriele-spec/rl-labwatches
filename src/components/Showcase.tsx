@@ -154,7 +154,7 @@ export default function Showcase({
   const router = useRouter();
 
   // primo tocco: luce e ingrandimento dell'orologio; toccandolo si va agli orologi disponibili della marca
-  const href = (i: number) => `/shop/marca/${items[i].slug}#disponibili`;
+  const href = (i: number) => `/shop/marca/${items[i].slug}`;
   const zoom = (i: number) => {
     const shot = ref.current?.querySelectorAll<HTMLElement>("[data-slot]")[i]?.querySelector<HTMLElement>("[data-boxshot]");
     if (reduced || !shot) return false;
