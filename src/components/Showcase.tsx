@@ -64,7 +64,7 @@ function Slot({
 }) {
   const photo: string = brand.vetrina;
   return (
-    <div className="relative flex w-[62vw] shrink-0 snap-center flex-col items-center px-3 sm:w-[34vw] lg:w-auto lg:px-2">
+    <div className="relative flex w-[78vw] shrink-0 snap-center flex-col items-center px-3 sm:w-[46vw] lg:w-auto lg:px-6">
       <button
         type="button"
         onMouseEnter={() => onHover(true)}
@@ -99,7 +99,7 @@ function Slot({
         />
 
         {/* cofanetto con l'orologio */}
-        <span className="relative mt-6 block aspect-[3/4] w-full">
+        <span className="relative mt-6 block aspect-[840/1020] w-full">
           {/* bagliore del colore del quadrante */}
           <span
             aria-hidden
@@ -115,9 +115,11 @@ function Slot({
           >
             {photo ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={photo} alt={`${brand.name} ${brand.icon} su un cofanetto`} draggable={false} loading="lazy" className="h-full w-full select-none object-contain drop-shadow-[0_18px_24px_rgba(0,0,0,0.55)]" />
+              <img src={photo} alt={`${brand.name} ${brand.icon} nel cofanetto originale`} draggable={false} loading="lazy" className="h-full w-full select-none object-contain object-bottom drop-shadow-[0_18px_24px_rgba(0,0,0,0.55)]" />
             ) : (
-              <Cofanetto brand={brand} lit={light === "on"} />
+              <span className="absolute inset-x-[15%] bottom-0 top-[24%]">
+                <Cofanetto brand={brand} lit={light === "on"} />
+              </span>
             )}
           </span>
         </span>
@@ -131,7 +133,7 @@ function Slot({
       </button>
 
       {/* ripiano in pietra (continuo da una nicchia all'altra) */}
-      <span aria-hidden className="relative z-10 -mx-3 mt-1 block h-3 w-[calc(100%+1.5rem)] bg-gradient-to-b from-[#3d4440] to-[#161a17] shadow-[0_18px_40px_rgba(0,0,0,0.6)] lg:-mx-2 lg:w-[calc(100%+1rem)]" />
+      <span aria-hidden className="relative z-10 -mx-3 mt-1 block h-3 w-[calc(100%+1.5rem)] bg-gradient-to-b from-[#3d4440] to-[#161a17] shadow-[0_18px_40px_rgba(0,0,0,0.6)] lg:-mx-6 lg:w-[calc(100%+3rem)]" />
 
       {/* targhetta sotto il ripiano: logo e modello */}
       <div className="mt-9 flex flex-col items-center text-center">
@@ -207,7 +209,7 @@ export default function Showcase({
         </div>
 
         <div className="relative mt-16">
-          <div className="-mx-4 flex snap-x snap-mandatory overflow-x-auto px-[19vw] pb-4 [scrollbar-width:none] sm:-mx-8 sm:px-[33vw] lg:mx-0 lg:grid lg:snap-none lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
+          <div className="-mx-4 flex snap-x snap-mandatory overflow-x-auto px-[11vw] pb-4 [scrollbar-width:none] sm:-mx-8 sm:px-[27vw] lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-y-16 lg:snap-none lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden">
             {items.map((b, i) => (
               <Slot
                 key={b.slug}
