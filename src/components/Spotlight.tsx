@@ -66,20 +66,48 @@ export function LightPool({ level }: { level: number }) {
   );
 }
 
-/** Luce dall'alto sul cofanetto: schiarisce la parte alta e scurisce la base, solo dentro la sagoma della foto */
-export function BoxLight({ src, level }: { src: string; level: number }) {
-  const mask = `url(${src}) center bottom / contain no-repeat`;
+/**
+ * Luce del faretto sul cofanetto: illumina solo la parte che sta dentro il cono (stessa forma del fascio,
+ * con il vertice sulla lente, `apex` px sopra il riquadro) e lascia in ombra quella fuori, come i bordi
+ * alti del coperchio. Entrambi i livelli stanno solo dentro la sagoma della foto.
+ */
+export function BoxLight({ src, level, apex = 28, spread = 30 }: { src: string; level: number; apex?: number; spread?: number }) {
+  const at = `50% -${apex}px`;
+  const from = 180 - spread;
+  const inside = `conic-gradient(from ${from}deg at ${at}, transparent 0deg, #000 ${spread * 0.4}deg, #000 ${spread * 1.6}deg, transparent ${spread * 2}deg)`;
+  const outside = `conic-gradient(from ${from}deg at ${at}, #000 0deg, transparent ${spread * 0.5}deg, transparent ${spread * 1.5}deg, #000 ${spread * 2}deg)`;
+  const layer = (shape: string): React.CSSProperties => ({
+    maskImage: `url(${src}), ${shape}`,
+    WebkitMaskImage: `url(${src}), ${shape}`,
+    maskSize: "contain, 100% 100%",
+    WebkitMaskSize: "contain, 100% 100%",
+    maskPosition: "center bottom, 0 0",
+    WebkitMaskPosition: "center bottom, 0 0",
+    maskRepeat: "no-repeat",
+    WebkitMaskRepeat: "no-repeat",
+    maskComposite: "intersect",
+    WebkitMaskComposite: "source-in",
+  });
+  const lit = Math.max(0, (level - 0.22) / 0.78);
   return (
-    <span
-      aria-hidden
-      className="pointer-events-none absolute inset-0 transition-opacity duration-700"
-      style={{
-        opacity: level,
-        mask,
-        WebkitMask: mask,
-        mixBlendMode: "soft-light",
-        background: "radial-gradient(ellipse 70% 55% at 50% 20%, rgba(255,247,228,0.95), rgba(255,240,210,0.35) 55%, rgba(0,0,0,0.35) 100%)",
-      }}
-    />
+    <>
+      {/* dentro il fascio: luce calda dall'alto */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 transition-opacity duration-700"
+        style={{
+          ...layer(inside),
+          opacity: level,
+          mixBlendMode: "soft-light",
+          background: "radial-gradient(ellipse 70% 60% at 50% 15%, rgba(255,247,228,1), rgba(255,240,210,0.45) 60%, rgba(0,0,0,0.25) 100%)",
+        }}
+      />
+      {/* fuori dal fascio: in ombra */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 transition-opacity duration-700"
+        style={{ ...layer(outside), opacity: lit, background: "rgba(4,8,6,0.62)" }}
+      />
+    </>
   );
 }
