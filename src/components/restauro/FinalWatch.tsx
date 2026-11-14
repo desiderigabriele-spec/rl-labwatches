@@ -8,7 +8,8 @@ import { useEffect, useRef } from "react";
  * la lancetta centrale gira e il contatore dei 30 minuti a ore 3 avanza.
  * Posizioni misurate sulle foto: quadrante centrato a (47.4%, 47.4%) con diametro 59.8% della foto.
  */
-const PHOTO = "/models/daytona-6239/fronte.webp";
+// foto con lo sfondo bianco reso trasparente: sta bene su qualsiasi fondo (il "multiply" non funziona dentro un livello in dissolvenza)
+const PHOTO = "/models/daytona-6239/fronte-trasparente.webp";
 const DIAL = "/models/daytona-6239/quadrante.webp";
 const DIAL_BOX = { left: 17.5, top: 17.5, size: 59.8 };
 // in raggi del quadrante, y verso l'alto (come nel modello 3D)
@@ -68,7 +69,7 @@ export default function FinalWatch({ active }: { active: boolean }) {
   return (
     <div className="relative aspect-square h-full w-full">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={PHOTO} alt="Il Daytona 6239 dopo il restauro" loading="lazy" className="absolute inset-0 h-full w-full mix-blend-multiply [mask-image:radial-gradient(circle,black_60%,transparent_71%)]" />
+      <img src={PHOTO} alt="Il Daytona 6239 dopo il restauro" loading="lazy" className="absolute inset-0 h-full w-full [mask-image:radial-gradient(circle,black_60%,transparent_71%)]" />
       <div
         className="absolute overflow-hidden rounded-full shadow-[inset_0_0_14px_rgba(0,0,0,0.45)]"
         style={{ left: `${DIAL_BOX.left}%`, top: `${DIAL_BOX.top}%`, width: `${DIAL_BOX.size}%`, height: `${DIAL_BOX.size}%` }}

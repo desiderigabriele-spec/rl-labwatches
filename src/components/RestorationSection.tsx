@@ -92,7 +92,7 @@ export default function RestorationSection() {
           </div>
           <div className="relative order-1 min-h-0 lg:order-2">
             {/* lampada sul banco */}
-            <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_50%_at_50%_50%,rgba(255,236,196,0.55),transparent_70%)]" />
+            <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_50%_at_50%_50%,rgba(250,238,212,0.5),transparent_70%)]" />
             <IntakeStage progress={scrollYProgress} />
             <motion.div style={{ opacity: showDone }} className="pointer-events-none absolute inset-0 p-2 sm:p-6">
               <div className="flex h-full w-full items-center justify-center" style={{ containerType: "size" }}>
