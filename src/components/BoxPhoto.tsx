@@ -22,12 +22,15 @@ function DialHands({ dial, aspect, brand, run }: { dial: Dial; aspect: number; b
   );
 }
 
+/** Bordo morbido della foto ravvicinata: nel cofanetto si fonde con il cuscino, nella pagina della marca galleggia nel buio */
+export const FEATHER = "radial-gradient(ellipse 50% 50% at 50% 42%, #000 70%, transparent 100%)";
+
 /**
- * Foto del cofanetto di una marca (riquadro 840×1020, vedi scripts/vetrina.mjs) con le lancette che segnano l'ora reale.
- * Con `zoomed` sopra il quadrante sfuma la foto ravvicinata dello stesso orologio, allineata quadrante su quadrante:
- * ingrandendo il riquadro si arriva sull'orologio nitido invece che su una foto sfocata.
+ * Foto del cofanetto di una marca (riquadro 840×1020, vedi scripts/vetrina.mjs). Se c'è la foto ravvicinata,
+ * l'orologio nel cofanetto è già quella, rimpicciolita e allineata quadrante su quadrante, con le lancette vive:
+ * entrando nella marca si ingrandisce proprio questo pezzo, senza stacchi (vedi lib/zoomEntrance).
  */
-export default function BoxPhoto({ brand, run, eager = false, zoomed = false }: { brand: Brand; run: boolean; eager?: boolean; zoomed?: boolean }) {
+export default function BoxPhoto({ brand, run, eager = false }: { brand: Brand; run: boolean; eager?: boolean }) {
   const close = brand.vicino && brand.dial ? brand.vicino : null;
   // dimensioni della foto ravvicinata nel riquadro, perché il suo quadrante coincida con quello del cofanetto
   const w = close && brand.dial ? brand.dial.r / close.r : 0; // in frazioni della larghezza del riquadro
@@ -42,22 +45,29 @@ export default function BoxPhoto({ brand, run, eager = false, zoomed = false }: 
         loading={eager ? "eager" : "lazy"}
         className="h-full w-full select-none object-contain object-bottom drop-shadow-[0_18px_24px_rgba(0,0,0,0.55)]"
       />
-      {brand.dial && !zoomed && <DialHands dial={brand.dial} aspect={840 / 1020} brand={brand} run={run} />}
-      {close && brand.dial && zoomed && (
+      {brand.dial && !close && <DialHands dial={brand.dial} aspect={840 / 1020} brand={brand} run={run} />}
+      {close && brand.dial && (
         <span
+          data-closeup
           className="absolute"
           style={{
             left: `${brand.dial.x - close.x * w}%`,
             top: `${brand.dial.y - close.y * h}%`,
             width: `${w * 100}%`,
             height: `${h * 100}%`,
-            animation: "box-zoom-in 450ms ease-out 180ms both",
-            maskImage: "radial-gradient(ellipse 50% 50% at 50% 42%, #000 70%, transparent 100%)",
-            WebkitMaskImage: "radial-gradient(ellipse 50% 50% at 50% 42%, #000 70%, transparent 100%)",
+            // la sfumatura si allarga (maskSize) mentre si entra nella marca, fino a mostrare la foto intera
+            maskImage: FEATHER,
+            WebkitMaskImage: FEATHER,
+            maskSize: "100% 100%",
+            WebkitMaskSize: "100% 100%",
+            maskPosition: "50% 42%",
+            WebkitMaskPosition: "50% 42%",
+            maskRepeat: "no-repeat",
+            WebkitMaskRepeat: "no-repeat",
           }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={close.src} alt="" aria-hidden draggable={false} className="h-full w-full" />
+          <img src={close.src} alt="" aria-hidden draggable={false} loading={eager ? "eager" : "lazy"} className="h-full w-full" />
           <DialHands dial={close} aspect={1024 / 1536} brand={brand} run={run} />
         </span>
       )}
@@ -65,14 +75,14 @@ export default function BoxPhoto({ brand, run, eager = false, zoomed = false }: 
   );
 }
 
-/** Foto ravvicinata di una marca, a sé (apertura della sezione), con le lancette vive */
-export function CloseUp({ brand, run }: { brand: Brand; run: boolean }) {
+/** Foto ravvicinata di una marca, intera, a sé (apertura della sezione), con le lancette vive */
+export function CloseUp({ brand, run, ref }: { brand: Brand; run: boolean; ref?: React.Ref<HTMLSpanElement> }) {
   const close = brand.vicino;
   if (!close) return null;
   return (
-    <span className="relative block aspect-[1024/1536] w-full overflow-hidden rounded-[1.25rem] shadow-[0_30px_60px_rgba(0,0,0,0.55)]">
+    <span ref={ref} className="relative block aspect-[1024/1536] w-full overflow-hidden rounded-[18px] shadow-[0_30px_60px_rgba(0,0,0,0.55)]">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={close.src} alt={`Orologio ${brand.name} da vicino`} draggable={false} className="h-full w-full select-none object-cover" />
+      <img src={close.src} alt={`Orologio ${brand.name} da vicino`} draggable={false} className="h-full w-full select-none" />
       {brand.dial && <DialHands dial={close} aspect={1024 / 1536} brand={brand} run={run} />}
     </span>
   );

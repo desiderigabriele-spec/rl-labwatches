@@ -6,6 +6,7 @@ import { brands, type Brand } from "@/data/brands";
 import { whatsappLink } from "@/data/site";
 import { WhatsAppIcon } from "./WhatsAppButton";
 import BrandLogo from "./BrandLogo";
+import { startZoom } from "@/lib/zoomEntrance";
 import BoxPhoto from "./BoxPhoto";
 import Spotlight, { BoxLight, LightPool } from "./Spotlight";
 
@@ -57,10 +58,8 @@ function Slot({
   onSelect,
   reduced,
   running,
-  entering,
 }: {
   running: boolean;
-  entering: boolean;
   brand: Brand;
   light: Light;
   selected: boolean;
@@ -71,7 +70,7 @@ function Slot({
   const photo: string = brand.vetrina;
   const lvl = light === "on" ? 1 : light === "idle" ? 0.22 : 0;
   return (
-    <div className="relative flex w-[78vw] shrink-0 snap-center flex-col items-center px-3 sm:w-[46vw] lg:w-auto lg:px-6">
+    <div data-slot className="relative flex w-[78vw] shrink-0 snap-center flex-col items-center px-3 sm:w-[46vw] lg:w-auto lg:px-6">
       <button
         type="button"
         onMouseEnter={() => onHover(true)}
@@ -95,20 +94,18 @@ function Slot({
             style={{ background: `radial-gradient(closest-side, ${brand.accent}, transparent)`, filter: "blur(28px)", opacity: light === "on" ? 0.6 : light === "idle" ? 0.1 : 0 }}
           />
           <span
+            data-boxshot
             className="absolute inset-0 transition-[filter,transform] duration-700 ease-out"
             style={{
               filter: light === "on" ? "brightness(1.06) contrast(1.04)" : light === "idle" ? "brightness(0.55) saturate(0.75)" : "brightness(0.16) saturate(0.4)",
               // secondo tocco: si "entra" nel cofanetto, ingrandendo verso il quadrante
-              transform: entering ? `scale(${brand.vicino ? 7 : 3.2})` : light === "on" ? "translateY(-6px) scale(1.04)" : "none",
-              transformOrigin: brand.dial ? `${brand.dial.x}% ${brand.dial.y}%` : "50% 62%",
-              transition: entering ? "transform 1000ms cubic-bezier(0.55,0,0.2,1), filter 700ms ease" : undefined,
-              zIndex: entering ? 60 : undefined,
+              transform: light === "on" ? "translateY(-6px) scale(1.04)" : "none",
             }}
           >
             {photo ? (
               <>
-                <BoxPhoto brand={brand} run={running && !reduced} zoomed={entering} />
-                {!entering && <BoxLight src={photo} level={lvl} />}
+                <BoxPhoto brand={brand} run={running && !reduced} />
+                <BoxLight src={photo} level={lvl} />
               </>
             ) : (
               <span className="absolute inset-x-[15%] bottom-0 top-[24%]">
@@ -159,9 +156,11 @@ export default function Showcase({
   // secondo tocco sullo stesso cofanetto: ingrandimento e poi la sezione della marca
   const enter = (i: number) => {
     const href = `/shop/marca/${items[i].slug}`;
-    if (reduced) return router.push(href);
+    // l'orologio ad alta definizione nel cofanetto si ingrandisce fino al centro della pagina della marca
+    const shot = ref.current?.querySelectorAll<HTMLElement>("[data-slot]")[i]?.querySelector<HTMLElement>("[data-boxshot]");
+    if (reduced || !shot?.querySelector("[data-closeup]")) return router.push(href);
     setEntering(i);
-    window.setTimeout(() => router.push(href), 1050);
+    startZoom(shot, href, (h) => router.push(h));
   };
   const pick = (i: number) => {
     if (entering !== null) return;
@@ -228,7 +227,6 @@ export default function Showcase({
                 selected={selected === i}
                 reduced={reduced}
                 running={visible}
-                entering={entering === i}
                 onHover={(h) => setHover((cur) => (h ? i : cur === i ? null : cur))}
                 onSelect={() => pick(i)}
               />
@@ -273,18 +271,6 @@ export default function Showcase({
         </AnimatePresence>
       </div>
 
-      {/* passaggio alla sezione della marca: la pagina si scurisce mentre si entra nel cofanetto */}
-      <AnimatePresence>
-        {entering !== null && (
-          <motion.div
-            aria-hidden
-            className="pointer-events-none fixed inset-0 z-50 bg-[#0b100d]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.65, ease: "easeIn" }}
-          />
-        )}
-      </AnimatePresence>
     </section>
   );
 }

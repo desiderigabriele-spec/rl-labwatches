@@ -94,6 +94,7 @@ export function BoxLight({ src, level, apex = 28, spread = 30 }: { src: string; 
       {/* dentro il fascio: luce calda dall'alto */}
       <span
         aria-hidden
+        data-boxlight
         className="pointer-events-none absolute inset-0 transition-opacity duration-700"
         style={{
           ...layer(inside),
@@ -105,6 +106,7 @@ export function BoxLight({ src, level, apex = 28, spread = 30 }: { src: string; 
       {/* fuori dal fascio: in ombra */}
       <span
         aria-hidden
+        data-boxlight
         className="pointer-events-none absolute inset-0 transition-opacity duration-700"
         style={{ ...layer(outside), opacity: lit, background: "rgba(4,8,6,0.62)" }}
       />
