@@ -1,36 +1,34 @@
 /**
- * Ingresso nella sezione di una marca, come una telecamera che entra nel cofanetto, senza stacchi.
+ * Ingresso nella sezione di una marca: un ingrandimento vero, come un obiettivo che si avvicina.
  *
  * Nel cofanetto della vetrina l'orologio è già la foto ravvicinata ad alta definizione, rimpicciolita e allineata
- * quadrante su quadrante (vedi BoxPhoto). Al secondo tocco l'intera foto del cofanetto viene copiata in un livello
- * fisso: una "finestra" che si stringe sull'orologio mentre il contenuto si ingrandisce, finché nella finestra resta
- * solo la foto ravvicinata, intera. Intanto si apre la pagina della marca, che dice dove sta il suo orologio:
- * la finestra atterra lì, poi il livello sfuma e resta la pagina vera.
+ * quadrante su quadrante (vedi BoxPhoto). Al secondo tocco l'intera foto del cofanetto passa in un livello fisso e
+ * si ingrandisce tutta, senza ritagli: i bordi del cofanetto escono dallo schermo mentre l'orologio arriva al centro.
+ * La pagina della marca ha in apertura la stessa scena già ingrandita (BrandEntrance): il livello atterra esattamente
+ * lì e poi sfuma, senza che si veda il passaggio.
  */
 type Rect = { left: number; top: number; width: number; height: number };
-type Zoom = {
-  root: HTMLDivElement;
-  back: HTMLDivElement;
-  frame: HTMLDivElement;
-  content: HTMLElement;
-  close: Rect; // posizione della foto ravvicinata dentro il contenuto, a scala 1 (px)
-  base: Rect; // misura del contenuto a scala 1
-  anims: Animation[];
-  raf: number;
-  t0: number;
-};
+type Zoom = { root: HTMLDivElement; back: HTMLDivElement; content: HTMLElement; anim: Animation; raf: number; t0: number };
 declare global {
   interface Window {
     __rlZoom?: Zoom;
   }
 }
 
-const TOTAL = 1500; // durata complessiva, ms
-const EASE_IN_OUT = "cubic-bezier(.65,0,.25,1)";
-const EASE_OUT = "cubic-bezier(.2,.65,.25,1)";
-const RADIUS = 18;
+const TOTAL = 1600; // durata complessiva, ms
 
 export const zoomPending = () => typeof window !== "undefined" && !!window.__rlZoom;
+
+/**
+ * Misure dell'apertura della pagina di una marca (le stesse di BrandEntrance, in px):
+ * larghezza dell'orologio ravvicinato e centro dell'orologio sullo schermo, con la pagina in cima.
+ */
+export function heroGeometry(vw: number) {
+  const T = vw >= 1024 ? 380 : vw >= 640 ? 340 : vw * 0.66;
+  const header = vw >= 640 ? 112 : 80;
+  const inner = T * 1.5 * 1.22; // l'orologio occupa l'82% dell'altezza dell'apertura
+  return { T, cx: vw / 2, cy: header + inner / 2 };
+}
 
 const px = (r: Rect) => ({ left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px` });
 
@@ -49,15 +47,7 @@ function setHands(root: HTMLElement) {
   });
 }
 
-/** Contenuto (relativo alla finestra) quando la finestra `t` mostra esattamente la foto ravvicinata */
-function contentFor(z: Zoom, t: Rect): Rect {
-  const k = t.width / z.close.width;
-  return { left: -z.close.left * k, top: -z.close.top * k, width: z.base.width * k, height: z.base.height * k };
-}
-
-/**
- * Parte dalla foto del cofanetto `shot` (che contiene [data-closeup]) e apre `href` con `go` poco dopo.
- */
+/** Parte dalla foto del cofanetto `shot` (che contiene [data-closeup]) e apre `href` con `go` poco dopo */
 export function startZoom(shot: HTMLElement, href: string, go: (href: string) => void) {
   const piece = shot.querySelector<HTMLElement>("[data-closeup]");
   if (!piece) return go(href);
@@ -67,84 +57,45 @@ export function startZoom(shot: HTMLElement, href: string, go: (href: string) =>
   const root = document.createElement("div");
   root.setAttribute("aria-hidden", "true");
   // sotto intestazione, barra del telefono e bottone WhatsApp (z 40-50), sopra la pagina
-  root.style.cssText = "position:fixed;inset:0;z-index:38;pointer-events:none";
+  root.style.cssText = "position:fixed;inset:0;z-index:38;pointer-events:none;overflow:hidden";
   const back = document.createElement("div");
   back.style.cssText = "position:absolute;inset:0;background:#0b100d;opacity:0";
-  const frame = document.createElement("div");
-  frame.style.cssText = "position:absolute;overflow:hidden;border-radius:0px";
-  Object.assign(frame.style, px(r));
   const content = shot.cloneNode(true) as HTMLElement;
   content.querySelectorAll("[data-boxlight]").forEach((n) => n.remove());
-  content.style.cssText = "position:absolute;left:0;top:0;transform:none;filter:none;margin:0";
-  content.style.width = `${r.width}px`;
-  content.style.height = `${r.height}px`;
-  frame.appendChild(content);
-  root.append(back, frame);
+  content.style.cssText = "position:absolute;transform:none;filter:none;margin:0";
+  Object.assign(content.style, px(r));
+  root.append(back, content);
   document.body.appendChild(root);
 
-  const zoom: Zoom = {
-    root,
-    back,
-    frame,
-    content,
-    close: { left: c.left - r.left, top: c.top - r.top, width: c.width, height: c.height },
-    base: { left: 0, top: 0, width: r.width, height: r.height },
-    anims: [],
-    raf: 0,
-    t0: performance.now(),
+  // destinazione: la scena come la mostra l'apertura della pagina della marca
+  const g = heroGeometry(window.innerWidth);
+  const k = g.T / c.width;
+  const end: Rect = {
+    left: g.cx - (c.left - r.left + c.width / 2) * k,
+    top: g.cy - (c.top - r.top + c.height / 2) * k,
+    width: r.width * k,
+    height: r.height * k,
   };
-  // destinazione: dove la pagina della marca mette il suo orologio (stesse misure di BrandEntrance e della pagina),
-  // così lo zoom va subito nel punto giusto; all'arrivo la pagina conferma la posizione esatta
-  const vw = window.innerWidth;
-  const W = vw >= 1024 ? 352 : vw >= 640 ? 320 : Math.min(vw * 0.72, 304);
-  const H = (W * c.height) / c.width;
-  const target: Rect = { left: (vw - W) / 2, top: (vw >= 640 ? 128 : 96) + 63, width: W, height: H };
-  animateTo(zoom, target, TOTAL, EASE_IN_OUT);
-  back.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, easing: "ease-out", fill: "forwards" });
+  const anim = content.animate([px(r), px(end)], { duration: TOTAL, easing: "cubic-bezier(.6,0,.2,1)", fill: "forwards" });
+  back.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 560, easing: "ease-in-out", fill: "forwards" });
 
+  const zoom: Zoom = { root, back, content, anim, raf: 0, t0: performance.now() };
   const tick = () => {
     setHands(content);
     zoom.raf = requestAnimationFrame(tick);
   };
   tick();
   window.__rlZoom = zoom;
-  window.setTimeout(() => go(href), 300);
+  // la pagina nuova si apre solo quando il fondo è già scuro: sotto lo zoom non si intravede niente
+  window.setTimeout(() => go(href), 600);
   // rete di sicurezza: se la pagina non arriva, il livello non resta mai sopra
   window.setTimeout(() => window.__rlZoom === zoom && finish(zoom), 6000);
 }
 
-/** Porta finestra e contenuto alla destinazione `t`, partendo da dove sono adesso */
-function animateTo(z: Zoom, t: Rect, duration: number, easing: string) {
-  const fr = z.frame.getBoundingClientRect();
-  const cr = z.content.getBoundingClientRect();
-  const from: Rect = { left: fr.left, top: fr.top, width: fr.width, height: fr.height };
-  const cFrom: Rect = { left: cr.left - fr.left, top: cr.top - fr.top, width: cr.width, height: cr.height };
-  const radius = parseFloat(getComputedStyle(z.frame).borderRadius) || 0;
-  const fade = getComputedStyle(z.content.querySelector<HTMLElement>("[data-closeup]")!).maskSize;
-  z.anims.forEach((a) => a.cancel());
-  Object.assign(z.frame.style, px(from));
-  Object.assign(z.content.style, px(cFrom));
-  const o = { duration, easing, fill: "forwards" as const };
-  const piece = z.content.querySelector<HTMLElement>("[data-closeup]")!;
-  z.anims = [
-    z.frame.animate(
-      [
-        { ...px(from), borderRadius: `${radius}px`, boxShadow: "0 0 0 rgba(0,0,0,0)" },
-        { ...px(t), borderRadius: `${RADIUS}px`, boxShadow: "0 30px 60px rgba(0,0,0,0.55)" },
-      ],
-      o
-    ),
-    z.content.animate([px(cFrom), px(contentFor(z, t))], o),
-    // la sfumatura che fonde l'orologio nel cuscino si allarga fino a sparire: resta la foto intera
-    piece.animate([{ maskSize: fade && fade !== "auto" ? fade : "100% 100%" }, { maskSize: "340% 340%" }], o),
-  ];
-  return z.anims[0];
-}
-
 function finish(z: Zoom, onDone?: () => void) {
   onDone?.();
-  const fade = { duration: 500, easing: "ease-out", fill: "forwards" as const };
-  z.frame.animate([{ opacity: 1 }, { opacity: 0 }], fade);
+  const fade = { duration: 600, easing: "ease-out", fill: "forwards" as const };
+  z.content.animate([{ opacity: 1 }, { opacity: 0 }], fade);
   z.back.animate([{ opacity: 1 }, { opacity: 0 }], fade).onfinish = () => {
     cancelAnimationFrame(z.raf);
     z.root.remove();
@@ -152,18 +103,26 @@ function finish(z: Zoom, onDone?: () => void) {
   if (window.__rlZoom === z) delete window.__rlZoom;
 }
 
-/** Chiamata dalla pagina della marca: la finestra atterra sul suo orologio, poi il livello sfuma */
+/** Chiamata dalla pagina della marca con la sua scena ingrandita: il livello atterra lì, poi sfuma */
 export function landZoom(target: HTMLElement, onDone: () => void) {
   const z = window.__rlZoom;
   if (!z) return onDone();
-  // la pagina nuova va in cima subito, senza lo scorrimento morbido, prima di misurare dove sta l'orologio
+  // la pagina nuova va in cima subito, senza lo scorrimento morbido, prima di misurare
   (window as unknown as { __lenis?: { scrollTo: (t: number, o?: object) => void } }).__lenis?.scrollTo(0, { immediate: true, force: true });
   window.scrollTo(0, 0);
   requestAnimationFrame(() =>
     requestAnimationFrame(() => {
       const t = target.getBoundingClientRect();
-      const left = Math.max(500, TOTAL - (performance.now() - z.t0));
-      animateTo(z, { left: t.left, top: t.top, width: t.width, height: t.height }, left, EASE_OUT).onfinish = () => finish(z, onDone);
+      const cur = z.content.getBoundingClientRect();
+      z.anim.cancel();
+      Object.assign(z.content.style, px(cur));
+      const left = Math.max(450, TOTAL - (performance.now() - z.t0));
+      const a = z.content.animate([px(cur), px({ left: t.left, top: t.top, width: t.width, height: t.height })], {
+        duration: left,
+        easing: "cubic-bezier(.2,.6,.25,1)",
+        fill: "forwards",
+      });
+      a.onfinish = () => finish(z, onDone);
     })
   );
 }
