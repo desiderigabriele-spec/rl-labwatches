@@ -158,7 +158,8 @@ export default function Showcase({
   const zoom = (i: number) => {
     const shot = ref.current?.querySelectorAll<HTMLElement>("[data-slot]")[i]?.querySelector<HTMLElement>("[data-boxshot]");
     if (reduced || !shot) return false;
-    return openZoom(shot, { name: items[i].name, href: href(i), go: (h) => router.push(h), onClose: () => setEntering(null) });
+    const v = items[i].vicino;
+    return openZoom(shot, { name: items[i].name, href: href(i), go: (h) => router.push(h), onClose: () => setEntering(null), dial: v ? { x: v.x, y: v.y, r: v.r } : undefined });
   };
   const pick = (i: number) => {
     if (entering !== null) return;

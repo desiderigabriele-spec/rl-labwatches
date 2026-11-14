@@ -52,7 +52,10 @@ const el = (tag: string, css: string, html = "") => {
  * Ingrandisce la foto del cofanetto `shot` (che contiene [data-closeup]).
  * Toccando l'orologio si apre `href` con `go`; `onClose` quando l'orologio torna nel cofanetto.
  */
-export function openZoom(shot: HTMLElement, o: { name: string; href: string; go: (href: string) => void; onClose: () => void }) {
+export function openZoom(
+  shot: HTMLElement,
+  o: { name: string; href: string; go: (href: string) => void; onClose: () => void; dial?: { x: number; y: number; r: number } }
+) {
   const piece = shot.querySelector<HTMLElement>("[data-closeup]");
   if (!piece || window.__rlZoom) return false;
   const r = shot.getBoundingClientRect();
@@ -80,7 +83,10 @@ export function openZoom(shot: HTMLElement, o: { name: string; href: string; go:
     "div",
     `position:absolute;left:0;right:0;bottom:${phone ? 92 : 44}px;text-align:center;color:#f5f1e8;pointer-events:none;opacity:0;padding:0 16px`,
     `<div style="font-family:var(--font-cormorant),Georgia,serif;font-weight:300;font-size:${phone ? 34 : 46}px;line-height:1">Orologi <em style="color:#d7b368">${o.name}</em></div>` +
-      `<div style="margin-top:10px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:rgba(245,241,232,.75)">Tocca l'orologio per vedere quelli disponibili</div>`
+      // invito ben visibile: bottone dorato che pulsa, con la mano che tocca
+      `<button type="button" data-cta class="zoom-cta" style="pointer-events:auto;margin-top:${phone ? 14 : 18}px;display:inline-flex;align-items:center;gap:10px;white-space:nowrap;border:0;border-radius:999px;background:#d7b368;color:#0b100d;padding:${phone ? "12px 18px" : "14px 26px"};font:600 ${phone ? 11 : 12}px/1.2 var(--font-montserrat),system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;cursor:pointer">` +
+      `<svg class="zoom-tap" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M12 10.5V9a1.5 1.5 0 0 1 3 0v2"/><path d="M15 10.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-2.7L3.6 14.6a1.5 1.5 0 0 1 2.5-1.7L9 16"/><path d="M6 4.5 4.5 3M13 3.5 14.5 2M9.5 2V.5" opacity=".7"/></svg>` +
+      `${phone ? "Tocca · vedi i disponibili" : "Tocca l'orologio · vedi quelli disponibili"}</button>`
   );
   const close = el(
     "button",
@@ -88,7 +94,9 @@ export function openZoom(shot: HTMLElement, o: { name: string; href: string; go:
     "&#x2715;"
   ) as HTMLButtonElement;
   close.setAttribute("aria-label", "Chiudi e torna alla vetrina");
-  root.append(back, content, shade, caption, close);
+  // anello d'oro che pulsa sul quadrante: si tocca lì
+  const ring = el("div", "position:absolute;pointer-events:none;transform:translate(-50%,-50%);border-radius:999px;border:2px solid rgba(215,179,104,.95);box-shadow:0 0 24px rgba(215,179,104,.45);opacity:0");
+  root.append(back, content, shade, ring, caption, close);
   document.body.appendChild(root);
 
   // destinazione: orologio largo come nella pagina della marca, al centro dello schermo
@@ -103,6 +111,13 @@ export function openZoom(shot: HTMLElement, o: { name: string; href: string; go:
     height: r.height * k,
   };
   const anim = content.animate([px(from), px(end)], { duration: DURATION, easing: EASE, fill: "forwards" });
+  if (o.dial) {
+    const cw = c.width * k; // larghezza della foto ravvicinata a fine ingrandimento
+    const chh = c.height * k;
+    const d = cw * (o.dial.r / 100) * 2 * 1.08;
+    Object.assign(ring.style, { left: `${cx - cw / 2 + (cw * o.dial.x) / 100}px`, top: `${cy - chh / 2 + (chh * o.dial.y) / 100}px`, width: `${d}px`, height: `${d}px` });
+    window.setTimeout(() => ring.classList.add("zoom-ring"), DURATION - 150);
+  }
   back.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 700, easing: "ease-in-out", fill: "forwards" });
   const show = { duration: 600, delay: DURATION - 300, easing: "ease-out", fill: "forwards" as const };
   [shade, caption, close].forEach((n) => n.animate([{ opacity: 0 }, { opacity: 1 }], show));
@@ -148,7 +163,7 @@ export function openZoom(shot: HTMLElement, o: { name: string; href: string; go:
     const cur = content.getBoundingClientRect();
     z.anim.cancel();
     const out = { duration: 900, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" as const };
-    [shade, caption, close].forEach((n) => n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, fill: "forwards" }));
+    [shade, caption, close, ring].forEach((n) => n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, fill: "forwards" }));
     content.animate([px({ left: cur.left, top: cur.top, width: cur.width, height: cur.height }), px(from)], out);
     back.animate([{ opacity: 1 }, { opacity: 0 }], out).onfinish = () => {
       z.cleanup();
@@ -161,7 +176,7 @@ export function openZoom(shot: HTMLElement, o: { name: string; href: string; go:
   function enter() {
     if (done) return;
     done = true;
-    [content, shade, caption, close].forEach((n) => n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, easing: "ease-out", fill: "forwards" }));
+    [content, shade, caption, close, ring].forEach((n) => n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, easing: "ease-out", fill: "forwards" }));
     window.setTimeout(() => o.go(o.href), 340);
     window.setTimeout(() => {
       lenis()?.start();
@@ -175,6 +190,7 @@ export function openZoom(shot: HTMLElement, o: { name: string; href: string; go:
     }, 900);
   }
   content.addEventListener("click", enter);
+  caption.querySelector("[data-cta]")?.addEventListener("click", enter);
   back.addEventListener("click", shut);
   close.addEventListener("click", shut);
   return true;
