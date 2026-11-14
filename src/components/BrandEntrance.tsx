@@ -1,26 +1,14 @@
 "use client";
-import { useLayoutEffect, useRef } from "react";
 import { brandBySlug } from "@/data/brands";
-import { landZoom, zoomPending } from "@/lib/zoomEntrance";
 import BoxPhoto from "./BoxPhoto";
 import BrandLogo from "./BrandLogo";
 
 /**
  * Apertura della sezione di una marca: l'interno del cofanetto, ingrandito come da un obiettivo, con l'orologio
- * ad alta definizione al centro e i titoli ai lati, nella penombra. È esattamente l'ultimo fotogramma dello zoom che
- * parte dalla vetrina (lib/zoomEntrance, heroGeometry: --T è la larghezza dell'orologio ravvicinato).
+ * ad alta definizione al centro e i titoli ai lati, nella penombra (--T è la larghezza dell'orologio ravvicinato).
  */
 export default function BrandEntrance({ slug, left, right }: { slug: string; left: React.ReactNode; right: React.ReactNode }) {
   const brand = brandBySlug(slug)!;
-  const ref = useRef<HTMLSpanElement>(null);
-
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el || !zoomPending()) return;
-    el.style.opacity = "0";
-    landZoom(el, () => (el.style.opacity = "1"));
-  }, []);
-
   const close = brand.vicino && brand.dial ? brand.vicino : null;
   let scene: React.ReactNode;
   if (close && brand.dial) {
@@ -32,7 +20,6 @@ export default function BrandEntrance({ slug, left, right }: { slug: string; lef
     const B = `(var(--T) / ${cw.toFixed(5)})`;
     scene = (
       <span
-        ref={ref}
         className="absolute block aspect-[840/1020]"
         style={{
           width: `calc${B}`,

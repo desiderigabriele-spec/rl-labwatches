@@ -6,7 +6,7 @@ import { brands, type Brand } from "@/data/brands";
 import { whatsappLink } from "@/data/site";
 import { WhatsAppIcon } from "./WhatsAppButton";
 import BrandLogo from "./BrandLogo";
-import { startZoom } from "@/lib/zoomEntrance";
+import { openZoom } from "@/lib/zoomEntrance";
 import BoxPhoto from "./BoxPhoto";
 import Spotlight, { BoxLight, LightPool } from "./Spotlight";
 
@@ -127,7 +127,7 @@ function Slot({
         <span className="flex h-9 items-center">
           <BrandLogo brand={brand} className={`transition-colors duration-500 ${light === "on" ? "text-cream" : "text-cream/40"} ${brand.ratio > 3 ? "h-4" : "h-8"}`} />
         </span>
-        <p className={`mt-3 h-4 text-[0.65rem] uppercase tracking-[0.22em] text-gold-3 transition-opacity duration-500 ${selected ? "opacity-100" : "opacity-0"}`}>Tocca di nuovo per entrare</p>
+        <p className={`mt-3 h-4 text-[0.65rem] uppercase tracking-[0.22em] text-gold-3 transition-opacity duration-500 ${selected && !brand.vicino ? "opacity-100" : "opacity-0"}`}>Tocca di nuovo per entrare</p>
       </div>
     </div>
   );
@@ -136,7 +136,7 @@ function Slot({
 export default function Showcase({
   eyebrow = "La vetrina",
   title = "Scegli la tua marca",
-  intro = "Ogni orologio in vendita è selezionato e revisionato nel mio laboratorio. Tocca un cofanetto per accendere la luce, toccalo di nuovo per entrare e vedere gli orologi disponibili di quella marca.",
+  intro = "Ogni orologio in vendita è selezionato e revisionato nel mio laboratorio. Tocca un cofanetto: si accende la luce e l\u2019orologio si avvicina. Toccalo ancora per vedere gli orologi disponibili di quella marca.",
 }: {
   eyebrow?: string;
   title?: string;
@@ -153,24 +153,29 @@ export default function Showcase({
   const [entering, setEntering] = useState<number | null>(null);
   const router = useRouter();
 
-  // secondo tocco sullo stesso cofanetto: ingrandimento e poi la sezione della marca
-  const enter = (i: number) => {
-    const href = `/shop/marca/${items[i].slug}`;
-    // l'orologio ad alta definizione nel cofanetto si ingrandisce fino al centro della pagina della marca
+  // primo tocco: luce e ingrandimento dell'orologio; toccandolo si va agli orologi disponibili della marca
+  const href = (i: number) => `/shop/marca/${items[i].slug}#disponibili`;
+  const zoom = (i: number) => {
     const shot = ref.current?.querySelectorAll<HTMLElement>("[data-slot]")[i]?.querySelector<HTMLElement>("[data-boxshot]");
-    if (reduced || !shot?.querySelector("[data-closeup]")) return router.push(href);
-    setEntering(i);
-    startZoom(shot, href, (h) => router.push(h));
+    if (reduced || !shot) return false;
+    return openZoom(shot, { name: items[i].name, href: href(i), go: (h) => router.push(h), onClose: () => setEntering(null) });
   };
   const pick = (i: number) => {
     if (entering !== null) return;
-    if (selected === i) return enter(i);
-    setSelected(i);
     router.prefetch(`/shop/marca/${items[i].slug}`);
-    // la foto ravvicinata serve subito al secondo tocco: la carico già ora
-    const close = items[i].vicino;
-    if (close) new window.Image().src = close.src;
+    // marche senza foto ravvicinata: primo tocco la luce, secondo tocco la sezione
+    if (!items[i].vicino || reduced) {
+      if (selected === i) return router.push(href(i));
+      return setSelected(i);
+    }
+    setSelected(i);
+    setEntering(i);
+    // prima si accende il faretto, poi parte l'ingrandimento
+    window.setTimeout(() => {
+      if (!zoom(i)) setEntering(null);
+    }, 420);
   };
+  const enter = (i: number) => router.push(href(i));
 
   useEffect(() => setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches), []);
 
