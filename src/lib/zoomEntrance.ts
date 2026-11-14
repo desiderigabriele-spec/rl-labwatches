@@ -4,7 +4,8 @@
  * Nel cofanetto l'orologio è già la foto ravvicinata ad alta definizione, rimpicciolita e allineata quadrante su
  * quadrante (vedi BoxPhoto). Al primo tocco l'intera foto del cofanetto passa in un livello fisso e si ingrandisce
  * tutta, senza ritagli: i bordi escono dallo schermo e l'orologio arriva al centro, nitido.
- * Toccando l'orologio ingrandito si va dritti agli orologi disponibili della marca; con ✕, Esc, il fondo o
+ * Toccando l'orologio ingrandito si va alla pagina degli orologi della marca (apertura compatta con il cofanetto
+ * piccolo e la lista subito sotto); con ✕, Esc, il fondo o
  * scorrendo, l'orologio torna nel cofanetto.
  */
 type Rect = { left: number; top: number; width: number; height: number };
@@ -156,7 +157,7 @@ export function openZoom(shot: HTMLElement, o: { name: string; href: string; go:
       o.onClose();
     };
   }
-  // dritti agli orologi disponibili della marca, senza rivedere l'orologio grande
+  // alla pagina degli orologi della marca: si apre in cima, con il cofanetto piccolo e la lista sotto
   function enter() {
     if (done) return;
     done = true;
@@ -164,7 +165,8 @@ export function openZoom(shot: HTMLElement, o: { name: string; href: string; go:
     window.setTimeout(() => o.go(o.href), 340);
     window.setTimeout(() => {
       lenis()?.start();
-      lenis()?.scrollTo("#disponibili", { immediate: true, force: true, offset: -96 });
+      lenis()?.scrollTo(0, { immediate: true, force: true });
+      window.scrollTo(0, 0);
       back.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500, easing: "ease-out", fill: "forwards" }).onfinish = () => {
         z.cleanup();
         root.remove();
