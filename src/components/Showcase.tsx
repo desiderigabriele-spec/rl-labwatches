@@ -116,14 +116,14 @@ function Slot({
             style={{
               filter: light === "on" ? "brightness(1.06) contrast(1.04)" : light === "idle" ? "brightness(0.55) saturate(0.75)" : "brightness(0.16) saturate(0.4)",
               // secondo tocco: si "entra" nel cofanetto, ingrandendo verso il quadrante
-              transform: entering ? "scale(3.2)" : light === "on" ? "translateY(-6px) scale(1.04)" : "none",
+              transform: entering ? `scale(${brand.vicino ? 7 : 3.2})` : light === "on" ? "translateY(-6px) scale(1.04)" : "none",
               transformOrigin: brand.dial ? `${brand.dial.x}% ${brand.dial.y}%` : "50% 62%",
-              transition: entering ? "transform 900ms cubic-bezier(0.6,0,0.2,1), filter 700ms ease" : undefined,
+              transition: entering ? "transform 1000ms cubic-bezier(0.55,0,0.2,1), filter 700ms ease" : undefined,
               zIndex: entering ? 60 : undefined,
             }}
           >
             {photo ? (
-              <BoxPhoto brand={brand} run={running && !reduced} />
+              <BoxPhoto brand={brand} run={running && !reduced} zoomed={entering} />
             ) : (
               <span className="absolute inset-x-[15%] bottom-0 top-[24%]">
                 <Cofanetto brand={brand} lit={light === "on"} />
@@ -179,13 +179,16 @@ export default function Showcase({
     const href = `/shop/marca/${items[i].slug}`;
     if (reduced) return router.push(href);
     setEntering(i);
-    window.setTimeout(() => router.push(href), 850);
+    window.setTimeout(() => router.push(href), 1050);
   };
   const pick = (i: number) => {
     if (entering !== null) return;
     if (selected === i) return enter(i);
     setSelected(i);
     router.prefetch(`/shop/marca/${items[i].slug}`);
+    // la foto ravvicinata serve subito al secondo tocco: la carico già ora
+    const close = items[i].vicino;
+    if (close) new window.Image().src = close.src;
   };
 
   useEffect(() => setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches), []);
@@ -296,7 +299,7 @@ export default function Showcase({
             className="pointer-events-none fixed inset-0 z-50 bg-[#0b100d]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.35, ease: "easeIn" }}
+            transition={{ duration: 0.4, delay: 0.65, ease: "easeIn" }}
           />
         )}
       </AnimatePresence>

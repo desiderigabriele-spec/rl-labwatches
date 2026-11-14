@@ -300,3 +300,9 @@ html[data-intro="seen"] .intro-splash {
   .reviews-track { animation: none; }
   .reviews-lane { overflow-x: auto; }
 }
+
+/* vetrina: la foto ravvicinata compare durante l'ingrandimento del cofanetto */
+@keyframes box-zoom-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
