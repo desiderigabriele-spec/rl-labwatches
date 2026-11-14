@@ -325,3 +325,24 @@ html[data-intro="seen"] .intro-splash {
 @media (prefers-reduced-motion: reduce) {
   .spot-dust { animation: none; }
 }
+
+/* vetrina ingrandita: invito a toccare l'orologio (bottone che pulsa, mano che tocca, anello sul quadrante) */
+.zoom-cta { animation: zoom-cta-pulse 1.8s ease-out infinite; }
+@keyframes zoom-cta-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(215, 179, 104, 0.7), 0 10px 30px rgba(0, 0, 0, 0.45); }
+  70% { box-shadow: 0 0 0 18px rgba(215, 179, 104, 0), 0 10px 30px rgba(0, 0, 0, 0.45); }
+  100% { box-shadow: 0 0 0 0 rgba(215, 179, 104, 0), 0 10px 30px rgba(0, 0, 0, 0.45); }
+}
+.zoom-tap { animation: zoom-tap 1.8s ease-in-out infinite; transform-origin: 50% 80%; }
+@keyframes zoom-tap {
+  0%, 100% { transform: translateY(0) scale(1); }
+  45% { transform: translateY(2px) scale(0.92); }
+}
+.zoom-ring { animation: zoom-ring 2.4s cubic-bezier(0.2, 0.6, 0.3, 1) infinite; }
+@keyframes zoom-ring {
+  0% { transform: translate(-50%, -50%) scale(0.92); opacity: 0.95; }
+  100% { transform: translate(-50%, -50%) scale(1.35); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .zoom-cta, .zoom-tap, .zoom-ring { animation: none; }
+}
