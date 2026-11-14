@@ -79,7 +79,7 @@ export default function RestorationSection() {
   }, [near]);
 
   return (
-    <section ref={ref} className="relative h-[720vh] border-y border-line bg-paper-2 lg:h-[980vh]" aria-label="Il restauro, passo dopo passo">
+    <section ref={ref} className="tema-chiaro relative h-[720vh] border-y border-line bg-paper-2 lg:h-[980vh]" aria-label="Il restauro, passo dopo passo">
       <div className="sticky top-0 flex h-dvh flex-col overflow-hidden">
         <div className="mx-auto w-full max-w-7xl px-4 pt-20 sm:px-8 sm:pt-24">
           <p className="eyebrow">Il restauro, passo dopo passo</p>
