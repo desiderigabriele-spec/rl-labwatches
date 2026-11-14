@@ -7,6 +7,7 @@ import { whatsappLink } from "@/data/site";
 import { WhatsAppIcon } from "./WhatsAppButton";
 import BrandLogo from "./BrandLogo";
 import BoxPhoto from "./BoxPhoto";
+import Spotlight, { BoxLight, LightPool } from "./Spotlight";
 
 /**
  * Vetrina con faretti, una nicchia per marca: su ogni ripiano c'è il modello più famoso della marca,
@@ -68,6 +69,7 @@ function Slot({
   reduced: boolean;
 }) {
   const photo: string = brand.vetrina;
+  const lvl = light === "on" ? 1 : light === "idle" ? 0.22 : 0;
   return (
     <div className="relative flex w-[78vw] shrink-0 snap-center flex-col items-center px-3 sm:w-[46vw] lg:w-auto lg:px-6">
       <button
@@ -81,27 +83,8 @@ function Slot({
         aria-label={selected ? `${brand.name}: entra e guarda gli orologi in vendita` : `${brand.name}: accendi la luce`}
         className="group relative block w-full cursor-pointer outline-none"
       >
-        {/* plafoniera del faretto */}
-        <span className="relative z-10 mx-auto block h-3 w-12 rounded-b-full bg-[#1c211e] shadow-[0_1px_0_rgba(255,255,255,0.06)]">
-          <span
-            className="absolute inset-x-2 bottom-0 h-1 rounded-full transition-all duration-500"
-            style={{ background: light === "on" ? "#fff4dc" : light === "idle" ? "#8a7f6a" : "#2a2e2b", boxShadow: light === "on" ? "0 0 18px 4px rgba(255,236,200,0.75)" : "none" }}
-          />
-        </span>
-
-        {/* cono di luce */}
-        <span
-          aria-hidden
-          className={`pointer-events-none absolute left-1/2 top-2 h-[92%] w-[150%] -translate-x-1/2 ${light === "on" && !reduced ? "lamp-on" : ""}`}
-          style={{
-            clipPath: "polygon(46% 0, 54% 0, 100% 100%, 0 100%)",
-            background: "linear-gradient(to bottom, rgba(255,244,220,0.55), rgba(255,240,210,0.14) 55%, rgba(255,240,210,0) 92%)",
-            filter: "blur(7px)",
-            mixBlendMode: "screen",
-            opacity: light === "on" ? 1 : light === "idle" ? 0.22 : 0,
-            transition: "opacity 600ms ease",
-          }}
-        />
+        {/* faretto: plafoniera, fascio conico e pulviscolo */}
+        <Spotlight level={lvl} flicker={light === "on" && !reduced} />
 
         {/* cofanetto con l'orologio */}
         <span className="relative mt-6 block aspect-[840/1020] w-full">
@@ -123,7 +106,10 @@ function Slot({
             }}
           >
             {photo ? (
-              <BoxPhoto brand={brand} run={running && !reduced} zoomed={entering} />
+              <>
+                <BoxPhoto brand={brand} run={running && !reduced} zoomed={entering} />
+                {!entering && <BoxLight src={photo} level={lvl} />}
+              </>
             ) : (
               <span className="absolute inset-x-[15%] bottom-0 top-[24%]">
                 <Cofanetto brand={brand} lit={light === "on"} />
@@ -132,12 +118,8 @@ function Slot({
           </span>
         </span>
 
-        {/* chiazza di luce sul ripiano */}
-        <span
-          aria-hidden
-          className="absolute -bottom-2 left-1/2 z-20 h-5 w-[80%] -translate-x-1/2 rounded-[50%] transition-opacity duration-700"
-          style={{ background: "radial-gradient(closest-side, rgba(255,240,210,0.55), transparent)", opacity: light === "on" ? 1 : light === "idle" ? 0.15 : 0 }}
-        />
+        {/* pozza di luce sul ripiano e ombra del cofanetto */}
+        <LightPool level={lvl} />
       </button>
 
       {/* ripiano in pietra (continuo da una nicchia all'altra) */}

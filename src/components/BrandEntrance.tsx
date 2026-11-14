@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { brandBySlug } from "@/data/brands";
 import BoxPhoto, { CloseUp } from "./BoxPhoto";
 import BrandLogo from "./BrandLogo";
+import Spotlight from "./Spotlight";
 
 /**
  * Apertura della sezione di una marca: il cofanetto arriva dall'ingrandimento della vetrina
@@ -15,19 +16,7 @@ export default function BrandEntrance({ slug }: { slug: string }) {
   return (
     <div className={`relative mx-auto w-full ${brand.vicino ? "max-w-[17rem] sm:max-w-[24rem]" : "max-w-[15rem] sm:max-w-[22rem]"}`}>
       {/* faretto */}
-      <span aria-hidden className="mx-auto block h-3 w-12 rounded-b-full bg-[#1c211e]">
-        <span className="mx-2 block h-1 translate-y-2 rounded-full bg-[#fff4dc] shadow-[0_0_18px_4px_rgba(255,236,200,0.75)]" />
-      </span>
-      <span
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-2 h-[96%] w-[160%] -translate-x-1/2"
-        style={{
-          clipPath: "polygon(46% 0, 54% 0, 100% 100%, 0 100%)",
-          background: "linear-gradient(to bottom, rgba(255,244,220,0.5), rgba(255,240,210,0.12) 55%, rgba(255,240,210,0) 92%)",
-          filter: "blur(7px)",
-          mixBlendMode: "screen",
-        }}
-      />
+      <Spotlight level={1} spread={30} />
       {brand.vicino ? (
         // arrivando dalla vetrina: l'orologio da vicino, nitido, che si assesta sotto il faretto
         <motion.div
