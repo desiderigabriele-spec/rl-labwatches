@@ -474,7 +474,7 @@ function softCircle(lg: CanvasRenderingContext2D, x: number, y: number, r: numbe
   lg.fillRect(x - r, y - r, 2 * r, 2 * r);
 }
 /** colore del fondo della sezione: il bianco delle foto diventa questo e i bordi sfumano nella pagina */
-const PAPER = "#f3f0ea";
+const PAPER = "#e9dfca"; // uguale al fondo della sezione (--color-paper-2)
 let chipCanvas: HTMLCanvasElement | null = null;
 
 export function chip(c: FxCtx) {

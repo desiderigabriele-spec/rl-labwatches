@@ -3,6 +3,7 @@ import Reveal from "./Reveal";
 import JsonLd from "./JsonLd";
 import SplitText from "./SplitText";
 import { breadcrumbLd } from "@/lib/seo";
+import Filigrana from "./Filigrana";
 
 export default function PageHero({
   eyebrow,
@@ -20,6 +21,7 @@ export default function PageHero({
     <section className="relative overflow-hidden border-b border-line pt-36 pb-16 sm:pt-44 sm:pb-24">
       {crumbs && <JsonLd data={breadcrumbLd(crumbs)} />}
       <div className="pointer-events-none absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-gold/10 blur-[120px]" />
+      <Filigrana className="absolute right-[-30%] top-[-30%] h-[150%] w-auto opacity-[0.14] sm:right-[-8%] lg:right-[2%]" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-8">
         <Reveal>
           {crumbs && (

@@ -12,6 +12,7 @@ import SplitText from "@/components/SplitText";
 import ParallaxImage from "@/components/ParallaxImage";
 import IrisReveal from "@/components/IrisReveal";
 import TrustBar from "@/components/TrustBar";
+import Filigrana from "@/components/Filigrana";
 import BeforeAfter from "@/components/BeforeAfter";
 import { WhatsAppIcon } from "@/components/WhatsAppButton";
 import { site, whatsappLink } from "@/data/site";
@@ -32,7 +33,9 @@ export default function Home() {
     <>
       {/* APERTURA: il volto di Roberto e un solo invito, mandare una foto */}
       <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute right-[-10%] top-1/4 h-[600px] w-[600px] rounded-full bg-gold/10 blur-[140px]" />
+        {/* filigrana del quadrante dietro il ritratto, con una luce più chiara che lo stacca dal fondo */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_74%_42%,rgba(255,251,240,0.9),rgba(255,251,240,0)_58%)]" />
+        <Filigrana className="absolute right-[-38%] top-[18%] h-[min(120vw,640px)] w-auto opacity-[0.2] sm:right-[-14%] lg:right-[-6%] lg:top-[-6%] lg:h-[118%]" />
         <div className="relative mx-auto grid max-w-7xl px-4 pt-20 sm:px-8 sm:pt-28 lg:min-h-[calc(100dvh-5rem)] lg:grid-cols-[1.05fr_0.95fr] lg:items-end lg:gap-8">
           <div className="relative z-10 lg:self-center lg:pb-16">
             <Reveal>
