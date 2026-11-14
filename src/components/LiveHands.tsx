@@ -90,7 +90,8 @@ export default function LiveHands({ style, run, beats = 8, sprites }: { style: H
             <circle cy={-0.6} r={0.048} fill={LUME} stroke="#d9dde1" strokeWidth={0.016} />
             <rect x={-0.016} y={0.12} width={0.032} height={0.12} rx={0.01} fill={STEEL} />
           </g>
-          <circle r={0.05} fill={STEEL} stroke="rgba(0,0,0,0.35)" strokeWidth={0.008} />
+          <circle r={0.075} fill={STEEL} stroke="rgba(0,0,0,0.4)" strokeWidth={0.01} />
+          <circle r={0.028} fill="#6d7277" />
         </g>
       </svg>
     </span>
