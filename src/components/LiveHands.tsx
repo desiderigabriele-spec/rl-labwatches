@@ -18,14 +18,14 @@ function SubmarinerDrawn({ hour, minute }: { hour: React.Ref<SVGGElement>; minut
   return (
     <>
       {/* ore: "Mercedes" */}
-      <g ref={hour}>
+      <g ref={hour} data-hand="h">
         <rect x={-0.035} y={-0.27} width={0.07} height={0.33} fill={STEEL} />
         <circle cy={-0.37} r={0.105} fill={LUME} stroke="#dfe2e6" strokeWidth={0.03} />
         <path d="M0 -0.37 V-0.475 M0 -0.37 L0.09 -0.318 M0 -0.37 L-0.09 -0.318" stroke="#dfe2e6" strokeWidth={0.026} />
         <path d="M-0.05 -0.465 L0 -0.56 L0.05 -0.465 Z" fill={LUME} stroke="#dfe2e6" strokeWidth={0.02} />
       </g>
       {/* minuti: a spada */}
-      <g ref={minute}>
+      <g ref={minute} data-hand="m">
         <path d="M-0.04 0.06 L-0.045 -0.6 L0 -0.8 L0.045 -0.6 L0.04 0.06 Z" fill={STEEL} />
         <path d="M-0.022 -0.12 L-0.026 -0.6 L0 -0.72 L0.026 -0.6 L0.022 -0.12 Z" fill={LUME} />
       </g>
@@ -69,9 +69,9 @@ export default function LiveHands({ style, run, beats = 8, sprites }: { style: H
       {sprites && (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img ref={hourImg} src={sprites.ore} alt="" draggable={false} className="absolute inset-0 h-full w-full" style={{ filter: shadow }} />
+          <img ref={hourImg} data-hand="h" src={sprites.ore} alt="" draggable={false} className="absolute inset-0 h-full w-full" style={{ filter: shadow }} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img ref={minuteImg} src={sprites.minuti} alt="" draggable={false} className="absolute inset-0 h-full w-full" style={{ filter: shadow }} />
+          <img ref={minuteImg} data-hand="m" src={sprites.minuti} alt="" draggable={false} className="absolute inset-0 h-full w-full" style={{ filter: shadow }} />
         </>
       )}
       <svg viewBox="-1 -1 2 2" className="absolute inset-0 h-full w-full overflow-visible">
@@ -85,7 +85,7 @@ export default function LiveHands({ style, run, beats = 8, sprites }: { style: H
         <g style={{ filter: "drop-shadow(0.02px 0.04px 0.025px rgba(0,0,0,0.55))" }}>
           {!sprites && style === "submariner" && <SubmarinerDrawn hour={hour} minute={minute} />}
           {/* secondi: sottile, con il punto luminoso e il contrappeso */}
-          <g ref={second}>
+          <g ref={second} data-hand="s">
             <rect x={-0.007} y={-0.9} width={0.014} height={1.12} fill={STEEL} />
             <circle cy={-0.6} r={0.048} fill={LUME} stroke="#d9dde1" strokeWidth={0.016} />
             <rect x={-0.016} y={0.12} width={0.032} height={0.12} rx={0.01} fill={STEEL} />

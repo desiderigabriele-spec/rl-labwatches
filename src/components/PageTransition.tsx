@@ -2,6 +2,7 @@
 import { usePathname } from "next/navigation";
 import { animate, motion, useMotionTemplate, useMotionValue, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { zoomPending } from "@/lib/zoomEntrance";
 
 /**
  * Transizione tra le pagine "a lancetta": al cambio di pagina un velo verde copre lo schermo
@@ -22,6 +23,7 @@ export default function PageTransition() {
       return;
     }
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (zoomPending()) return; // ingresso nella marca dalla vetrina: c'è già lo zoom
     sweep.set(0);
     setOn(true);
     const c = animate(sweep, 360, { duration: 0.95, ease: [0.65, 0, 0.25, 1], delay: 0.08, onComplete: () => setOn(false) });
