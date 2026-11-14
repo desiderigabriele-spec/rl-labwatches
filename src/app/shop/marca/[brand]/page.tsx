@@ -42,33 +42,32 @@ export default async function BrandPage({ params }: Props) {
       {/* fondo scuro sotto la pagina: arrivando dalla vetrina non si vede il lampo chiaro del cambio pagina */}
       <style>{"body{background:#0b100d}"}</style>
       {/* apertura scura, in continuità con la vetrina */}
-      <section className="guilloche relative overflow-hidden bg-[#0b100d] pb-16 pt-24 text-cream sm:pb-24 sm:pt-32">
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0,69,42,0.35),transparent_60%)]" />
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-8">
-          <nav aria-label="Percorso" className="text-center text-[0.7rem] uppercase tracking-[0.2em] text-cream/45">
-            <Link href="/" className="hover:text-gold-3">Home</Link> <span aria-hidden>/</span>{" "}
-            <Link href="/shop" className="hover:text-gold-3">Orologi</Link> <span aria-hidden>/</span> {b.name}
-          </nav>
-          <div className="mt-4 grid items-center gap-8 lg:grid-cols-[1fr_auto_1fr] lg:gap-12">
-            <div className="order-2 text-center lg:order-1 lg:text-right">
-              <BrandLogo brand={b} className={`text-gold-3 ${b.ratio > 3 ? "h-7" : "h-12 lg:h-14"}`} />
-              <h1 className="mt-6 font-display text-5xl font-light leading-[1.05] sm:text-6xl xl:text-7xl">
+      <section className="relative overflow-hidden bg-[#0b100d] pt-20 text-cream sm:pt-28">
+        <BrandEntrance
+          slug={b.slug}
+          left={
+            <>
+              <nav aria-label="Percorso" className="text-[0.7rem] uppercase tracking-[0.2em] text-cream/45">
+                <Link href="/" className="hover:text-gold-3">Home</Link> <span aria-hidden>/</span>{" "}
+                <Link href="/shop" className="hover:text-gold-3">Orologi</Link> <span aria-hidden>/</span> {b.name}
+              </nav>
+              <BrandLogo brand={b} className={`mx-auto mt-6 text-gold-3 lg:ml-auto lg:mr-0 ${b.ratio > 3 ? "h-7" : "h-12 lg:h-14"}`} />
+              <h1 className="mt-5 font-display text-5xl font-light leading-[1.05] sm:text-6xl xl:text-7xl">
                 Orologi <em className="text-gold-3">{b.name}</em>
               </h1>
-            </div>
-            <div className="order-1 lg:order-2">
-              <BrandEntrance slug={b.slug} />
-            </div>
-            <div className="order-3 text-center lg:text-left">
-              <p className="mx-auto max-w-md leading-relaxed text-cream/65 lg:mx-0 lg:text-lg">
+            </>
+          }
+          right={
+            <>
+              <p className="mx-auto max-w-md leading-relaxed text-cream/70 lg:mx-0 lg:text-lg">
                 Ogni {b.name} in vendita è selezionato da me, controllato e revisionato nel mio laboratorio prima di arrivare in vetrina, con 12 mesi di garanzia.
               </p>
-              <a href="#disponibili" className="btn mt-8 !border-gold-3 !bg-gold-3 !text-green-2 hover:!bg-cream">
+              <a href="#disponibili" className="btn mt-8 self-center !border-gold-3 !bg-gold-3 !text-green-2 hover:!bg-cream lg:self-start">
                 Orologi disponibili
               </a>
-            </div>
-          </div>
-        </div>
+            </>
+          }
+        />
       </section>
 
       <div className="bg-paper">
