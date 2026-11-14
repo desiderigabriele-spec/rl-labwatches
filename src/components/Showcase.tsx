@@ -6,6 +6,7 @@ import { brands, type Brand } from "@/data/brands";
 import { whatsappLink } from "@/data/site";
 import { WhatsAppIcon } from "./WhatsAppButton";
 import BrandLogo from "./BrandLogo";
+import LiveHands from "./LiveHands";
 
 /**
  * Vetrina con faretti, una nicchia per marca: su ogni ripiano c'è il modello più famoso della marca,
@@ -54,7 +55,9 @@ function Slot({
   onHover,
   onSelect,
   reduced,
+  running,
 }: {
+  running: boolean;
   brand: Brand;
   light: Light;
   selected: boolean;
@@ -114,8 +117,24 @@ function Slot({
             }}
           >
             {photo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={photo} alt={`${brand.name} ${brand.icon} nel cofanetto originale`} draggable={false} loading="lazy" className="h-full w-full select-none object-contain object-bottom drop-shadow-[0_18px_24px_rgba(0,0,0,0.55)]" />
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={photo} alt={`${brand.name} ${brand.icon} nel cofanetto originale`} draggable={false} loading="lazy" className="h-full w-full select-none object-contain object-bottom drop-shadow-[0_18px_24px_rgba(0,0,0,0.55)]" />
+                {brand.dial && (
+                  // il riquadro 840×1020 della foto: x e r in % della larghezza, y in % dell'altezza
+                  <span
+                    className="absolute"
+                    style={{
+                      left: `${brand.dial.x - brand.dial.r}%`,
+                      width: `${brand.dial.r * 2}%`,
+                      top: `${brand.dial.y - brand.dial.r * (840 / 1020)}%`,
+                      height: `${brand.dial.r * 2 * (840 / 1020)}%`,
+                    }}
+                  >
+                    <LiveHands style={brand.dial.hands} beats={brand.dial.beats} run={running && !reduced} />
+                  </span>
+                )}
+              </>
             ) : (
               <span className="absolute inset-x-[15%] bottom-0 top-[24%]">
                 <Cofanetto brand={brand} lit={light === "on"} />
@@ -158,6 +177,7 @@ export default function Showcase({
   const items = brands;
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.35 });
+  const visible = useInView(ref, { amount: 0.05 }); // le lancette girano solo con la vetrina sullo schermo
   const [introLit, setIntroLit] = useState(-1); // quanti faretti si sono già accesi all'ingresso
   const [hover, setHover] = useState<number | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
@@ -217,6 +237,7 @@ export default function Showcase({
                 light={lightOf(i)}
                 selected={selected === i}
                 reduced={reduced}
+                running={visible}
                 onHover={(h) => setHover((cur) => (h ? i : cur === i ? null : cur))}
                 onSelect={() => setSelected((s) => (s === i ? null : i))}
               />

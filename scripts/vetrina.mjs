@@ -1,6 +1,6 @@
 // Prepara la foto di un orologio nel suo cofanetto per la vetrina della home.
-//   node scripts/vetrina.mjs <foto.png> <slug-marca> <px-per-mm>
-//   es. node scripts/vetrina.mjs rolex.png rolex 5.32
+//   node scripts/vetrina.mjs <foto.png> <slug-marca> <px-per-mm> [x,y,r]
+//   es. node scripts/vetrina.mjs rolex.png rolex 5.32 512,857,84
 //
 // Tutte le foto vanno alla STESSA SCALA (3 px per millimetro reale), così in vetrina gli orologi
 // risultano grandi uguali e i cofanetti hanno le loro proporzioni vere.
@@ -12,7 +12,9 @@
 import sharp from "sharp";
 import { mkdirSync } from "node:fs";
 
-const [src, slug, pxmm] = process.argv.slice(2);
+// [x,y,r] = centro del quadrante e raggio (bordo interno della lunetta) in pixel sulla foto originale:
+// lo script stampa dove cadono nella foto finale, da copiare in brands.ts (dial) per le lancette animate.
+const [src, slug, pxmm, dialArg] = process.argv.slice(2);
 if (!src || !slug || !Number(pxmm)) {
   console.error("Uso: node scripts/vetrina.mjs <foto.png> <slug-marca> <px-per-mm>");
   process.exit(1);
@@ -32,4 +34,12 @@ await sharp({ create: { width: W, height: H, channels: 4, background: { r: 0, g:
   .composite([{ input: fitted.data, left: Math.round((W - fitted.info.width) / 2), top: H - fitted.info.height }])
   .webp({ quality: 88, alphaQuality: 90 })
   .toFile(out);
+if (dialArg) {
+  const [dx, dy, dr] = dialArg.split(",").map(Number);
+  const f = fitted.info.width / trimmed.info.width;
+  const left = Math.round((W - fitted.info.width) / 2), top = H - fitted.info.height;
+  const ox = left + (dx + (trimmed.info.trimOffsetLeft ?? 0)) * f, oy = top + (dy + (trimmed.info.trimOffsetTop ?? 0)) * f;
+  const pct = (v, t) => +((v / t) * 100).toFixed(2);
+  console.log(`dial: { x: ${pct(ox, W)}, y: ${pct(oy, H)}, r: ${pct(dr * f, W)} }`);
+}
 console.log(`${out}: cofanetto ${(fitted.info.width / SCALE / 10).toFixed(1)} × ${(fitted.info.height / SCALE / 10).toFixed(1)} cm`);
