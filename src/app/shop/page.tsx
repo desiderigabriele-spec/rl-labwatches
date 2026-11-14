@@ -1,5 +1,6 @@
 import PageHero from "@/components/PageHero";
-import Reveal from "@/components/Reveal";
+import { Suspense } from "react";
+import ShopGrid from "@/components/ShopGrid";
 import ProductCard from "@/components/ProductCard";
 import Showcase from "@/components/Showcase";
 import { products, SHOP_READY } from "@/data/products";
@@ -21,16 +22,20 @@ export default function ShopPage() {
         intro="Ogni pezzo è controllato e revisionato nel mio laboratorio prima della vendita."
         crumbs={[{ name: "Orologi", path: "/shop" }]}
       />
-      <Showcase items={products.slice(0, 5)} eyebrow="In vetrina" title="Accendi la luce su un orologio" />
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-8">
-        <h2 className="mb-12 font-display text-4xl font-light">Tutti gli orologi</h2>
-        <div className="grid gap-x-10 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((p, i) => (
-            <Reveal key={p.slug} delay={(i % 3) * 0.1}>
-              <ProductCard product={p} />
-            </Reveal>
-          ))}
-        </div>
+      <Showcase eyebrow="In vetrina" title="Scegli la tua marca" />
+      <section id="orologi" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:px-8">
+        <h2 className="mb-8 font-display text-4xl font-light">Tutti gli orologi</h2>
+        <Suspense
+          fallback={
+            <div className="grid gap-x-10 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
+              {products.map((p) => (
+                <ProductCard key={p.slug} product={p} />
+              ))}
+            </div>
+          }
+        >
+          <ShopGrid products={products} />
+        </Suspense>
       </section>
     </>
   );

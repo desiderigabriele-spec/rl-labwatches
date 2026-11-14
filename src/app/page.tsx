@@ -14,7 +14,6 @@ import IrisReveal from "@/components/IrisReveal";
 import TrustBar from "@/components/TrustBar";
 import BeforeAfter from "@/components/BeforeAfter";
 import { WhatsAppIcon } from "@/components/WhatsAppButton";
-import { products } from "@/data/products";
 import { site, whatsappLink } from "@/data/site";
 import { pageMeta } from "@/lib/seo";
 
@@ -109,9 +108,9 @@ export default function Home() {
       <ServicesRail />
 
       {/* VETRINA con i faretti */}
-      <Showcase items={products.slice(0, 5)} />
+      <Showcase />
       <div className="bg-[#0b100d] pb-20 text-center">
-        <Link href="/shop" className="btn !border-cream/40 !text-cream hover:!bg-cream hover:!text-green-2">Tutti gli orologi</Link>
+        <Link href="/shop#orologi" className="btn !border-cream/40 !text-cream hover:!bg-cream hover:!text-green-2">Vedi tutti gli orologi</Link>
       </div>
 
       <BrandStrip />
