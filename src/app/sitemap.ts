@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/data/site";
 import { products, SHOP_READY } from "@/data/products";
+import { brands } from "@/data/brands";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -23,6 +24,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page("/termini-di-servizio", 0.2, "yearly"),
     page("/cookie", 0.2, "yearly"),
     page("/note-legali", 0.2, "yearly"),
-    ...(SHOP_READY ? [page("/shop", 0.8, "weekly"), ...products.map((p) => page(`/shop/${p.slug}`, 0.6, "weekly"))] : []),
+    ...(SHOP_READY ? [page("/shop", 0.8, "weekly"), ...brands.map((b) => page(`/shop/marca/${b.slug}`, 0.7, "weekly")), ...products.map((p) => page(`/shop/${p.slug}`, 0.6, "weekly"))] : []),
   ];
 }

@@ -32,12 +32,14 @@ export default function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
+  // pagine che si aprono su fondo scuro (sezioni delle marche): intestazione sempre chiara, per leggere il logo
+  const darkTop = pathname.startsWith("/shop/marca/");
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        open ? "bg-transparent" : scrolled ? "border-b border-line bg-paper/85 backdrop-blur-md" : "bg-transparent"
+        open ? "bg-transparent" : scrolled || darkTop ? "border-b border-line bg-paper/85 backdrop-blur-md" : "bg-transparent"
       }`}
     >
       <div className={`relative z-10 mx-auto flex max-w-7xl items-center justify-between px-4 transition-all duration-500 sm:px-8 ${scrolled ? "h-16" : "h-20 sm:h-28"}`}>
