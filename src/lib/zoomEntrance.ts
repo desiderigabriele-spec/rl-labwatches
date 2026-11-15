@@ -54,7 +54,7 @@ const el = (tag: string, css: string, html = "") => {
  */
 export function openZoom(
   shot: HTMLElement,
-  o: { name: string; href: string; go: (href: string) => void; onClose: () => void; dial?: { x: number; y: number; r: number } }
+  o: { name: string; href: string; go: (href: string) => void; onClose: () => void }
 ) {
   const piece = shot.querySelector<HTMLElement>("[data-closeup]");
   if (!piece || window.__rlZoom) return false;
@@ -94,9 +94,7 @@ export function openZoom(
     "&#x2715;"
   ) as HTMLButtonElement;
   close.setAttribute("aria-label", "Chiudi e torna alla vetrina");
-  // anello d'oro che pulsa sul quadrante: si tocca lì
-  const ring = el("div", "position:absolute;pointer-events:none;transform:translate(-50%,-50%);border-radius:999px;border:2px solid rgba(215,179,104,.95);box-shadow:0 0 24px rgba(215,179,104,.45);opacity:0");
-  root.append(back, content, shade, ring, caption, close);
+  root.append(back, content, shade, caption, close);
   document.body.appendChild(root);
 
   // destinazione: orologio largo come nella pagina della marca, al centro dello schermo
@@ -111,13 +109,6 @@ export function openZoom(
     height: r.height * k,
   };
   const anim = content.animate([px(from), px(end)], { duration: DURATION, easing: EASE, fill: "forwards" });
-  if (o.dial) {
-    const cw = c.width * k; // larghezza della foto ravvicinata a fine ingrandimento
-    const chh = c.height * k;
-    const d = cw * (o.dial.r / 100) * 2 * 1.08;
-    Object.assign(ring.style, { left: `${cx - cw / 2 + (cw * o.dial.x) / 100}px`, top: `${cy - chh / 2 + (chh * o.dial.y) / 100}px`, width: `${d}px`, height: `${d}px` });
-    window.setTimeout(() => ring.classList.add("zoom-ring"), DURATION - 150);
-  }
   back.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 700, easing: "ease-in-out", fill: "forwards" });
   const show = { duration: 600, delay: DURATION - 300, easing: "ease-out", fill: "forwards" as const };
   [shade, caption, close].forEach((n) => n.animate([{ opacity: 0 }, { opacity: 1 }], show));
@@ -163,7 +154,7 @@ export function openZoom(
     const cur = content.getBoundingClientRect();
     z.anim.cancel();
     const out = { duration: 900, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" as const };
-    [shade, caption, close, ring].forEach((n) => n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, fill: "forwards" }));
+    [shade, caption, close].forEach((n) => n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, fill: "forwards" }));
     content.animate([px({ left: cur.left, top: cur.top, width: cur.width, height: cur.height }), px(from)], out);
     back.animate([{ opacity: 1 }, { opacity: 0 }], out).onfinish = () => {
       z.cleanup();
@@ -176,7 +167,7 @@ export function openZoom(
   function enter() {
     if (done) return;
     done = true;
-    [content, shade, caption, close, ring].forEach((n) => n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, easing: "ease-out", fill: "forwards" }));
+    [content, shade, caption, close].forEach((n) => n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, easing: "ease-out", fill: "forwards" }));
     window.setTimeout(() => o.go(o.href), 340);
     window.setTimeout(() => {
       lenis()?.start();
