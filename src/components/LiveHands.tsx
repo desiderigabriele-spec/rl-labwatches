@@ -9,7 +9,7 @@ import { useEffect, useRef } from "react";
  * (8 volte al secondo per i Rolex a 28.800 alternanze).
  */
 export type HandStyle = "submariner" | "nautilus";
-export type HandSprites = { ore: string; minuti: string };
+export type HandSprites = { ore: string; minuti: string; secondi?: string };
 
 const STEEL = "url(#lh-steel)";
 const LUME = "#f2eee2";
@@ -55,6 +55,7 @@ export default function LiveHands({ style, run, beats = 8, sprites }: { style: H
   const second = useRef<SVGGElement>(null);
   const hourImg = useRef<HTMLImageElement>(null);
   const minuteImg = useRef<HTMLImageElement>(null);
+  const secondImg = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     const set = () => {
@@ -67,6 +68,7 @@ export default function LiveHands({ style, run, beats = 8, sprites }: { style: H
       second.current?.setAttribute("transform", `rotate(${s * 6})`);
       if (hourImg.current) hourImg.current.style.transform = `rotate(${h * 30}deg)`;
       if (minuteImg.current) minuteImg.current.style.transform = `rotate(${m * 6}deg)`;
+      if (secondImg.current) secondImg.current.style.transform = `rotate(${s * 6}deg)`;
     };
     set();
     if (!run) return;
@@ -88,6 +90,10 @@ export default function LiveHands({ style, run, beats = 8, sprites }: { style: H
           <img ref={hourImg} data-hand="h" src={sprites.ore} alt="" draggable={false} className="absolute inset-0 h-full w-full" style={{ filter: shadow }} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img ref={minuteImg} data-hand="m" src={sprites.minuti} alt="" draggable={false} className="absolute inset-0 h-full w-full" style={{ filter: shadow }} />
+          {sprites.secondi && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img ref={secondImg} data-hand="s" src={sprites.secondi} alt="" draggable={false} className="absolute inset-0 h-full w-full" style={{ filter: shadow }} />
+          )}
         </>
       )}
       <svg viewBox="-1 -1 2 2" className="absolute inset-0 h-full w-full overflow-visible">
@@ -101,7 +107,7 @@ export default function LiveHands({ style, run, beats = 8, sprites }: { style: H
         <g style={{ filter: "drop-shadow(0.02px 0.04px 0.025px rgba(0,0,0,0.55))" }}>
           {!sprites && style === "submariner" && <SubmarinerDrawn hour={hour} minute={minute} />}
           {!sprites && style === "nautilus" && <NautilusDrawn hour={hour} minute={minute} />}
-          {style === "nautilus" ? (
+          {sprites?.secondi ? null : style === "nautilus" ? (
             // secondi del Nautilus: asta sottile con la punta luminescente e il contrappeso corto
             <g ref={second} data-hand="s">
               <rect x={-0.006} y={-0.94} width={0.012} height={1.2} fill={STEEL} />
@@ -116,8 +122,9 @@ export default function LiveHands({ style, run, beats = 8, sprites }: { style: H
             </g>
           )}
           {/* perno: con le lancette vere resta piccolo, così si vedono i loro anelli */}
-          <circle r={sprites ? 0.034 : 0.075} fill={STEEL} stroke="rgba(0,0,0,0.4)" strokeWidth={0.008} />
-          <circle r={sprites ? 0.013 : 0.028} fill="#6d7277" />
+          {/* il Nautilus ha il cappuccio del perno più grande, come nella foto */}
+          <circle r={sprites ? (style === "nautilus" ? 0.06 : 0.034) : 0.075} fill={STEEL} stroke="rgba(0,0,0,0.4)" strokeWidth={0.008} />
+          <circle r={sprites ? (style === "nautilus" ? 0.022 : 0.013) : 0.028} fill="#6d7277" />
         </g>
       </svg>
     </span>
