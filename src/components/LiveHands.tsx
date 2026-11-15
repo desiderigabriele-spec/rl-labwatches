@@ -8,7 +8,7 @@ import { useEffect, useRef } from "react";
  * al centro, a mezzogiorno); altrimenti sono disegnate. I secondi scattano come il calibro vero
  * (8 volte al secondo per i Rolex a 28.800 alternanze).
  */
-export type HandStyle = "submariner";
+export type HandStyle = "submariner" | "nautilus";
 export type HandSprites = { ore: string; minuti: string };
 
 const STEEL = "url(#lh-steel)";
@@ -28,6 +28,22 @@ function SubmarinerDrawn({ hour, minute }: { hour: React.Ref<SVGGElement>; minut
       <g ref={minute} data-hand="m">
         <path d="M-0.04 0.06 L-0.045 -0.6 L0 -0.8 L0.045 -0.6 L0.04 0.06 Z" fill={STEEL} />
         <path d="M-0.022 -0.12 L-0.026 -0.6 L0 -0.72 L0.026 -0.6 L0.022 -0.12 Z" fill={LUME} />
+      </g>
+    </>
+  );
+}
+
+/** Patek Philippe Nautilus: ore e minuti a bastone in oro bianco con il luminescente */
+function NautilusDrawn({ hour, minute }: { hour: React.Ref<SVGGElement>; minute: React.Ref<SVGGElement> }) {
+  return (
+    <>
+      <g ref={hour} data-hand="h">
+        <path d="M-0.04 0.05 L-0.04 -0.53 L0 -0.585 L0.04 -0.53 L0.04 0.05 Z" fill={STEEL} />
+        <path d="M-0.02 -0.14 L-0.02 -0.52 L0 -0.55 L0.02 -0.52 L0.02 -0.14 Z" fill={LUME} />
+      </g>
+      <g ref={minute} data-hand="m">
+        <path d="M-0.034 0.05 L-0.034 -0.79 L0 -0.84 L0.034 -0.79 L0.034 0.05 Z" fill={STEEL} />
+        <path d="M-0.017 -0.16 L-0.017 -0.78 L0 -0.81 L0.017 -0.78 L0.017 -0.16 Z" fill={LUME} />
       </g>
     </>
   );
@@ -84,12 +100,21 @@ export default function LiveHands({ style, run, beats = 8, sprites }: { style: H
         </defs>
         <g style={{ filter: "drop-shadow(0.02px 0.04px 0.025px rgba(0,0,0,0.55))" }}>
           {!sprites && style === "submariner" && <SubmarinerDrawn hour={hour} minute={minute} />}
-          {/* secondi: sottile, con il punto luminoso e il contrappeso */}
-          <g ref={second} data-hand="s">
-            <rect x={-0.007} y={-0.9} width={0.014} height={1.12} fill={STEEL} />
-            <circle cy={-0.6} r={0.048} fill={LUME} stroke="#d9dde1" strokeWidth={0.016} />
-            <rect x={-0.016} y={0.12} width={0.032} height={0.12} rx={0.01} fill={STEEL} />
-          </g>
+          {!sprites && style === "nautilus" && <NautilusDrawn hour={hour} minute={minute} />}
+          {style === "nautilus" ? (
+            // secondi del Nautilus: asta sottile con la punta luminescente e il contrappeso corto
+            <g ref={second} data-hand="s">
+              <rect x={-0.006} y={-0.94} width={0.012} height={1.2} fill={STEEL} />
+              <rect x={-0.012} y={-0.9} width={0.024} height={0.14} rx={0.006} fill={LUME} />
+            </g>
+          ) : (
+            // secondi del Submariner: sottile, con il punto luminoso e il contrappeso
+            <g ref={second} data-hand="s">
+              <rect x={-0.007} y={-0.9} width={0.014} height={1.12} fill={STEEL} />
+              <circle cy={-0.6} r={0.048} fill={LUME} stroke="#d9dde1" strokeWidth={0.016} />
+              <rect x={-0.016} y={0.12} width={0.032} height={0.12} rx={0.01} fill={STEEL} />
+            </g>
+          )}
           {/* perno: con le lancette vere resta piccolo, così si vedono i loro anelli */}
           <circle r={sprites ? 0.034 : 0.075} fill={STEEL} stroke="rgba(0,0,0,0.4)" strokeWidth={0.008} />
           <circle r={sprites ? 0.013 : 0.028} fill="#6d7277" />
