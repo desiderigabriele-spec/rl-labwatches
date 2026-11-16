@@ -327,11 +327,20 @@ html[data-intro="seen"] .intro-splash {
 }
 
 /* vetrina ingrandita: invito a toccare (bottone che pulsa, mano che tocca) */
-.zoom-cta { animation: zoom-cta-pulse 1.8s ease-out infinite; }
+.zoom-cta { position: relative; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); }
+/* alone che si allarga: solo trasformazione e opacità, lo muove la scheda grafica senza ridisegnare */
+.zoom-cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 2px rgba(215, 179, 104, 0.9), 0 0 18px 4px rgba(215, 179, 104, 0.55);
+  animation: zoom-cta-pulse 1.8s ease-out infinite;
+  pointer-events: none;
+}
 @keyframes zoom-cta-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(215, 179, 104, 0.7), 0 10px 30px rgba(0, 0, 0, 0.45); }
-  70% { box-shadow: 0 0 0 18px rgba(215, 179, 104, 0), 0 10px 30px rgba(0, 0, 0, 0.45); }
-  100% { box-shadow: 0 0 0 0 rgba(215, 179, 104, 0), 0 10px 30px rgba(0, 0, 0, 0.45); }
+  0% { transform: scale(1); opacity: 0.9; }
+  70%, 100% { transform: scale(1.14, 1.5); opacity: 0; }
 }
 .zoom-tap { animation: zoom-tap 1.8s ease-in-out infinite; transform-origin: 50% 80%; }
 @keyframes zoom-tap {
@@ -339,5 +348,5 @@ html[data-intro="seen"] .intro-splash {
   45% { transform: translateY(2px) scale(0.92); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .zoom-cta, .zoom-tap { animation: none; }
+  .zoom-cta::after, .zoom-tap { animation: none; }
 }

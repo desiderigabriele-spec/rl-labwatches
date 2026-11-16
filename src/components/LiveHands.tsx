@@ -58,8 +58,13 @@ export default function LiveHands({ style, run, beats = 8, sprites }: { style: H
   const secondImg = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
+    let lastBeat = -1;
     const set = () => {
       const now = new Date();
+      // si aggiorna solo quando i secondi scattano, non a ogni fotogramma: molto meno lavoro sul telefono
+      const beat = Math.floor((now.getTime() * beats) / 1000);
+      if (beat === lastBeat) return;
+      lastBeat = beat;
       const s = now.getSeconds() + Math.floor((now.getMilliseconds() / 1000) * beats) / beats;
       const m = now.getMinutes() + now.getSeconds() / 60;
       const h = (now.getHours() % 12) + m / 60;
