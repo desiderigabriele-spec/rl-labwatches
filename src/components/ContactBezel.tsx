@@ -9,36 +9,54 @@ import { WhatsAppIcon } from "./WhatsAppButton";
 const ARC = 104;
 /** Chiama a sinistra, Preventivo in alto al centro, WhatsApp a destra: gradi dalla verticale */
 const ANGLES = [-58, 0, 58];
-/** anello della lettura: quanto della pagina hai già letto */
-const PR = 33.5;
-const PC = 2 * Math.PI * PR;
+/** scatti dei secondi al secondo, come un calibro a 28.800 alternanze */
+const BEATS = 8;
 
 /**
  * Contatti su telefono: una lunetta da subacqueo in basso al centro, al posto della barra.
- * L'anello ruota a scatti come una vera ghiera, le lancette fanno un giro e si aprono a ventaglio
- * Chiama, Preventivo e WhatsApp. L'arco d'oro sull'anello si riempie man mano che leggi la pagina.
- * Si nasconde mentre scorri verso il basso e torna appena ti fermi o risali, come la barra di prima.
+ * Ghiera, quadrante e lancette sono foto (public/lunetta, originali in VETRINA/lunetta) e le lancette
+ * segnano l'ora vera. Al tocco la ghiera ruota a scatti come una vera ghiera e si aprono a ventaglio
+ * Chiama, Preventivo e WhatsApp. Si nasconde mentre scorri verso il basso e torna appena ti fermi o risali.
  */
 export default function ContactBezel() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [nudge, setNudge] = useState(false);
-  const progress = useRef<SVGCircleElement>(null);
+  const hourHand = useRef<HTMLImageElement>(null);
+  const minuteHand = useRef<HTMLImageElement>(null);
+  const secondHand = useRef<SVGGElement>(null);
 
   useEffect(() => setOpen(false), [pathname]);
 
-  // nascondi scorrendo in giù, mostra appena ti fermi; aggiorna l'arco della lettura
+  // ora vera: si aggiorna solo quando i secondi scattano, non a ogni fotogramma
+  useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const beats = reduced ? 1 : BEATS;
+    let lastBeat = -1;
+    let raf = 0;
+    const tick = () => {
+      const now = new Date();
+      const beat = Math.floor((now.getTime() * beats) / 1000);
+      if (beat !== lastBeat) {
+        lastBeat = beat;
+        const sec = now.getSeconds() + Math.floor((now.getMilliseconds() / 1000) * beats) / beats;
+        const min = now.getMinutes() + now.getSeconds() / 60;
+        const hr = (now.getHours() % 12) + min / 60;
+        if (hourHand.current) hourHand.current.style.transform = `rotate(${hr * 30}deg)`;
+        if (minuteHand.current) minuteHand.current.style.transform = `rotate(${min * 6}deg)`;
+        secondHand.current?.setAttribute("transform", `rotate(${sec * 6})`);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  // nascondi scorrendo in giù, mostra appena ti fermi
   useEffect(() => {
     let last = window.scrollY;
     let idle = 0;
-    let raf = 0;
-    const paint = () => {
-      raf = 0;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-      progress.current?.setAttribute("stroke-dashoffset", String(PC * (1 - p)));
-    };
     const onScroll = () => {
       const y = window.scrollY;
       const atBottom = y + window.innerHeight >= document.documentElement.scrollHeight - 80;
@@ -49,14 +67,11 @@ export default function ContactBezel() {
       }
       window.clearTimeout(idle);
       idle = window.setTimeout(() => setHidden(false), 350);
-      if (!raf) raf = requestAnimationFrame(paint);
     };
-    paint();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.clearTimeout(idle);
-      cancelAnimationFrame(raf);
     };
   }, [pathname]);
 
@@ -144,85 +159,39 @@ export default function ContactBezel() {
           aria-label={open ? "Chiudi i contatti" : "Contatti: chiama, WhatsApp o preventivo"}
           className="bezel-btn absolute inset-0 rounded-full"
         >
-          <svg viewBox="-50 -50 100 100" className="h-full w-full overflow-visible" aria-hidden>
-            <defs>
-              <linearGradient id="bz-edge" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stopColor="#f6e5b0" />
-                <stop offset=".32" stopColor="#c19443" />
-                <stop offset=".58" stopColor="#6c501b" />
-                <stop offset=".82" stopColor="#e2c27a" />
-                <stop offset="1" stopColor="#8a6826" />
-              </linearGradient>
-              <radialGradient id="bz-insert" cx=".5" cy=".38" r=".62">
-                <stop offset="0" stopColor="#13563b" />
-                <stop offset=".7" stopColor="#06291b" />
-                <stop offset="1" stopColor="#02140d" />
-              </radialGradient>
-              <radialGradient id="bz-dial" cx=".42" cy=".32" r=".75">
-                <stop offset="0" stopColor="#0f7149" />
-                <stop offset=".55" stopColor="#034128" />
-                <stop offset="1" stopColor="#011a10" />
-              </radialGradient>
-              <linearGradient id="bz-gold" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stopColor="#f7e6b4" />
-                <stop offset="1" stopColor="#b78f3e" />
-              </linearGradient>
-            </defs>
-            {/* bordo zigrinato in oro */}
-            <circle r="49" fill="url(#bz-edge)" />
-            <circle r="47.6" fill="none" stroke="#3f2e0d" strokeOpacity=".55" strokeWidth="2.4" strokeDasharray="1.25 1.24" />
-            <circle r="46.3" fill="none" stroke="#fbeec6" strokeOpacity=".55" strokeWidth=".5" />
-            {/* ghiera girevole: inserto verde con le tacche dei minuti e il triangolo luminoso */}
-            <g className="bezel-ring">
-              <circle r="45.6" fill="url(#bz-insert)" />
-              {Array.from({ length: 60 }, (_, i) => {
-                if (i === 0) return null;
-                const r = `rotate(${i * 6})`;
-                if (i % 5 === 0) return <rect key={i} x="-.85" y="-44" width="1.7" height="5.2" fill="url(#bz-gold)" transform={r} />;
-                if (i < 15) return <circle key={i} cy="-42" r=".7" fill="#e8cf8f" transform={r} />;
-                return <rect key={i} x="-.3" y="-43.6" width=".6" height="2.2" fill="#e8cf8f" opacity=".75" transform={r} />;
-              })}
-              <path d="M0 -44.2 L4 -37.6 L-4 -37.6 Z" fill="url(#bz-gold)" />
-              <circle className="bezel-lume" cy="-39.9" r="1.35" fill="#fffbea" />
-              {/* quanto hai letto della pagina */}
-              <circle r={PR} fill="none" stroke="#d7b368" strokeOpacity=".16" strokeWidth="1.1" />
-              <circle
-                ref={progress}
-                r={PR}
-                fill="none"
-                stroke="#e9cd86"
-                strokeWidth="1.1"
-                strokeLinecap="round"
-                strokeDasharray={PC}
-                strokeDashoffset={PC}
-                transform="rotate(-90)"
-              />
-            </g>
-            {/* quadrante soleil, fermo */}
-            <circle r="31.8" fill="#010c07" opacity=".6" />
-            <circle r="31" fill="url(#bz-dial)" />
-            <g stroke="#fff" strokeOpacity=".05" strokeWidth=".6">
-              {Array.from({ length: 36 }, (_, i) => (
-                <line key={i} y1="-5" y2="-30" transform={`rotate(${i * 10})`} />
-              ))}
-            </g>
-            {[0, 90, 180, 270].map((d) => (
-              <rect key={d} x="-.8" y="-28.5" width="1.6" height="4.5" rx=".4" fill="url(#bz-gold)" transform={`rotate(${d})`} />
-            ))}
-            {/* lancette come nel logo: alle 10 e 10, all'apertura fanno un giro e si fermano a mezzogiorno */}
-            <g className="bezel-hand bezel-h">
-              <circle r="26" fill="none" />
-              <path d="M-1.7 3.5 L-1.15 -14.5 L0 -17 L1.15 -14.5 L1.7 3.5 Z" fill="url(#bz-gold)" />
-            </g>
-            <g className="bezel-hand bezel-m">
-              <circle r="26" fill="none" />
-              <path d="M-1.3 4.5 L-.8 -22.5 L0 -25 L.8 -22.5 L1.3 4.5 Z" fill="url(#bz-gold)" />
-            </g>
-            <circle r="2.6" fill="url(#bz-gold)" />
-            <circle r=".9" fill="#04241a" />
-            {/* riflesso del vetro */}
-            <ellipse cx="-9" cy="-15" rx="19" ry="8" fill="#fff" opacity=".07" transform="rotate(-28 -9 -15)" />
-          </svg>
+          {/* quadrante soleil, fermo, sotto la ghiera */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/lunetta/quadrante.webp" alt="" draggable={false} className="absolute inset-[12.5%] h-[75%] w-[75%] rounded-full" />
+          {/* lancette vere sopra il quadrante (immagini con il perno al centro, a mezzogiorno) */}
+          <span className="bezel-hands absolute inset-[12.5%]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img ref={hourHand} src="/lunetta/ore.webp" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img ref={minuteHand} src="/lunetta/minuti.webp" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
+            <svg viewBox="-1 -1 2 2" className="absolute inset-0 h-full w-full overflow-visible">
+              <defs>
+                <linearGradient id="bz-gold" x1="0" x2="1">
+                  <stop offset="0" stopColor="#b88a35" />
+                  <stop offset=".5" stopColor="#fbe7ad" />
+                  <stop offset="1" stopColor="#a67b2c" />
+                </linearGradient>
+              </defs>
+              {/* secondi: ago sottile in oro con il contrappeso */}
+              <g ref={secondHand}>
+                <rect x="-.011" y="-.93" width=".022" height="1.15" fill="url(#bz-gold)" />
+                <circle cy=".15" r=".045" fill="url(#bz-gold)" />
+              </g>
+              <circle r=".055" fill="url(#bz-gold)" stroke="rgba(0,0,0,.35)" strokeWidth=".01" />
+              <circle r=".018" fill="#5e451a" />
+            </svg>
+          </span>
+          {/* ghiera girevole con il bordo zigrinato e il triangolo luminoso */}
+          <span className="bezel-ring absolute inset-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/lunetta/ghiera.webp" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
+            {/* il punto luminoso del triangolo che ogni tanto si accende */}
+            <span className="bezel-lume absolute left-[50.5%] top-[7.7%] h-[7%] w-[7%] -translate-x-1/2 -translate-y-1/2 rounded-full" />
+          </span>
         </button>
       </div>
     </div>

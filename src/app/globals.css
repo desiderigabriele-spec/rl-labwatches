@@ -420,18 +420,10 @@ html[data-intro="seen"] .intro-splash {
 .bezel-btn {
   filter: drop-shadow(0 10px 14px rgb(0 20 12 / 0.45)) drop-shadow(0 2px 3px rgb(0 0 0 / 0.35));
   -webkit-tap-highlight-color: transparent;
+  transition: scale 0.2s ease;
 }
-.bezel-btn:active svg {
-  transform: scale(0.95);
-}
-.bezel-btn svg {
-  transition: transform 0.2s ease;
-}
-/* le rotazioni girano intorno al centro del quadrante (ogni gruppo è centrato sull'origine) */
-.bezel-ring,
-.bezel-hand {
-  transform-box: fill-box;
-  transform-origin: center;
+.bezel-btn:active {
+  scale: 0.95;
 }
 .bezel-ring {
   /* scatti da 3°, come una ghiera a 120 click */
@@ -450,19 +442,21 @@ html[data-intro="seen"] .intro-splash {
   100% { transform: rotate(0deg); }
 }
 .bezel-lume {
+  background: radial-gradient(circle, rgb(255 251 225 / 0.95) 0 30%, rgb(255 236 170 / 0.45) 55%, transparent 72%);
+  mix-blend-mode: screen;
+  opacity: 0;
   animation: bezel-lume 4.5s ease-in-out infinite;
 }
 @keyframes bezel-lume {
-  0%, 70%, 100% { opacity: 0.75; }
-  85% { opacity: 1; filter: drop-shadow(0 0 2px #fff6c9) drop-shadow(0 0 4px #e9cd86); }
+  0%, 65%, 100% { opacity: 0; }
+  82% { opacity: 1; }
 }
-.bezel-hand {
-  transition: transform 0.9s cubic-bezier(0.6, 0, 0.2, 1);
+.bezel-hands img {
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.55));
 }
-.bezel-h { transform: rotate(-60deg); }
-.bezel-m { transform: rotate(60deg); }
-.is-open .bezel-h { transform: rotate(0deg); }
-.is-open .bezel-m { transform: rotate(360deg); }
+.bezel-hands svg {
+  filter: drop-shadow(0 0.5px 0.6px rgb(0 0 0 / 0.6));
+}
 
 .bezel-item {
   position: absolute;
@@ -483,27 +477,22 @@ html[data-intro="seen"] .intro-splash {
   opacity: 1;
   pointer-events: auto;
 }
-/* medaglione: smalto chiaro in una cornice d'oro */
+/* medaglioni: smalto chiaro o verde in una cornice d'oro (foto in public/lunetta) */
 .bezel-medal {
   display: grid;
   place-items: center;
-  width: 52px;
-  height: 52px;
+  width: 54px;
+  height: 54px;
   border-radius: 9999px;
   color: var(--color-green);
-  background:
-    radial-gradient(circle at 38% 30%, #fffaf0, #efe5cf 62%, #dccdaa) padding-box,
-    linear-gradient(135deg, #f6e5b0, #b98d3b 40%, #6c501b 60%, #e2c27a 85%) border-box;
-  border: 2px solid transparent;
-  box-shadow: 0 10px 22px -8px rgb(0 0 0 / 0.55), inset 0 1px 0 rgb(255 255 255 / 0.7);
+  background: url(/lunetta/medaglione-crema.webp) center / cover;
+  box-shadow: 0 10px 22px -8px rgb(0 0 0 / 0.6);
 }
 .is-primary .bezel-medal {
-  width: 60px;
-  height: 60px;
+  width: 62px;
+  height: 62px;
   color: var(--color-gold-3);
-  background:
-    radial-gradient(circle at 38% 30%, #0f7149, #034128 62%, #01200f) padding-box,
-    linear-gradient(135deg, #f6e5b0, #b98d3b 40%, #6c501b 60%, #e2c27a 85%) border-box;
+  background-image: url(/lunetta/medaglione-verde.webp);
 }
 .bezel-label {
   font-size: 0.62rem;
@@ -525,7 +514,7 @@ html[data-intro="seen"] .intro-splash {
   transition-delay: 0.15s;
 }
 @media (prefers-reduced-motion: reduce) {
-  .bezel-ring, .bezel-hand, .bezel-item, .bezel-ask { transition-duration: 0s !important; transition-delay: 0s !important; }
+  .bezel-ring, .bezel-item, .bezel-ask { transition-duration: 0s !important; transition-delay: 0s !important; }
   .bezel-lume, .is-nudge .bezel-ring { animation: none; }
 }
 
