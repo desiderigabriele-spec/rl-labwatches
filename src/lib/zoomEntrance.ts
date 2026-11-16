@@ -9,7 +9,7 @@
  * scorrendo, l'orologio torna nel cofanetto.
  */
 type Rect = { left: number; top: number; width: number; height: number };
-type Zoom = { root: HTMLDivElement; back: HTMLDivElement; content: HTMLElement; from: Rect; anim: Animation; raf: number; cleanup: () => void };
+type Zoom = { root: HTMLDivElement; raf: number; cleanup: () => void };
 declare global {
   interface Window {
     __rlZoom?: Zoom;
@@ -24,11 +24,17 @@ const lenis = () => (window as unknown as { __lenis?: LenisLike }).__lenis;
 /** C'è un ingrandimento aperto o un passaggio in corso: la pagina nuova non deve fare la sua dissolvenza */
 export const zoomPending = () => typeof window !== "undefined" && !!window.__rlZoom;
 
-const px = (r: Rect) => ({ left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px` });
+const place = (n: HTMLElement, r: Rect) =>
+  Object.assign(n.style, { position: "absolute", left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px`, margin: "0", transformOrigin: "0 0", willChange: "transform" });
+const move = (dx: number, dy: number, s: number) => ({ transform: `translate(${dx}px,${dy}px) scale(${s})` });
 
 /** Lancette del contenuto copiato: continuano a segnare l'ora (8 scatti al secondo per i secondi) */
+let lastBeat = -1;
 function setHands(root: HTMLElement) {
   const now = new Date();
+  const beat = Math.floor(now.getTime() / 125); // si aggiorna solo quando la lancetta scatta, non a ogni fotogramma
+  if (beat === lastBeat) return;
+  lastBeat = beat;
   const s = now.getSeconds() + Math.floor((now.getMilliseconds() / 1000) * 8) / 8;
   const m = now.getMinutes() + now.getSeconds() / 60;
   const h = (now.getHours() % 12) + m / 60;
@@ -70,13 +76,20 @@ export function openZoom(
   root.setAttribute("role", "dialog");
   root.setAttribute("aria-label", `Orologi ${o.name}`);
   const back = el("div", "position:absolute;inset:0;background:#0b100d;opacity:0;cursor:zoom-out") as HTMLDivElement;
-  const content = shot.cloneNode(true) as HTMLElement;
-  content.querySelectorAll("[data-boxlight]").forEach((n) => n.remove());
-  content.style.cssText = "position:absolute;transform:none;filter:none;margin:0;cursor:pointer";
-  Object.assign(content.style, px(from));
-  content.setAttribute("role", "button");
-  content.setAttribute("aria-label", `Vedi gli orologi ${o.name} disponibili`);
-  content.tabIndex = 0;
+  // Due strati che si ingrandiscono con transform (scheda grafica, niente ridisegno a ogni fotogramma):
+  // - il cofanetto, impaginato piccolo come in vetrina e ingrandito: la sua foto non ha più dettaglio di così;
+  // - la foto ravvicinata, impaginata già alla misura finale e rimpicciolita all'inizio: arriva nitida.
+  // Nessuno dei due supera la misura dello schermo, così anche Safari su iPhone li disegna senza fatica.
+  const boxEl = shot.cloneNode(true) as HTMLElement;
+  boxEl.querySelectorAll("[data-boxlight],[data-closeup]").forEach((n) => n.remove());
+  boxEl.style.cssText = "filter:none;transform:none;transition:none;cursor:pointer";
+  boxEl.querySelectorAll("img").forEach((i) => (i.style.filter = "none"));
+  const closeEl = piece.cloneNode(true) as HTMLElement;
+  closeEl.querySelectorAll("img").forEach((i) => (i.loading = "eager"));
+  closeEl.style.cursor = "pointer";
+  closeEl.setAttribute("role", "button");
+  closeEl.setAttribute("aria-label", `Vedi gli orologi ${o.name} disponibili`);
+  closeEl.tabIndex = 0;
   // penombra in basso per la didascalia, sopra l'orologio ingrandito
   const shade = el("div", "position:absolute;inset:auto 0 0 0;height:34%;background:linear-gradient(to top,rgba(11,16,13,.92),rgba(11,16,13,0));pointer-events:none;opacity:0");
   const caption = el(
@@ -90,11 +103,11 @@ export function openZoom(
   );
   const close = el(
     "button",
-    `position:absolute;right:${phone ? 14 : 28}px;top:${phone ? 92 : 128}px;width:44px;height:44px;border-radius:999px;border:1px solid rgba(245,241,232,.35);background:rgba(11,16,13,.55);color:#f5f1e8;font-size:20px;line-height:1;cursor:pointer;opacity:0;backdrop-filter:blur(6px)`,
+    `position:absolute;right:${phone ? 14 : 28}px;top:${phone ? 92 : 128}px;width:44px;height:44px;border-radius:999px;border:1px solid rgba(245,241,232,.35);background:rgba(11,16,13,.7);color:#f5f1e8;font-size:20px;line-height:1;cursor:pointer;opacity:0`,
     "&#x2715;"
   ) as HTMLButtonElement;
   close.setAttribute("aria-label", "Chiudi e torna alla vetrina");
-  root.append(back, content, shade, caption, close);
+  root.append(back, boxEl, closeEl, shade, caption, close);
   document.body.appendChild(root);
 
   // destinazione: orologio largo come nella pagina della marca, al centro dello schermo
@@ -102,21 +115,32 @@ export function openZoom(
   const k = T / c.width;
   const cx = vw / 2;
   const cy = phone ? vh * 0.45 : vh * 0.5 + 20;
-  const end: Rect = {
-    left: cx - (c.left - r.left + c.width / 2) * k,
-    top: cy - (c.top - r.top + c.height / 2) * k,
-    width: r.width * k,
-    height: r.height * k,
+  const endLeft = cx - (c.left - r.left + c.width / 2) * k;
+  const endTop = cy - (c.top - r.top + c.height / 2) * k;
+  const endC: Rect = { left: endLeft + (c.left - r.left) * k, top: endTop + (c.top - r.top) * k, width: c.width * k, height: c.height * k };
+  place(boxEl, from);
+  place(closeEl, endC);
+  const opts = { duration: DURATION, easing: EASE, fill: "forwards" as const };
+  const anims = [
+    boxEl.animate([move(0, 0, 1), move(endLeft - r.left, endTop - r.top, k)], opts),
+    closeEl.animate([move(c.left - endC.left, c.top - endC.top, 1 / k), move(0, 0, 1)], opts),
+  ];
+  // a ingrandimento finito, quando niente si muove (nasconderla costa un attimo di calcolo)
+  anims[0].onfinish = () => {
+    if (!done && under) under.style.visibility = "hidden";
   };
-  const anim = content.animate([px(from), px(end)], { duration: DURATION, easing: EASE, fill: "forwards" });
+  let done = false;
+  // quando il fondo è opaco la vetrina sotto non si vede: la nascondo, così il telefono non la ridisegna
+  const under = shot.closest("section") as HTMLElement | null;
   back.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 700, easing: "ease-in-out", fill: "forwards" });
+  const reveal = () => under && (under.style.visibility = "");
   const show = { duration: 600, delay: DURATION - 300, easing: "ease-out", fill: "forwards" as const };
   [shade, caption, close].forEach((n) => n.animate([{ opacity: 0 }, { opacity: 1 }], show));
   lenis()?.stop();
 
   const onKey = (e: KeyboardEvent) => {
     if (e.key === "Escape") shut();
-    if ((e.key === "Enter" || e.key === " ") && document.activeElement === content) enter();
+    if ((e.key === "Enter" || e.key === " ") && document.activeElement === closeEl) enter();
   };
   const onWheel = () => shut();
   window.addEventListener("keydown", onKey);
@@ -127,10 +151,6 @@ export function openZoom(
 
   const z: Zoom = {
     root,
-    back,
-    content,
-    from,
-    anim,
     raf: 0,
     cleanup: () => {
       window.removeEventListener("keydown", onKey);
@@ -139,24 +159,26 @@ export function openZoom(
     },
   };
   const tick = () => {
-    setHands(content);
+    setHands(closeEl);
     z.raf = requestAnimationFrame(tick);
   };
   tick();
   window.__rlZoom = z;
-  content.focus({ preventScroll: true });
+  closeEl.focus({ preventScroll: true });
 
-  let done = false;
   // l'orologio torna nel cofanetto
   function shut() {
     if (done) return;
     done = true;
-    const cur = content.getBoundingClientRect();
-    z.anim.cancel();
-    const out = { duration: 900, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" as const };
+    reveal();
     [shade, caption, close].forEach((n) => n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, fill: "forwards" }));
-    content.animate([px({ left: cur.left, top: cur.top, width: cur.width, height: cur.height }), px(from)], out);
-    back.animate([{ opacity: 1 }, { opacity: 0 }], out).onfinish = () => {
+    // stesso percorso all'indietro, un po' più veloce
+    anims.forEach((a) => {
+      a.reverse();
+      a.updatePlaybackRate(-1.45);
+    });
+    back.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 900, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" });
+    anims[0].onfinish = () => {
       z.cleanup();
       root.remove();
       if (window.__rlZoom === z) delete window.__rlZoom;
@@ -167,7 +189,7 @@ export function openZoom(
   function enter() {
     if (done) return;
     done = true;
-    [content, shade, caption, close].forEach((n) => n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, easing: "ease-out", fill: "forwards" }));
+    [boxEl, closeEl, shade, caption, close].forEach((n) => n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, easing: "ease-out", fill: "forwards" }));
     window.setTimeout(() => o.go(o.href), 340);
     window.setTimeout(() => {
       lenis()?.start();
@@ -180,7 +202,8 @@ export function openZoom(
       };
     }, 900);
   }
-  content.addEventListener("click", enter);
+  boxEl.addEventListener("click", enter);
+  closeEl.addEventListener("click", enter);
   caption.querySelector("[data-cta]")?.addEventListener("click", enter);
   back.addEventListener("click", shut);
   close.addEventListener("click", shut);

@@ -210,7 +210,8 @@ export default function Showcase({
     return "idle";
   };
 
-  const sel = selected !== null ? items[selected] : null;
+  // il riquadro della marca sotto la vetrina compare quando l'ingrandimento è chiuso, non mentre è aperto
+  const sel = selected !== null && entering === null ? items[selected] : null;
 
   return (
     <section ref={ref} className="guilloche sheen relative overflow-hidden bg-[#0b100d] py-20 text-cream sm:py-32" aria-labelledby="vetrina-titolo">

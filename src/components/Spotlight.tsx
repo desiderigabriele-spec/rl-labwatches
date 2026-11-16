@@ -42,6 +42,8 @@ export default function Spotlight({ level, flicker = false, spread = 30 }: { lev
         <span
           className="spot-dust absolute inset-0"
           style={{
+            // il pulviscolo si muove solo nel faretto acceso
+            animationPlayState: on ? "running" : "paused",
             maskImage: `conic-gradient(from ${180 - spread}deg at 50% 0%, transparent 0deg, #000 ${spread * 0.5}deg, #000 ${spread * 1.5}deg, transparent ${spread * 2}deg)`,
             WebkitMaskImage: `conic-gradient(from ${180 - spread}deg at 50% 0%, transparent 0deg, #000 ${spread * 0.5}deg, #000 ${spread * 1.5}deg, transparent ${spread * 2}deg)`,
           }}
