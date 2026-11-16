@@ -34,7 +34,7 @@ function removeGroup(svg, id) {
 const removeBackground = (svg) => svg.replace(/<rect x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*" fill="[^"]*"\/>/, "");
 
 const parts = {};
-for (const name of ["RL-orizzontale-metallo", "RL-completo-metallo", "RL-completo-negativo"]) {
+for (const name of ["RL-orizzontale-metallo", "RL-orizzontale-negativo", "RL-completo-metallo", "RL-completo-negativo"]) {
   const src = readFileSync(join(kit, "SVG", `${name}.svg`), "utf8");
   // scritte su fondo trasparente (il colore di fondo lo dà già la pagina): file statico
   let words = removeBackground(["clock-face", "hands", "hand-pivot"].reduce(removeGroup, src));

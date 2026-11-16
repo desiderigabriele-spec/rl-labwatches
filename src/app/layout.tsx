@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import IntroSplash from "@/components/IntroSplash";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import MobileActionBar from "@/components/MobileActionBar";
+import ContactBezel from "@/components/ContactBezel";
 import ReadingBezel from "@/components/ReadingBezel";
 import SmoothScroll from "@/components/SmoothScroll";
 import NavDirection from "@/components/NavDirection";
@@ -49,7 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="flex-1">{children}</main>
         <Footer />
         <WhatsAppButton />
-        <MobileActionBar />
+        <ContactBezel />
         <ReadingBezel />
         <SmoothScroll />
         <NavDirection />
