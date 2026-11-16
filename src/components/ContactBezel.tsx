@@ -161,9 +161,9 @@ export default function ContactBezel() {
         >
           {/* quadrante soleil, fermo, sotto la ghiera */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/lunetta/quadrante.webp" alt="" draggable={false} className="absolute inset-[12.5%] h-[75%] w-[75%] rounded-full" />
+          <img src="/lunetta/quadrante.webp" alt="" draggable={false} className="absolute inset-[12.8%] h-[74.4%] w-[74.4%] rounded-full" />
           {/* lancette vere sopra il quadrante (immagini con il perno al centro, a mezzogiorno) */}
-          <span className="bezel-hands absolute inset-[12.5%]">
+          <span className="bezel-hands absolute inset-[12.8%]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img ref={hourHand} src="/lunetta/ore.webp" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
