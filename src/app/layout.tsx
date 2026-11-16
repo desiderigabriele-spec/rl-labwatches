@@ -6,7 +6,6 @@ import Footer from "@/components/Footer";
 import IntroSplash from "@/components/IntroSplash";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import MobileActionBar from "@/components/MobileActionBar";
-import PageTransition from "@/components/PageTransition";
 import ReadingBezel from "@/components/ReadingBezel";
 import SmoothScroll from "@/components/SmoothScroll";
 import JsonLd from "@/components/JsonLd";
@@ -51,7 +50,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <WhatsAppButton />
         <MobileActionBar />
         <ReadingBezel />
-        <PageTransition />
         <SmoothScroll />
       </body>
     </html>
