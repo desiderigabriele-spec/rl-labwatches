@@ -16,13 +16,13 @@ const BEATS = 8;
  * Contatti su telefono: una lunetta da subacqueo in basso al centro, al posto della barra.
  * Ghiera, quadrante e lancette sono foto (public/lunetta, originali in VETRINA/lunetta) e le lancette
  * segnano l'ora vera. Al tocco la ghiera ruota a scatti come una vera ghiera e si aprono a ventaglio
- * Chiama, Preventivo e WhatsApp. Si nasconde mentre scorri verso il basso e torna appena ti fermi o risali.
+ * Chiama, Preventivo e WhatsApp. Resta sempre visibile e ogni tanto fa un piccolo richiamo.
  */
 export default function ContactBezel() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [hidden, setHidden] = useState(false);
-  const [nudge, setNudge] = useState(false);
+  const [attn, setAttn] = useState(false);
+  const usedRef = useRef(false);
   const hourHand = useRef<HTMLImageElement>(null);
   const minuteHand = useRef<HTMLImageElement>(null);
   const secondHand = useRef<HTMLImageElement>(null);
@@ -53,36 +53,32 @@ export default function ContactBezel() {
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // nascondi scorrendo in giù, mostra appena ti fermi
+  // resta sempre visibile; se la pagina scorre mentre i contatti sono aperti, si richiudono
   useEffect(() => {
-    let last = window.scrollY;
-    let idle = 0;
-    const onScroll = () => {
-      const y = window.scrollY;
-      const atBottom = y + window.innerHeight >= document.documentElement.scrollHeight - 80;
-      if (Math.abs(y - last) >= 6) {
-        setHidden(y > last && y > 240 && !atBottom);
-        setOpen(false);
-        last = y;
-      }
-      window.clearTimeout(idle);
-      idle = window.setTimeout(() => setHidden(false), 350);
-    };
+    if (!open) return;
+    const y0 = window.scrollY;
+    const onScroll = () => Math.abs(window.scrollY - y0) > 12 && setOpen(false);
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.clearTimeout(idle);
-    };
-  }, [pathname]);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [open]);
 
-  // un solo scatto della ghiera poco dopo l'apertura del sito, per far capire che si tocca
+  // ogni tanto un richiamo discreto: la ghiera fa due scatti, un riflesso passa sul vetro, il triangolo si
+  // illumina e un alone d'oro si allarga una volta. Il primo dopo 4 secondi, poi ogni 14; dopo che hai
+  // aperto i contatti una volta non serve più
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const a = window.setTimeout(() => setNudge(true), 2600);
-    const b = window.setTimeout(() => setNudge(false), 3300);
+    let off = 0;
+    const play = () => {
+      if (usedRef.current || document.hidden) return;
+      setAttn(true);
+      off = window.setTimeout(() => setAttn(false), 1800);
+    };
+    const first = window.setTimeout(play, 4000);
+    const every = window.setInterval(play, 14000);
     return () => {
-      window.clearTimeout(a);
-      window.clearTimeout(b);
+      window.clearTimeout(first);
+      window.clearTimeout(off);
+      window.clearInterval(every);
     };
   }, []);
 
@@ -94,6 +90,8 @@ export default function ContactBezel() {
   }, [open]);
 
   const toggle = () => {
+    usedRef.current = true;
+    setAttn(false);
     setOpen((v) => !v);
     navigator.vibrate?.(8); // lo scatto si sente, dove il telefono lo permette
   };
@@ -114,9 +112,9 @@ export default function ContactBezel() {
       />
       <div
         style={{ viewTransitionName: "mobile-bar" }}
-        className={`bezel-dock fixed bottom-[calc(14px+env(safe-area-inset-bottom))] left-1/2 z-40 h-[68px] w-[68px] -translate-x-1/2 transition-transform duration-500 ${
-          hidden && !open ? "translate-y-[150%]" : ""
-        } ${open ? "is-open" : ""} ${nudge && !open ? "is-nudge" : ""}`}
+        className={`bezel-dock fixed bottom-[calc(14px+env(safe-area-inset-bottom))] left-1/2 z-40 h-[68px] w-[68px] -translate-x-1/2 ${open ? "is-open" : ""} ${
+          attn && !open ? "is-attn" : ""
+        }`}
       >
         <p
           aria-hidden={!open}
@@ -180,6 +178,8 @@ export default function ContactBezel() {
             {/* il punto luminoso del triangolo che ogni tanto si accende */}
             <span className="bezel-lume absolute left-[50.5%] top-[7.7%] h-[7%] w-[7%] -translate-x-1/2 -translate-y-1/2 rounded-full" />
           </span>
+          <span aria-hidden className="bezel-glint absolute inset-0 overflow-hidden rounded-full" />
+          <span aria-hidden className="bezel-halo pointer-events-none absolute inset-0 rounded-full" />
         </button>
       </div>
     </div>
