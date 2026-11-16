@@ -25,7 +25,7 @@ export default function ContactBezel() {
   const [nudge, setNudge] = useState(false);
   const hourHand = useRef<HTMLImageElement>(null);
   const minuteHand = useRef<HTMLImageElement>(null);
-  const secondHand = useRef<SVGGElement>(null);
+  const secondHand = useRef<HTMLImageElement>(null);
 
   useEffect(() => setOpen(false), [pathname]);
 
@@ -45,7 +45,7 @@ export default function ContactBezel() {
         const hr = (now.getHours() % 12) + min / 60;
         if (hourHand.current) hourHand.current.style.transform = `rotate(${hr * 30}deg)`;
         if (minuteHand.current) minuteHand.current.style.transform = `rotate(${min * 6}deg)`;
-        secondHand.current?.setAttribute("transform", `rotate(${sec * 6})`);
+        if (secondHand.current) secondHand.current.style.transform = `rotate(${sec * 6}deg)`;
       }
       raf = requestAnimationFrame(tick);
     };
@@ -162,28 +162,16 @@ export default function ContactBezel() {
           {/* quadrante soleil, fermo, sotto la ghiera */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/lunetta/quadrante.webp" alt="" draggable={false} className="absolute inset-[12.8%] h-[74.4%] w-[74.4%] rounded-full" />
-          {/* lancette vere sopra il quadrante (immagini con il perno al centro, a mezzogiorno) */}
+          {/* lancette vere sopra il quadrante (immagini quadrate con il perno al centro, a mezzogiorno) */}
           <span className="bezel-hands absolute inset-[12.8%]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img ref={hourHand} src="/lunetta/ore.webp" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img ref={minuteHand} src="/lunetta/minuti.webp" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
-            <svg viewBox="-1 -1 2 2" className="absolute inset-0 h-full w-full overflow-visible">
-              <defs>
-                <linearGradient id="bz-gold" x1="0" x2="1">
-                  <stop offset="0" stopColor="#b88a35" />
-                  <stop offset=".5" stopColor="#fbe7ad" />
-                  <stop offset="1" stopColor="#a67b2c" />
-                </linearGradient>
-              </defs>
-              {/* secondi: ago sottile in oro con il contrappeso */}
-              <g ref={secondHand}>
-                <rect x="-.011" y="-.93" width=".022" height="1.15" fill="url(#bz-gold)" />
-                <circle cy=".15" r=".045" fill="url(#bz-gold)" />
-              </g>
-              <circle r=".055" fill="url(#bz-gold)" stroke="rgba(0,0,0,.35)" strokeWidth=".01" />
-              <circle r=".018" fill="#5e451a" />
-            </svg>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img ref={secondHand} src="/lunetta/secondi.webp" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
+            {/* rubino al centro del perno */}
+            <span className="absolute left-1/2 top-1/2 h-[5%] w-[5%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_35%_35%,#fbe7ad,#a67b2c)]" />
           </span>
           {/* ghiera girevole con il bordo zigrinato e il triangolo luminoso */}
           <span className="bezel-ring absolute inset-0">

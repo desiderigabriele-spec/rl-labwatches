@@ -454,9 +454,6 @@ html[data-intro="seen"] .intro-splash {
 .bezel-hands img {
   filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.55));
 }
-.bezel-hands svg {
-  filter: drop-shadow(0 0.5px 0.6px rgb(0 0 0 / 0.6));
-}
 
 .bezel-item {
   position: absolute;
