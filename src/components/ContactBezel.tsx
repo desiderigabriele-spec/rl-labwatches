@@ -9,6 +9,11 @@ import { WhatsAppIcon } from "./WhatsAppButton";
 const ARC = 104;
 /** Chiama a sinistra, Preventivo in alto al centro, WhatsApp a destra: gradi dalla verticale */
 const ANGLES = [-58, 0, 58];
+/** scritte del richiamo, a turno: riga piccola in maiuscoletto, riga grande in corsivo */
+const MESSAGES = [
+  ["Contatta", "Roberto"],
+  ["Preventivo", "gratuito"],
+] as const;
 /** scatti dei secondi al secondo, come un calibro a 28.800 alternanze */
 const BEATS = 8;
 
@@ -16,12 +21,14 @@ const BEATS = 8;
  * Contatti su telefono: una lunetta da subacqueo in basso al centro, al posto della barra.
  * Ghiera, quadrante e lancette sono foto (public/lunetta, originali in VETRINA/lunetta) e le lancette
  * segnano l'ora vera. Al tocco la ghiera ruota a scatti come una vera ghiera e si aprono a ventaglio
- * Chiama, Preventivo e WhatsApp. Resta sempre visibile e ogni tanto fa un piccolo richiamo.
+ * Chiama, Preventivo e WhatsApp. Resta sempre visibile e ogni tanto si apre in una capsula con una scritta.
  */
 export default function ContactBezel() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [attn, setAttn] = useState(false);
+  // richiamo: 0 = fermo, 1 = si apre in capsula con la scritta, 2 = torna lunetta
+  const [pill, setPill] = useState(0);
+  const [msg, setMsg] = useState(0);
   const usedRef = useRef(false);
   const hourHand = useRef<HTMLImageElement>(null);
   const minuteHand = useRef<HTMLImageElement>(null);
@@ -62,22 +69,24 @@ export default function ContactBezel() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [open]);
 
-  // ogni tanto un richiamo discreto: la ghiera fa due scatti, un riflesso passa sul vetro, il triangolo si
-  // illumina e un alone d'oro si allarga una volta. Il primo dopo 4 secondi, poi ogni 14; dopo che hai
+  // ogni tanto la lunetta rotola a sinistra e si apre in una capsula con la scritta (Contatta Roberto, poi
+  // Preventivo gratuito, a turno), poi torna lunetta. Il primo dopo 4 secondi, poi ogni 16; dopo che hai
   // aperto i contatti una volta non serve più
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    let off = 0;
+    const timers: number[] = [];
+    let n = 0;
     const play = () => {
       if (usedRef.current || document.hidden) return;
-      setAttn(true);
-      off = window.setTimeout(() => setAttn(false), 1800);
+      setMsg(n++ % MESSAGES.length);
+      setPill(1);
+      timers.push(window.setTimeout(() => setPill(2), 3400));
+      timers.push(window.setTimeout(() => setPill(0), 4200));
     };
-    const first = window.setTimeout(play, 4000);
-    const every = window.setInterval(play, 14000);
+    timers.push(window.setTimeout(play, 4000));
+    const every = window.setInterval(play, 16000);
     return () => {
-      window.clearTimeout(first);
-      window.clearTimeout(off);
+      timers.forEach(clearTimeout);
       window.clearInterval(every);
     };
   }, []);
@@ -91,7 +100,7 @@ export default function ContactBezel() {
 
   const toggle = () => {
     usedRef.current = true;
-    setAttn(false);
+    setPill(0);
     setOpen((v) => !v);
     navigator.vibrate?.(8); // lo scatto si sente, dove il telefono lo permette
   };
@@ -113,8 +122,8 @@ export default function ContactBezel() {
       <div
         style={{ viewTransitionName: "mobile-bar" }}
         className={`bezel-dock fixed bottom-[calc(14px+env(safe-area-inset-bottom))] left-1/2 z-40 h-[68px] w-[68px] -translate-x-1/2 ${open ? "is-open" : ""} ${
-          attn && !open ? "is-attn" : ""
-        }`}
+          pill && !open ? "is-pill-anim" : ""
+        } ${pill === 1 && !open ? "is-pill" : ""}`}
       >
         <p
           aria-hidden={!open}
@@ -149,6 +158,14 @@ export default function ContactBezel() {
           })}
         </ul>
 
+        {/* capsula del richiamo: si allarga dietro la lunetta, che rotola sul lato sinistro */}
+        <button type="button" tabIndex={-1} aria-hidden onClick={toggle} className="bezel-pill">
+          <span className="bezel-pill-text">
+            <small>{MESSAGES[msg][0]}</small>
+            <em>{MESSAGES[msg][1]}</em>
+          </span>
+        </button>
+
         <button
           type="button"
           onClick={toggle}
@@ -179,7 +196,6 @@ export default function ContactBezel() {
             <span className="bezel-lume absolute left-[50.5%] top-[7.7%] h-[7%] w-[7%] -translate-x-1/2 -translate-y-1/2 rounded-full" />
           </span>
           <span aria-hidden className="bezel-glint absolute inset-0 overflow-hidden rounded-full" />
-          <span aria-hidden className="bezel-halo pointer-events-none absolute inset-0 rounded-full" />
         </button>
       </div>
     </div>
