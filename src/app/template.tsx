@@ -1,17 +1,18 @@
 "use client";
-import { motion } from "motion/react";
-import { zoomPending } from "@/lib/zoomEntrance";
+import { ViewTransition } from "react";
+import { usePathname } from "next/navigation";
 
-// Transizione tra le pagine
+/**
+ * Cambio di pagina a scorrimento: il browser fotografa la pagina che esce e quella che entra e le fa
+ * scorrere con la scheda grafica (View Transitions). La direzione è su <html data-nav> (NavDirection),
+ * i movimenti sono in globals.css. La chiave sul percorso fa uscire ed entrare la pagina a ogni cambio,
+ * anche dentro la stessa sezione (es. da una marca all'altra).
+ */
 export default function Template({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   return (
-    <motion.div
-      // entrando nella marca dalla vetrina la pagina è già sotto lo zoom: niente dissolvenza
-      initial={zoomPending() ? false : { opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {children}
-    </motion.div>
+    <ViewTransition key={pathname} enter="page" exit="page" default="none">
+      <div>{children}</div>
+    </ViewTransition>
   );
 }

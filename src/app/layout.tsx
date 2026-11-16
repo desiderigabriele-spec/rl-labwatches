@@ -8,6 +8,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import MobileActionBar from "@/components/MobileActionBar";
 import ReadingBezel from "@/components/ReadingBezel";
 import SmoothScroll from "@/components/SmoothScroll";
+import NavDirection from "@/components/NavDirection";
 import JsonLd from "@/components/JsonLd";
 import { localBusinessLd, OG_IMAGE, websiteLd } from "@/lib/seo";
 import { site } from "@/data/site";
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <MobileActionBar />
         <ReadingBezel />
         <SmoothScroll />
+        <NavDirection />
       </body>
     </html>
   );

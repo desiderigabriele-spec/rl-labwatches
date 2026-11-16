@@ -44,6 +44,8 @@ export default function ReadingBezel({ variant = "floating" }: { variant?: "floa
       onClick={toTop}
       aria-label={`Torna in cima (letto il ${Math.round(p * 100)}%)`}
       tabIndex={show ? 0 : -1}
+      // quello fisso in basso resta fermo durante lo scorrimento tra le pagine; quello nell'intestazione segue l'intestazione
+      style={variant === "header" ? undefined : { viewTransitionName: "read-bezel" }}
       className={`${
         variant === "header"
           ? "relative grid h-10 w-10 lg:hidden"
