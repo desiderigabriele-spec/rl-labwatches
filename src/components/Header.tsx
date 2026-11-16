@@ -38,6 +38,8 @@ export default function Header() {
 
   return (
     <header
+      // ferma durante lo scorrimento tra le pagine (vedi globals.css)
+      style={{ viewTransitionName: "site-header" }}
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
         open ? "bg-transparent" : scrolled || darkTop ? "border-b border-line bg-paper/85 backdrop-blur-md" : "bg-transparent"
       }`}

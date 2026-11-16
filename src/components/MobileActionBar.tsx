@@ -37,6 +37,7 @@ export default function MobileActionBar() {
   return (
     <nav
       aria-label="Azioni rapide"
+      style={{ viewTransitionName: "mobile-bar" }}
       className={`fixed inset-x-0 bottom-0 z-40 grid grid-cols-[1fr_1fr_1.3fr] border-t border-line bg-paper/95 backdrop-blur-md transition-transform duration-500 lg:hidden ${hidden ? "translate-y-full" : ""}`}
     >
       <a href={`tel:${site.phone.replace(/\s/g, "")}`} className={`${item} text-fg`}>

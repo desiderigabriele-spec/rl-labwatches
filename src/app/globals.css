@@ -350,3 +350,85 @@ html[data-intro="seen"] .intro-splash {
 @media (prefers-reduced-motion: reduce) {
   .zoom-cta::after, .zoom-tap { animation: none; }
 }
+
+/* ---------------------------------------------------------------------------------------------
+   Cambio di pagina a scorrimento (View Transitions). La direzione è su <html data-nav>
+   (components/NavDirection, regole in lib/navDirection):
+   next = entra da destra, prev = da sinistra, deeper = sale dal basso, up = scende dall'alto,
+   fade = dissolvenza, none = cambio secco (es. sotto l'ingrandimento della vetrina).
+   Si muove solo il contenuto: intestazione e barre fisse restano ferme sopra.
+   --------------------------------------------------------------------------------------------- */
+:root {
+  --vt-out: 320ms;
+  --vt-in: 480ms;
+  --vt-ease-out: cubic-bezier(0.55, 0, 0.75, 0.3);
+  --vt-ease-in: cubic-bezier(0.2, 0.8, 0.25, 1);
+}
+::view-transition {
+  pointer-events: none;
+}
+/* fondo e piè di pagina cambiano subito */
+::view-transition-old(root) {
+  display: none;
+}
+::view-transition-new(root) {
+  animation: none;
+}
+/* elementi fissi: fermi e sopra il contenuto che scorre */
+::view-transition-group(site-header),
+::view-transition-group(mobile-bar),
+::view-transition-group(wa-button),
+::view-transition-group(read-bezel) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header),
+::view-transition-old(mobile-bar),
+::view-transition-old(wa-button),
+::view-transition-old(read-bezel) {
+  display: none;
+}
+::view-transition-new(site-header),
+::view-transition-new(mobile-bar),
+::view-transition-new(wa-button),
+::view-transition-new(read-bezel) {
+  animation: none;
+}
+
+/* contenuto: esce veloce, entra più morbido */
+::view-transition-old(.page) {
+  animation: var(--vt-out) var(--vt-ease-out) both vt-fade-out;
+}
+::view-transition-new(.page) {
+  animation: var(--vt-in) var(--vt-ease-in) both vt-fade-in;
+}
+:root[data-nav="next"]::view-transition-old(.page) { animation-name: vt-out-left; }
+:root[data-nav="next"]::view-transition-new(.page) { animation-name: vt-in-right; }
+:root[data-nav="prev"]::view-transition-old(.page) { animation-name: vt-out-right; }
+:root[data-nav="prev"]::view-transition-new(.page) { animation-name: vt-in-left; }
+:root[data-nav="deeper"]::view-transition-old(.page) { animation-name: vt-out-up; }
+:root[data-nav="deeper"]::view-transition-new(.page) { animation-name: vt-in-bottom; }
+:root[data-nav="up"]::view-transition-old(.page) { animation-name: vt-out-down; }
+:root[data-nav="up"]::view-transition-new(.page) { animation-name: vt-in-top; }
+:root[data-nav="none"]::view-transition-old(.page) { display: none; }
+:root[data-nav="none"]::view-transition-new(.page) { animation: none; }
+
+@keyframes vt-fade-out { to { opacity: 0; } }
+@keyframes vt-fade-in { from { opacity: 0; } }
+@keyframes vt-out-left { to { opacity: 0; transform: translateX(-22vw); } }
+@keyframes vt-out-right { to { opacity: 0; transform: translateX(22vw); } }
+@keyframes vt-in-right { from { opacity: 0; transform: translateX(32vw); } }
+@keyframes vt-in-left { from { opacity: 0; transform: translateX(-32vw); } }
+@keyframes vt-out-up { to { opacity: 0; transform: translateY(-10vh); } }
+@keyframes vt-out-down { to { opacity: 0; transform: translateY(10vh); } }
+@keyframes vt-in-bottom { from { opacity: 0; transform: translateY(16vh); } }
+@keyframes vt-in-top { from { opacity: 0; transform: translateY(-16vh); } }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
