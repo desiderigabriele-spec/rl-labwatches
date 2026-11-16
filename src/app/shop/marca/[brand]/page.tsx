@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import BrandEntrance from "@/components/BrandEntrance";
-import BrandLogo from "@/components/BrandLogo";
 import JsonLd from "@/components/JsonLd";
 import ShopGrid, { BrandNav, EmptyBrand } from "@/components/ShopGrid";
 import { brandBySlug, brands } from "@/data/brands";
@@ -43,7 +42,7 @@ export default async function BrandPage({ params }: Props) {
       <style>{"body{background:#0b100d}"}</style>
       {/* apertura scura, in continuità con la vetrina */}
       {/* apertura compatta: il cofanetto piccolo e che cosa si trova in questa pagina */}
-      <section className="guilloche relative overflow-hidden bg-[#0b100d] pb-10 pt-24 text-cream sm:pb-16 sm:pt-36">
+      <section className="guilloche relative overflow-hidden bg-[#0b100d] pb-12 pt-20 text-cream sm:pb-16 sm:pt-36">
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_0%,rgba(0,69,42,0.35),transparent_60%)]" />
         <div className="relative">
           <BrandEntrance slug={b.slug}>
@@ -54,11 +53,11 @@ export default async function BrandPage({ params }: Props) {
             <h1 className="mt-3 font-display text-[2rem] font-light leading-[1.05] sm:mt-4 sm:text-5xl lg:text-6xl">
               Orologi <em className="text-gold-3">{b.name}</em> in vendita
             </h1>
-            <p className="mt-4 max-w-2xl text-[0.9rem] leading-relaxed text-cream/70 sm:mt-5 sm:text-base lg:text-lg">
+            <p className="mx-auto mt-4 max-w-md text-[0.95rem] leading-relaxed text-cream/70 sm:mx-0 sm:mt-5 sm:max-w-2xl sm:text-base lg:text-lg">
               Qui trovi i {b.name} che ho selezionato e revisionato nel mio laboratorio di Pistoia, pronti da indossare. Per ogni orologio ci sono foto
               vere, referenza, anno, condizioni e corredo. Ti interessa un pezzo o ne cerchi uno preciso? Scrivimi e ti rispondo io.
             </p>
-            <ul className="mt-4 hidden flex-wrap gap-x-6 gap-y-2 text-[0.72rem] uppercase tracking-[0.18em] text-gold-3 sm:mt-6 sm:flex">
+            <ul className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-[0.62rem] uppercase tracking-[0.18em] text-gold-3 sm:justify-start sm:gap-x-6 sm:text-[0.72rem]">
               <li>Revisionati in laboratorio</li>
               <li>Garanzia 12 mesi</li>
               <li>Spedizione assicurata o ritiro a Pistoia</li>
@@ -69,10 +68,15 @@ export default async function BrandPage({ params }: Props) {
 
       <div className="bg-paper">
       <section id="disponibili" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:px-8">
-        <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
+        <div className="mb-8 flex items-end justify-between gap-6 sm:mb-10">
           <h2 className="font-display text-4xl font-light">
             {list.length ? `${list.length} ${list.length === 1 ? "orologio disponibile" : "orologi disponibili"}` : "Orologi disponibili"}
           </h2>
+          <Link href="/shop#orologi" className="shrink-0 border-b border-line pb-1 text-[0.7rem] uppercase tracking-[0.2em] text-mute hover:text-fg">
+            Tutte le marche
+          </Link>
+        </div>
+        <div className="mb-14">
           <BrandNav current={b.slug} />
         </div>
         {list.length ? <ShopGrid products={list} /> : <EmptyBrand brand={b} />}

@@ -5,21 +5,33 @@ import { whatsappLink } from "@/data/site";
 import ProductCard from "./ProductCard";
 import Reveal from "./Reveal";
 import { WhatsAppIcon } from "./WhatsAppButton";
+import BrandLogo from "./BrandLogo";
 
-/** Collegamenti alle sezioni delle marche (la marca aperta è evidenziata) */
+/**
+ * Scelta della marca con i loghi, in tessere tutte uguali: tre per riga sul telefono, sei in fila sul computer.
+ * La marca aperta è la tessera scura con il logo dorato. I loghi hanno proporzioni diverse (Audemars Piguet è
+ * una scritta lunga, Cartier quasi quadrato): l'altezza cambia perché sembrino tutti della stessa grandezza.
+ */
 export function BrandNav({ current }: { current?: string }) {
-  const chip = (active: boolean) =>
-    `rounded-full border px-4 py-1.5 text-sm transition-colors duration-300 ${active ? "border-fg bg-fg text-paper" : "border-line text-mute hover:border-fg hover:text-fg"}`;
   return (
-    <nav aria-label="Marche" className="flex flex-wrap gap-2">
-      <Link href="/shop#orologi" className={chip(!current)} aria-current={!current ? "page" : undefined}>
-        Tutti
-      </Link>
-      {brands.map((b) => (
-        <Link key={b.slug} href={`/shop/marca/${b.slug}`} className={chip(current === b.slug)} aria-current={current === b.slug ? "page" : undefined}>
-          {b.name}
-        </Link>
-      ))}
+    <nav aria-label="Marche" className="grid grid-cols-3 gap-2 sm:grid-cols-6 sm:gap-3">
+      {brands.map((b) => {
+        const on = current === b.slug;
+        // Patek Philippe ha la scritta sottile e piccola sotto la croce: un po' più grande per pareggiare il peso
+        const size = b.ratio > 3 ? "h-[1.15rem] sm:h-6" : b.ratio < 1.5 || b.slug === "patek-philippe" ? "h-10 sm:h-12" : "h-7 sm:h-9";
+        return (
+          <Link
+            key={b.slug}
+            href={`/shop/marca/${b.slug}`}
+            aria-current={on ? "page" : undefined}
+            className={`group flex h-[4.25rem] items-center justify-center rounded-sm border px-2 transition-colors duration-300 sm:h-24 ${
+              on ? "border-fg bg-fg text-gold-3" : "border-line bg-paper-2/60 text-fg/60 hover:border-fg/40 hover:text-fg"
+            }`}
+          >
+            <BrandLogo brand={b} className={`max-w-full ${size}`} />
+          </Link>
+        );
+      })}
     </nav>
   );
 }
