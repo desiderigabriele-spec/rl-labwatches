@@ -287,8 +287,16 @@ html[data-intro="seen"] .intro-splash {
 }
 .verb-word { display: block; }
 .verb-fill { position: absolute; inset: 0; }
-.verb-outline { color: transparent; -webkit-text-stroke: 1.5px rgba(148, 116, 42, 0.5); }
-.verb-fill { color: var(--color-gold); clip-path: inset(0 100% 0 0); }
+/* "oro colato": la parola è incisa nella carta e l'oro lucido la riempie con un bordo morbido */
+.verb-outline { color: #e6dbc2; text-shadow: 1px 1px 0 rgb(255 255 255 / 0.85), -1px -1px 0 rgb(90 70 30 / 0.28); }
+.verb-fill {
+  color: transparent;
+  background: linear-gradient(100deg, #7a5a1c, #c99a45 25%, #f6e2a6 45%, #b8893a 60%, #8a6826 80%, #d9b468);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-mask-image: linear-gradient(90deg, #000 -18%, transparent 0%);
+  mask-image: linear-gradient(90deg, #000 -18%, transparent 0%);
+}
 @media (prefers-reduced-motion: reduce) { .defect-pin::after { animation: none; } }
 
 /* recensioni: due nastri che scorrono in direzioni opposte, si fermano al passaggio o al tocco */
@@ -432,31 +440,83 @@ html[data-intro="seen"] .intro-splash {
 .is-open .bezel-ring {
   transform: rotate(-30deg);
 }
-/* richiamo: due scatti della ghiera e ritorno */
-.is-attn .bezel-ring {
-  animation: bezel-click 1.2s steps(1, end);
+/* richiamo: la lunetta rotola a sinistra (la ghiera gira come una ruota) e dietro si apre una capsula
+   con la scritta; poi torna indietro. 84px = metà capsula (118) meno metà lunetta (34); 141° = 84px
+   di rotolamento su una ruota da 68px */
+.is-pill-anim .bezel-btn,
+.is-pill-anim .bezel-ring {
+  transition: transform 0.7s cubic-bezier(0.3, 0.7, 0.25, 1);
 }
-@keyframes bezel-click {
-  0% { transform: rotate(0deg); }
-  15% { transform: rotate(-3deg); }
-  30% { transform: rotate(-6deg); }
-  70% { transform: rotate(-3deg); }
-  85%, 100% { transform: rotate(0deg); }
+.is-pill .bezel-btn {
+  transform: translateX(-84px);
 }
-/* punto luminoso del triangolo: si accende con il richiamo */
+.is-pill .bezel-ring {
+  transform: rotate(-141deg);
+}
+.bezel-pill {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 68px;
+  height: 60px;
+  translate: -50% -50%;
+  border-radius: 9999px;
+  border: 1.5px solid transparent;
+  background:
+    radial-gradient(ellipse at 30% 0%, #0d5c3c, #03341f 55%, #01200f) padding-box,
+    linear-gradient(135deg, #f6e5b0, #b98d3b 40%, #6c501b 60%, #e2c27a 85%) border-box;
+  box-shadow: 0 14px 28px -10px rgb(0 20 12 / 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: width 0.7s cubic-bezier(0.3, 0.7, 0.25, 1), opacity 0.2s ease 0.5s;
+  -webkit-tap-highlight-color: transparent;
+}
+.is-pill .bezel-pill {
+  width: 236px;
+  opacity: 1;
+  pointer-events: auto;
+  transition: width 0.7s cubic-bezier(0.3, 0.7, 0.25, 1), opacity 0.15s ease;
+}
+.bezel-pill-text {
+  position: absolute;
+  left: 76px;
+  right: 14px;
+  top: 50%;
+  translate: 8px -50%;
+  display: grid;
+  text-align: left;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.25s ease, translate 0.25s ease;
+}
+.is-pill .bezel-pill-text {
+  opacity: 1;
+  translate: 0 -50%;
+  transition: opacity 0.4s ease 0.35s, translate 0.5s cubic-bezier(0.2, 0.8, 0.25, 1) 0.35s;
+}
+.bezel-pill-text small {
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--color-gold-3);
+}
+.bezel-pill-text em {
+  font-family: var(--font-display), serif;
+  font-size: 1.4rem;
+  line-height: 1.05;
+  color: var(--color-cream);
+}
+/* punto luminoso del triangolo e riflesso sul vetro mentre rotola */
 .bezel-lume {
   background: radial-gradient(circle, rgb(255 251 225 / 0.95) 0 30%, rgb(255 236 170 / 0.45) 55%, transparent 72%);
   mix-blend-mode: screen;
   opacity: 0;
+  transition: opacity 0.6s ease;
 }
-.is-attn .bezel-lume {
-  animation: bezel-lume 1.6s ease-in-out;
+.is-pill .bezel-lume {
+  opacity: 1;
 }
-@keyframes bezel-lume {
-  0%, 100% { opacity: 0; }
-  45% { opacity: 1; }
-}
-/* riflesso che attraversa il vetro */
 .bezel-glint::before {
   content: "";
   position: absolute;
@@ -465,24 +525,12 @@ html[data-intro="seen"] .intro-splash {
   mix-blend-mode: screen;
   transform: translateX(-120%);
 }
-.is-attn .bezel-glint::before {
-  animation: bezel-glint 1.1s cubic-bezier(0.4, 0, 0.2, 1) 0.25s;
+.is-pill .bezel-glint::before {
+  animation: bezel-glint 1.1s cubic-bezier(0.4, 0, 0.2, 1) 0.6s;
 }
 @keyframes bezel-glint {
   from { transform: translateX(-120%); }
   to { transform: translateX(120%); }
-}
-/* alone d'oro che si allarga una volta */
-.bezel-halo {
-  box-shadow: 0 0 0 1.5px rgb(215 179 104 / 0.9), 0 0 14px 2px rgb(215 179 104 / 0.45);
-  opacity: 0;
-}
-.is-attn .bezel-halo {
-  animation: bezel-halo 1.5s cubic-bezier(0.2, 0.8, 0.3, 1) 0.15s;
-}
-@keyframes bezel-halo {
-  0% { opacity: 0.9; transform: scale(1); }
-  100% { opacity: 0; transform: scale(1.55); }
 }
 .bezel-hands img {
   filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.55));
@@ -545,7 +593,7 @@ html[data-intro="seen"] .intro-splash {
 }
 @media (prefers-reduced-motion: reduce) {
   .bezel-ring, .bezel-item, .bezel-ask { transition-duration: 0s !important; transition-delay: 0s !important; }
-  .is-attn .bezel-ring, .is-attn .bezel-lume, .is-attn .bezel-glint::before, .is-attn .bezel-halo { animation: none; }
+  .is-pill .bezel-glint::before { animation: none; }
 }
 
 /* fondo e piè di pagina cambiano subito */

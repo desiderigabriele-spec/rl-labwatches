@@ -6,8 +6,8 @@ import { CHAPTERS, CH_LEN, CH_START, workOf } from "./chapters";
 const clamp = (x: number) => Math.min(1, Math.max(0, x));
 
 /**
- * Il verbo gigante dietro al pezzo (LAVARE, PULIRE, RICOSTRUIRE…): il contorno si riempie d'oro
- * mentre il lavoro avanza. La dimensione si adatta alla lunghezza della parola.
+ * Il verbo gigante dietro al pezzo (LAVARE, PULIRE, RICOSTRUIRE…): inciso nella carta, si riempie d'oro
+ * lucido mentre il lavoro avanza ("oro colato"). La dimensione si adatta alla lunghezza della parola.
  */
 export default function VerbBackdrop({ progress }: { progress: MotionValue<number> }) {
   const box = useRef<HTMLDivElement>(null);
@@ -27,7 +27,13 @@ export default function VerbBackdrop({ progress }: { progress: MotionValue<numbe
       box.current.style.setProperty("--len", String(w.length));
     }
     if (box.current) box.current.style.opacity = inRange ? String(Math.min(1, local / 0.06, (1 - local) / 0.06)) : "0";
-    if (fill.current) fill.current.style.clipPath = `inset(0 ${100 - clamp(workOf(local)) * 100}% 0 0)`;
+    if (fill.current) {
+      // l'oro avanza con un bordo morbido, come metallo fuso che riempie l'incisione
+      const x = clamp(workOf(local)) * 118 - 9;
+      const m = `linear-gradient(90deg, #000 ${x - 9}%, transparent ${x + 9}%)`;
+      fill.current.style.maskImage = m;
+      fill.current.style.setProperty("-webkit-mask-image", m);
+    }
   });
 
   return (
