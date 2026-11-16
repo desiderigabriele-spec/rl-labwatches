@@ -367,6 +367,168 @@ html[data-intro="seen"] .intro-splash {
 ::view-transition {
   pointer-events: none;
 }
+/* ---------------------------------------------------------------------------------------------
+   Intestazione senza fascia: sotto il logo e il menu la pagina si sfoca sempre di più verso l'alto
+   (tre strati di sfocatura crescente, ognuno sfumato, più un velo del colore del fondo)
+   --------------------------------------------------------------------------------------------- */
+.veil {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 49;
+  height: 6.5rem;
+  pointer-events: none;
+}
+@media (min-width: 1024px) {
+  .veil {
+    height: 7.5rem;
+  }
+}
+.veil i {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.5s ease, background-color 0.5s ease;
+}
+.veil.veil-on i {
+  opacity: 1;
+}
+.veil i:nth-child(1) {
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 70%, transparent 100%);
+}
+.veil i:nth-child(2) {
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 58%, transparent 88%);
+}
+.veil i:nth-child(3) {
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 75%);
+}
+.veil i:nth-child(4) {
+  background: linear-gradient(to bottom, rgb(241 233 216 / 0.86) 0%, rgb(241 233 216 / 0.66) 45%, rgb(241 233 216 / 0) 100%);
+}
+.veil.veil-dark i:nth-child(4) {
+  background: linear-gradient(to bottom, rgb(8 14 11 / 0.82) 0%, rgb(8 14 11 / 0.6) 45%, rgb(8 14 11 / 0) 100%);
+}
+
+/* ---------------------------------------------------------------------------------------------
+   Lunetta dei contatti (ContactBezel): ghiera che scatta, lancette che girano, contatti a ventaglio
+   --------------------------------------------------------------------------------------------- */
+.bezel-btn {
+  filter: drop-shadow(0 10px 14px rgb(0 20 12 / 0.45)) drop-shadow(0 2px 3px rgb(0 0 0 / 0.35));
+  -webkit-tap-highlight-color: transparent;
+}
+.bezel-btn:active svg {
+  transform: scale(0.95);
+}
+.bezel-btn svg {
+  transition: transform 0.2s ease;
+}
+/* le rotazioni girano intorno al centro del quadrante (ogni gruppo è centrato sull'origine) */
+.bezel-ring,
+.bezel-hand {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.bezel-ring {
+  /* scatti da 3°, come una ghiera a 120 click */
+  transition: transform 0.6s steps(10, end);
+}
+.is-open .bezel-ring {
+  transform: rotate(-30deg);
+}
+.is-nudge .bezel-ring {
+  animation: bezel-nudge 0.7s steps(1, end);
+}
+@keyframes bezel-nudge {
+  0% { transform: rotate(-3deg); }
+  33% { transform: rotate(-6deg); }
+  66% { transform: rotate(-3deg); }
+  100% { transform: rotate(0deg); }
+}
+.bezel-lume {
+  animation: bezel-lume 4.5s ease-in-out infinite;
+}
+@keyframes bezel-lume {
+  0%, 70%, 100% { opacity: 0.75; }
+  85% { opacity: 1; filter: drop-shadow(0 0 2px #fff6c9) drop-shadow(0 0 4px #e9cd86); }
+}
+.bezel-hand {
+  transition: transform 0.9s cubic-bezier(0.6, 0, 0.2, 1);
+}
+.bezel-h { transform: rotate(-60deg); }
+.bezel-m { transform: rotate(60deg); }
+.is-open .bezel-h { transform: rotate(0deg); }
+.is-open .bezel-m { transform: rotate(360deg); }
+
+.bezel-item {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  transform: translate(-50%, -26px) scale(0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.25, 1.15) var(--d), opacity 0.3s ease var(--d);
+  -webkit-tap-highlight-color: transparent;
+}
+.is-open .bezel-item {
+  transform: translate(calc(-50% + var(--x)), calc(-26px + var(--y))) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+/* medaglione: smalto chiaro in una cornice d'oro */
+.bezel-medal {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 9999px;
+  color: var(--color-green);
+  background:
+    radial-gradient(circle at 38% 30%, #fffaf0, #efe5cf 62%, #dccdaa) padding-box,
+    linear-gradient(135deg, #f6e5b0, #b98d3b 40%, #6c501b 60%, #e2c27a 85%) border-box;
+  border: 2px solid transparent;
+  box-shadow: 0 10px 22px -8px rgb(0 0 0 / 0.55), inset 0 1px 0 rgb(255 255 255 / 0.7);
+}
+.is-primary .bezel-medal {
+  width: 60px;
+  height: 60px;
+  color: var(--color-gold-3);
+  background:
+    radial-gradient(circle at 38% 30%, #0f7149, #034128 62%, #01200f) padding-box,
+    linear-gradient(135deg, #f6e5b0, #b98d3b 40%, #6c501b 60%, #e2c27a 85%) border-box;
+}
+.bezel-label {
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-cream);
+  white-space: nowrap;
+  text-shadow: 0 1px 6px rgb(0 0 0 / 0.5);
+}
+.bezel-ask {
+  opacity: 0;
+  translate: -50% 8px;
+  transition: opacity 0.4s ease, translate 0.5s ease;
+}
+.is-open .bezel-ask {
+  opacity: 1;
+  translate: -50% 0;
+  transition-delay: 0.15s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bezel-ring, .bezel-hand, .bezel-item, .bezel-ask { transition-duration: 0s !important; transition-delay: 0s !important; }
+  .bezel-lume, .is-nudge .bezel-ring { animation: none; }
+}
+
 /* fondo e piè di pagina cambiano subito */
 ::view-transition-old(root) {
   display: none;
