@@ -11,7 +11,7 @@ const ARC = 104;
 const ANGLES = [-58, 0, 58];
 /** scritte del richiamo, a turno: riga piccola in maiuscoletto, riga grande in corsivo */
 const MESSAGES = [
-  ["Contatta", "Roberto"],
+  ["Chiedi a", "Roberto"],
   ["Preventivo", "gratuito"],
 ] as const;
 /** scatti dei secondi al secondo, come un calibro a 28.800 alternanze */
