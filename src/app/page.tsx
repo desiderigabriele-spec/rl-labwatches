@@ -111,10 +111,13 @@ export default function Home() {
       <ServicesRail />
 
       {/* VETRINA con i faretti */}
-      <Showcase />
-      <div className="bg-[#0b100d] pb-20 text-center">
-        <Link href="/shop#orologi" className="btn !border-cream/40 !text-cream hover:!bg-cream hover:!text-green-2">Vedi tutti gli orologi</Link>
-      </div>
+      <Showcase
+        cta={
+          <Link href="/shop#orologi" className="btn !border-cream/40 !text-cream hover:!bg-cream hover:!text-green-2">
+            Vedi tutti gli orologi
+          </Link>
+        }
+      />
 
       <BrandStrip />
 

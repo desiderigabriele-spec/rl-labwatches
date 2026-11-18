@@ -137,10 +137,13 @@ export default function Showcase({
   eyebrow = "La vetrina",
   title = "Scegli la tua marca",
   intro = "Ogni orologio in vendita è selezionato e revisionato nel mio laboratorio. Tocca un cofanetto: si accende la luce e l\u2019orologio si avvicina. Toccalo ancora per vedere gli orologi disponibili di quella marca.",
+  cta,
 }: {
   eyebrow?: string;
   title?: string;
   intro?: string;
+  /** pulsante in fondo alla vetrina, dentro la stessa sezione (stesso fondo e stessa trama) */
+  cta?: React.ReactNode;
 }) {
   const items = brands;
   const ref = useRef<HTMLElement>(null);
@@ -279,7 +282,6 @@ export default function Showcase({
               />
             ))}
           </div>
-          <p className="mt-6 text-center text-[0.7rem] uppercase tracking-[0.2em] text-cream/30">Immagini illustrative</p>
         </div>
 
         <AnimatePresence mode="wait">
@@ -318,6 +320,7 @@ export default function Showcase({
         </AnimatePresence>
       </div>
 
+      {cta && <div className="relative mt-12 text-center sm:mt-16">{cta}</div>}
     </section>
   );
 }
