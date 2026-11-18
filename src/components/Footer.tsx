@@ -56,7 +56,7 @@ export default function Footer() {
         <div className="mx-auto max-w-7xl px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-6 text-xs text-cream/55 sm:px-8 lg:pb-6">
           <p>© {new Date().getFullYear()} RL Lab Watches · {site.owner} · {site.address.city}, Italia{site.vat && ` · P.IVA ${site.vat}`}</p>
           <p className="mt-2 max-w-3xl text-cream/45">
-            Laboratorio indipendente, non affiliato ai marchi citati. I nomi e i loghi delle marche appartengono ai rispettivi proprietari e sono usati solo per indicare gli orologi su cui intervengo.
+            Laboratorio indipendente, non affiliato ai marchi citati. I nomi e i loghi delle marche appartengono ai rispettivi proprietari e sono usati solo per indicare gli orologi su cui intervengo. Le immagini dei cofanetti e degli orologi in vetrina sono ricostruzioni a scopo illustrativo.
           </p>
         </div>
       </div>

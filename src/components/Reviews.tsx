@@ -73,6 +73,7 @@ function Strip() {
   const inView = useInView(box, { amount: 0.2 });
   const stopped = useRef(false);
   const x = useRef(0);
+  const written = useRef(0);
   const copy = useRef(0);
   const settle = useRef(0);
 
@@ -85,6 +86,7 @@ function Strip() {
       copy.current = ul.scrollWidth / 3;
       x.current = prev ? (x.current / prev) * copy.current : copy.current;
       el.scrollLeft = x.current;
+      written.current = el.scrollLeft;
     };
     measure();
     window.addEventListener("resize", measure);
@@ -103,6 +105,7 @@ function Strip() {
         x.current += dt * 0.03;
         if (x.current > copy.current * 1.5) x.current -= copy.current;
         el.scrollLeft = x.current;
+        written.current = el.scrollLeft;
       }
       raf = requestAnimationFrame(tick);
     };
@@ -115,6 +118,8 @@ function Strip() {
   };
   // scorrendolo a mano resta infinito: a scorrimento finito, se si è vicini al bordo si salta di una copia
   const onScroll = () => {
+    // scorrimento che non è il nostro (dito, rotellina, inerzia): si ferma
+    if (box.current && Math.abs(box.current.scrollLeft - written.current) > 2) stop();
     if (!stopped.current) return;
     window.clearTimeout(settle.current);
     settle.current = window.setTimeout(() => {
@@ -122,7 +127,7 @@ function Strip() {
       if (!el || !copy.current) return;
       if (el.scrollLeft < copy.current * 0.5) el.scrollLeft += copy.current;
       else if (el.scrollLeft > copy.current * 1.5) el.scrollLeft -= copy.current;
-      x.current = el.scrollLeft;
+      x.current = written.current = el.scrollLeft;
     }, 160);
   };
   const step = (dir: number) => {

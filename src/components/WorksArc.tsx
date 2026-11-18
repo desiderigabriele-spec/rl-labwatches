@@ -261,7 +261,7 @@ export default function WorksArc() {
 /**
  * Miniature dei lavori (metà prima, metà dopo) in un nastro che scorre da solo, all'infinito (tre copie: si
  * scorre su quella in mezzo e si salta di una copia al bordo, senza che si veda). Appena lo tocchi o lo scorri
- * col dito si ferma e resta fermo, così si sceglie bene; si muove solo quando è sullo schermo.
+ * col dito si ferma, così si sceglie bene, e riparte da solo dopo 5 secondi; si muove solo quando è sullo schermo.
  */
 function Reel({ cur, onPick }: { cur: number; onPick: (k: number) => void }) {
   const reel = useRef<HTMLDivElement>(null);
@@ -269,6 +269,7 @@ function Reel({ cur, onPick }: { cur: number; onPick: (k: number) => void }) {
   const inView = useInView(reel, { amount: 0.2 });
   const paused = useRef(false);
   const x = useRef(0);
+  const written = useRef(0);
   const copy = useRef(0);
 
   useEffect(() => {
@@ -279,6 +280,7 @@ function Reel({ cur, onPick }: { cur: number; onPick: (k: number) => void }) {
       copy.current = ul.scrollWidth / 3;
       if (!x.current) x.current = copy.current;
       el.scrollLeft = x.current;
+      written.current = el.scrollLeft;
     };
     measure();
     window.addEventListener("resize", measure);
@@ -297,6 +299,7 @@ function Reel({ cur, onPick }: { cur: number; onPick: (k: number) => void }) {
         x.current += dt * 0.028;
         if (x.current > copy.current * 1.5) x.current -= copy.current;
         el.scrollLeft = x.current;
+        written.current = el.scrollLeft; // quello che il browser ha davvero applicato (arrotonda)
       }
       raf = requestAnimationFrame(tick);
     };
@@ -304,19 +307,40 @@ function Reel({ cur, onPick }: { cur: number; onPick: (k: number) => void }) {
     return () => cancelAnimationFrame(raf);
   }, [inView]);
 
-  // appena lo tocchi o lo scorri si ferma e resta fermo: così si sceglie con calma
+  // appena lo tocchi o lo scorri si ferma, così si sceglie con calma; se per 5 secondi non lo tocchi più
+  // riprende a scorrere da solo, da dove l'hai lasciato
+  const idle = useRef(0);
+  const settle = useRef(0);
   const pause = () => {
     paused.current = true;
+    window.clearTimeout(idle.current);
+    idle.current = window.setTimeout(() => {
+      if (reel.current) x.current = written.current = reel.current.scrollLeft;
+      paused.current = false;
+    }, 5000);
   };
-  // scorrendolo a mano resta infinito anche lui
+  useEffect(
+    () => () => {
+      window.clearTimeout(idle.current);
+      window.clearTimeout(settle.current);
+    },
+    []
+  );
   const onScroll = () => {
     const el = reel.current;
-    if (!el || !paused.current || !copy.current) return;
-    let v = el.scrollLeft;
-    if (v < copy.current * 0.5) v += copy.current;
-    else if (v > copy.current * 1.5) v -= copy.current;
-    if (v !== el.scrollLeft) el.scrollLeft = v;
-    x.current = v;
+    if (!el || !copy.current) return;
+    // lo scorrimento non è il nostro (dito, rotellina, inerzia dopo il dito): si ferma
+    if (Math.abs(el.scrollLeft - written.current) > 2) pause();
+    if (!paused.current) return;
+    x.current = el.scrollLeft;
+    // resta infinito anche a mano: a scorrimento finito, vicino al bordo salta di una copia (senza che si veda)
+    window.clearTimeout(settle.current);
+    settle.current = window.setTimeout(() => {
+      const v = el.scrollLeft;
+      if (v < copy.current * 0.5) el.scrollLeft = v + copy.current;
+      else if (v > copy.current * 1.5) el.scrollLeft = v - copy.current;
+      x.current = written.current = el.scrollLeft;
+    }, 180);
   };
 
   return (
