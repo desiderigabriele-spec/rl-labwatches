@@ -60,8 +60,6 @@ function Step({ i, progress }: { i: number; progress: MotionValue<number> }) {
   );
 }
 
-/** dopo che il restauro è stato visto (o saltato) una volta, la sezione resta chiusa con "Rivedi" */
-const SEEN_KEY = "rl-restauro-visto";
 
 type Lenis = { scrollTo: (t: number, o?: object) => void; resize: () => void };
 const lenis = () => (window as unknown as { __lenis?: Lenis }).__lenis;
@@ -77,9 +75,9 @@ function jump(y: number) {
 export default function RestorationSection() {
   const ref = useRef<HTMLElement>(null);
   /**
-   * La prima volta il restauro avanza con lo scorrimento. Quando l'hai visto fino in fondo (o hai toccato
-   * "Salta") la sezione si chiude sull'orologio finito con "Rivedi il restauro": da lì in poi, anche
-   * tornando su o nelle visite successive, non va più riscorso tutto.
+   * Il restauro avanza con lo scorrimento. Quando l'hai visto fino in fondo (o hai toccato "Salta") la
+   * sezione si chiude sull'orologio finito con "Rivedi il restauro": tornando su non va riscorso tutto.
+   * Vale solo finché resti sulla pagina: ricaricandola (o tornandoci) il restauro riparte da capo.
    * Si chiude solo quando è fuori dallo schermo, e se era sopra la pagina viene compensata: niente salti.
    */
   const [collapsed, setCollapsed] = useState(false);
@@ -87,9 +85,6 @@ export default function RestorationSection() {
   const pending = useRef<null | { mode: "keep" | "skip"; top: number; above: boolean; anchor: number }>(null);
   const markSeen = () => {
     seen.current = true;
-    try {
-      localStorage.setItem(SEEN_KEY, "1");
-    } catch {}
   };
   const collapse = (mode: "keep" | "skip") => {
     const el = ref.current;
@@ -100,14 +95,6 @@ export default function RestorationSection() {
     pending.current = { mode, top: r.top + window.scrollY, above: r.bottom <= 0, anchor };
     setCollapsed(true);
   };
-  useEffect(() => {
-    try {
-      if (localStorage.getItem(SEEN_KEY)) {
-        seen.current = true;
-        collapse("keep");
-      }
-    } catch {}
-  }, []);
   useLayoutEffect(() => {
     const p = pending.current;
     const el = ref.current;
@@ -201,7 +188,7 @@ export default function RestorationSection() {
 
   return (
     <section ref={ref} className="relative h-[720vh] border-y border-line bg-paper-2 lg:h-[980vh]" aria-label="Il restauro, passo dopo passo">
-      <div className="sticky top-0 flex h-dvh flex-col overflow-hidden">
+      <div data-no-veil className="sticky top-0 flex h-dvh flex-col overflow-hidden">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 pt-20 sm:px-8 sm:pt-24">
           <p className="eyebrow">Il restauro, passo dopo passo</p>
           <button

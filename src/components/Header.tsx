@@ -26,6 +26,7 @@ export default function Header() {
   // tono del fondo sotto l'intestazione: su fondo scuro logo chiaro, su fondo chiaro logo verde e oro
   const [dark, setDark] = useState(false);
   const [everDark, setEverDark] = useState(false);
+  const [noVeil, setNoVeil] = useState(false);
   const ref = useRef<HTMLElement>(null);
   useEffect(() => {
     const cache = new WeakMap<Element, number>();
@@ -52,6 +53,8 @@ export default function Header() {
       }
       const d = tone >= 0 && tone < 0.35;
       setDark(d);
+      // sotto l'intestazione c'è una scena ferma (es. il restauro): niente sfocatura, coprirebbe le scritte
+      setNoVeil(document.elementsFromPoint(Math.min(40, window.innerWidth / 4), y).some((el) => !h.contains(el) && !!el.closest("[data-no-veil]")));
       if (d) setEverDark(true);
     };
     const queue = () => { if (!raf) raf = requestAnimationFrame(check); };
@@ -82,7 +85,7 @@ export default function Header() {
     {/* Niente fascia dietro l'intestazione: quello che le scorre sotto si sfoca sempre di più verso l'alto, così logo e
         menu restano puliti e in evidenza. Più strati di sfocatura crescente, ognuno sfumato (vedi .veil in globals.css).
         Sta fuori dall'intestazione e senza view-transition-name: altrimenti la sfocatura non vedrebbe la pagina sotto. */}
-    <div aria-hidden className={`veil ${dark ? "veil-dark" : ""} ${scrolled && !open ? "veil-on" : ""}`}>
+    <div aria-hidden className={`veil ${dark ? "veil-dark" : ""} ${scrolled && !open && !noVeil ? "veil-on" : ""}`}>
       <i />
       <i />
       <i />
