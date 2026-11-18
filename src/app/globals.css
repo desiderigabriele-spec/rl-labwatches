@@ -274,7 +274,7 @@ html[data-intro="seen"] .intro-splash {
 }
 .intake-stamp.is-on { opacity: 0.85; transform: rotate(-10deg) scale(1); }
 .verb-backdrop { container-type: inline-size; }
-/* larghezza piena per le parole corte, mai più alta di un decimo dello schermo */
+/* stessa altezza per tutti i verbi: il più lungo occupa tutta la larghezza; mai più alta di un decimo dello schermo */
 .verb-line {
   position: relative;
   text-align: center;
