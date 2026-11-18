@@ -49,7 +49,20 @@ function NautilusDrawn({ hour, minute }: { hour: React.Ref<SVGGElement>; minute:
   );
 }
 
-export default function LiveHands({ style, run, beats = 8, sprites }: { style: HandStyle; run: boolean; beats?: number; sprites?: HandSprites | null }) {
+/** seconds = false per gli orologi senza lancetta dei secondi (es. Royal Oak 16202: solo ore e minuti) */
+export default function LiveHands({
+  style,
+  run,
+  beats = 8,
+  sprites,
+  seconds = true,
+}: {
+  style: HandStyle;
+  run: boolean;
+  beats?: number;
+  sprites?: HandSprites | null;
+  seconds?: boolean;
+}) {
   const hour = useRef<SVGGElement>(null);
   const minute = useRef<SVGGElement>(null);
   const second = useRef<SVGGElement>(null);
@@ -112,7 +125,7 @@ export default function LiveHands({ style, run, beats = 8, sprites }: { style: H
         <g style={{ filter: "drop-shadow(0.02px 0.04px 0.025px rgba(0,0,0,0.55))" }}>
           {!sprites && style === "submariner" && <SubmarinerDrawn hour={hour} minute={minute} />}
           {!sprites && style === "nautilus" && <NautilusDrawn hour={hour} minute={minute} />}
-          {sprites?.secondi ? null : style === "nautilus" ? (
+          {sprites?.secondi || !seconds ? null : style === "nautilus" ? (
             // secondi del Nautilus: asta sottile con la punta luminescente e il contrappeso corto
             <g ref={second} data-hand="s">
               <rect x={-0.006} y={-0.94} width={0.012} height={1.2} fill={STEEL} />
