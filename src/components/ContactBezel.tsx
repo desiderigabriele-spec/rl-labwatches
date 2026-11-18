@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { site, whatsappLink } from "@/data/site";
 import { WhatsAppIcon } from "./WhatsAppButton";
 
@@ -30,6 +30,24 @@ export default function ContactBezel() {
   const [pill, setPill] = useState(0);
   const [msg, setMsg] = useState(0);
   const usedRef = useRef(false);
+  const dock = useRef<HTMLDivElement>(null);
+  const pillText = useRef<HTMLSpanElement>(null);
+  // capsula larga quanto la scritta: 76px per la lunetta a sinistra, poi il testo e 26px di margine.
+  // La lunetta rotola fino al bordo sinistro (metà capsula meno metà lunetta) e la ghiera gira di conseguenza
+  useLayoutEffect(() => {
+    const fit = () => {
+      const t = pillText.current;
+      const d = dock.current;
+      if (!t || !d) return;
+      const w = Math.ceil(76 + t.scrollWidth + 26);
+      const shift = -(w / 2 - 34);
+      d.style.setProperty("--pill-w", `${w}px`);
+      d.style.setProperty("--pill-shift", `${shift}px`);
+      d.style.setProperty("--pill-roll", `${(shift / (Math.PI * 68)) * 360}deg`);
+    };
+    fit();
+    document.fonts?.ready.then(fit); // rimisura quando i caratteri sono caricati
+  }, [msg]);
   const hourHand = useRef<HTMLImageElement>(null);
   const minuteHand = useRef<HTMLImageElement>(null);
   const secondHand = useRef<HTMLImageElement>(null);
@@ -120,6 +138,7 @@ export default function ContactBezel() {
         className={`fixed inset-0 z-40 bg-[#04120c]/55 backdrop-blur-[6px] transition-opacity duration-500 ${open ? "opacity-100" : "pointer-events-none opacity-0"}`}
       />
       <div
+        ref={dock}
         style={{ viewTransitionName: "mobile-bar" }}
         className={`bezel-dock fixed bottom-[calc(14px+env(safe-area-inset-bottom))] left-1/2 z-40 h-[68px] w-[68px] -translate-x-1/2 ${open ? "is-open" : ""} ${
           pill && !open ? "is-pill-anim" : ""
@@ -160,7 +179,7 @@ export default function ContactBezel() {
 
         {/* capsula del richiamo: si allarga dietro la lunetta, che rotola sul lato sinistro */}
         <button type="button" tabIndex={-1} aria-hidden onClick={toggle} className="bezel-pill">
-          <span className="bezel-pill-text">
+          <span ref={pillText} className="bezel-pill-text">
             <small>{MESSAGES[msg][0]}</small>
             <em>{MESSAGES[msg][1]}</em>
           </span>
