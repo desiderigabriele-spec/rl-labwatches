@@ -4,10 +4,12 @@ import { useRef } from "react";
 import { CHAPTERS, CH_LEN, CH_START, workOf } from "./chapters";
 
 const clamp = (x: number) => Math.min(1, Math.max(0, x));
+/** tutti i verbi hanno la stessa altezza: quella che fa stare nello schermo il più lungo (RICOSTRUIRE) */
+const LONGEST = Math.max(...CHAPTERS.map((c) => c.verb.length));
 
 /**
  * Il verbo gigante dietro al pezzo (LAVARE, PULIRE, RICOSTRUIRE…): inciso nella carta, si riempie d'oro
- * lucido mentre il lavoro avanza ("oro colato"). La dimensione si adatta alla lunghezza della parola.
+ * lucido mentre il lavoro avanza ("oro colato"). Tutti i verbi hanno la stessa grandezza, quella del più lungo.
  */
 export default function VerbBackdrop({ progress }: { progress: MotionValue<number> }) {
   const box = useRef<HTMLDivElement>(null);
@@ -24,7 +26,6 @@ export default function VerbBackdrop({ progress }: { progress: MotionValue<numbe
       last.current = i;
       const w = CHAPTERS[i].verb;
       outline.current.textContent = fill.current.textContent = w;
-      box.current.style.setProperty("--len", String(w.length));
     }
     if (box.current) box.current.style.opacity = inRange ? String(Math.min(1, local / 0.06, (1 - local) / 0.06)) : "0";
     if (fill.current) {
@@ -37,7 +38,7 @@ export default function VerbBackdrop({ progress }: { progress: MotionValue<numbe
   });
 
   return (
-    <div ref={box} aria-hidden className="verb-backdrop pointer-events-none w-full shrink-0 select-none" style={{ opacity: 0, ["--len" as string]: CHAPTERS[0].verb.length }}>
+    <div ref={box} aria-hidden className="verb-backdrop pointer-events-none w-full shrink-0 select-none" style={{ opacity: 0, ["--len" as string]: LONGEST }}>
       <div className="verb-line">
         <span ref={outline} className="verb-word verb-outline">
           {CHAPTERS[0].verb}
