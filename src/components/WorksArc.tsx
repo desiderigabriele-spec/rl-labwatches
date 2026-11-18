@@ -32,8 +32,8 @@ function arc(d: number) {
 const ease = (k: number) => (k < 0.5 ? 8 * k ** 4 : 1 - (-2 * k + 2) ** 4 / 2);
 
 /**
- * Prima e dopo dei lavori del laboratorio, da sfogliare sull'arco: si trascina, si usano le frecce o si tocca
- * un lavoro di lato. Sul lavoro davanti la linea del prima e dopo parte da sola e si trascina dal cerchio.
+ * Prima e dopo dei lavori del laboratorio. In alto il nome del lavoro e i cerchietti che scorrono da soli;
+ * sotto l'arco, da sfogliare trascinando, toccando un lavoro di lato o un cerchietto (o con le frecce della tastiera). Sul lavoro davanti la linea del prima e dopo parte da sola e si trascina dal cerchio.
  * Si caricano solo le foto vicine a quella davanti.
  */
 export default function WorksArc() {
@@ -175,6 +175,13 @@ export default function WorksArc() {
   const w = works[cur];
   return (
     <div className="mx-auto w-full min-w-0 max-w-[min(100%,34rem)]">
+      {/* il lavoro davanti: che orologio e che lavoro */}
+      <p key={w.slug} className="animate-[fade-up_0.5s_ease] text-center" aria-live="polite">
+        <span className="block text-[0.66rem] font-medium uppercase tracking-[0.22em] text-gold">{w.watch}</span>
+        <span className="mt-1 block font-display text-2xl leading-tight sm:text-[1.7rem]">{w.job}</span>
+      </p>
+      {/* i cerchietti scorrono da soli all'infinito; si fermano se li tocchi o li scorri, toccandone uno l'arco va lì */}
+      <Reel cur={cur} onPick={(k) => go(Math.round(pos.current) + wrapD(k, Math.round(pos.current)))} />
       <div
         ref={stage}
         role="group"
@@ -189,7 +196,7 @@ export default function WorksArc() {
         onPointerMove={onMove}
         onPointerUp={onUp}
         onPointerCancel={onUp}
-        className="relative aspect-[1/0.92] w-full cursor-grab touch-pan-y select-none outline-none [perspective:1300px] [perspective-origin:50%_40%]"
+        className="relative mt-3 aspect-[1/0.8] w-full cursor-grab lg:[mask-image:linear-gradient(90deg,transparent,#000_14%,#000_86%,transparent)] touch-pan-y select-none outline-none [perspective:1300px] [perspective-origin:50%_40%]"
       >
         <div className="absolute inset-0 [transform-style:preserve-3d]">
           {works.map((wk, i) => {
@@ -203,7 +210,7 @@ export default function WorksArc() {
                   cards.current[i] = el;
                 }}
                 aria-hidden={!front}
-                className="absolute left-[18%] top-[12%] aspect-square w-[64%] rounded-md will-change-transform"
+                className="absolute left-[18%] top-[4%] aspect-square w-[64%] rounded-md will-change-transform"
               >
                 {/* stampa con il passe-partout avorio e il filo d'oro */}
                 <div className="absolute inset-0 overflow-hidden rounded-md border-[9px] border-[#f8f2e4] bg-paper-2 shadow-[0_34px_60px_-26px_rgba(18,32,26,0.5),0_2px_6px_rgba(18,32,26,0.08)]">
@@ -235,24 +242,119 @@ export default function WorksArc() {
         </div>
       </div>
 
-      {/* il lavoro davanti e le frecce */}
-      <div className="mt-2 flex items-center justify-between gap-4">
-        <p key={w.slug} className="min-w-0 animate-[fade-up_0.5s_ease] text-sm" aria-live="polite">
-          <b className="block font-display text-xl font-medium leading-tight">{w.watch}</b>
-          <span className="text-mute">{w.job}</span>
-        </p>
-        <div className="flex shrink-0 items-center gap-2">
-          <button type="button" aria-label="Lavoro precedente" onClick={() => go(Math.round(pos.current) - 1)} className="grid h-10 w-10 place-items-center rounded-full border border-line bg-paper transition-colors hover:border-fg">
-            ←
-          </button>
-          <span className="whitespace-nowrap px-1 text-center font-display text-lg tabular-nums text-gold">
-            {String(cur + 1).padStart(2, "0")} / {String(N).padStart(2, "0")}
-          </span>
-          <button type="button" aria-label="Lavoro successivo" onClick={() => go(Math.round(pos.current) + 1)} className="grid h-10 w-10 place-items-center rounded-full border border-line bg-paper transition-colors hover:border-fg">
-            →
-          </button>
-        </div>
+    </div>
+  );
+}
+
+/**
+ * Cerchietti dei lavori in un nastro che scorre da solo, all'infinito (tre copie: si scorre su quella in mezzo
+ * e si salta di una copia al bordo, senza che si veda). Si ferma quando lo tocchi o lo scorri col dito e
+ * riparte da solo dopo qualche secondo; si muove solo quando è sullo schermo.
+ */
+function Reel({ cur, onPick }: { cur: number; onPick: (k: number) => void }) {
+  const reel = useRef<HTMLDivElement>(null);
+  const list = useRef<HTMLUListElement>(null);
+  const inView = useInView(reel, { amount: 0.2 });
+  const paused = useRef(false);
+  const idle = useRef(0);
+  const x = useRef(0);
+  const copy = useRef(0);
+  const [stopped, setStopped] = useState(false);
+
+  useEffect(() => {
+    const el = reel.current;
+    const ul = list.current;
+    if (!el || !ul) return;
+    const measure = () => {
+      copy.current = ul.scrollWidth / 3;
+      if (!x.current) x.current = copy.current;
+      el.scrollLeft = x.current;
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  useEffect(() => {
+    if (!inView || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let raf = 0;
+    let last = performance.now();
+    const tick = (t: number) => {
+      const dt = Math.min(50, t - last);
+      last = t;
+      const el = reel.current;
+      if (el && !paused.current && copy.current) {
+        x.current += dt * 0.028;
+        if (x.current > copy.current * 1.5) x.current -= copy.current;
+        el.scrollLeft = x.current;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView]);
+
+  const pause = () => {
+    paused.current = true;
+    setStopped(true);
+    window.clearTimeout(idle.current);
+    idle.current = window.setTimeout(() => {
+      paused.current = false;
+      setStopped(false);
+      if (reel.current) x.current = reel.current.scrollLeft;
+    }, 3500);
+  };
+  useEffect(() => () => window.clearTimeout(idle.current), []);
+  // scorrendolo a mano resta infinito anche lui
+  const onScroll = () => {
+    const el = reel.current;
+    if (!el || !paused.current || !copy.current) return;
+    let v = el.scrollLeft;
+    if (v < copy.current * 0.5) v += copy.current;
+    else if (v > copy.current * 1.5) v -= copy.current;
+    if (v !== el.scrollLeft) el.scrollLeft = v;
+    x.current = v;
+  };
+
+  return (
+    <div className="relative mt-4">
+      <div
+        ref={reel}
+        onPointerDown={pause}
+        onWheel={pause}
+        onTouchStart={pause}
+        onScroll={onScroll}
+        className="overflow-x-auto [mask-image:linear-gradient(90deg,transparent,#000_9%,#000_91%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        <ul ref={list} className="flex w-max gap-3 px-6 py-1.5" aria-label="Lavori">
+          {[0, 1, 2].map((c) =>
+            works.map((wk, k) => (
+              <li key={`${c}-${wk.slug}`}>
+                <button
+                  type="button"
+                  tabIndex={c === 1 ? 0 : -1}
+                  aria-hidden={c !== 1}
+                  aria-label={`${wk.watch}: ${wk.job}`}
+                  aria-current={k === cur}
+                  onClick={() => {
+                    onPick(k);
+                    pause();
+                  }}
+                  className={`block h-11 w-11 overflow-hidden rounded-full bg-paper-2 transition duration-300 ${
+                    k === cur ? "scale-105 opacity-100 shadow-[0_0_0_2px_var(--color-paper),0_0_0_3.5px_var(--color-gold-2)]" : "opacity-60 shadow-[0_0_0_1px_var(--color-line)] hover:opacity-100"
+                  }`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`/lavori/mini/${wk.slug}.webp`} alt="" loading="lazy" draggable={false} className="pointer-events-none h-full w-full object-cover" />
+                </button>
+              </li>
+            ))
+          )}
+        </ul>
       </div>
+      <span aria-hidden className={`pointer-events-none absolute -top-3 right-6 text-[0.55rem] uppercase tracking-[0.2em] text-gold transition-opacity duration-300 ${stopped ? "opacity-90" : "opacity-0"}`}>
+        In pausa
+      </span>
     </div>
   );
 }
