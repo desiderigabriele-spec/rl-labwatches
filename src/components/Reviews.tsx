@@ -1,9 +1,13 @@
+"use client";
+import { useInView } from "motion/react";
+import { useEffect, useRef } from "react";
 import Reveal from "./Reveal";
 import { GOOGLE_REVIEWS_URL, reviews, type Review } from "@/data/reviews";
 
 /**
- * Recensioni vere da Google: due nastri che scorrono in direzioni opposte (si fermano al passaggio del mouse
- * o al tocco), ogni scheda con il logo Google e il link alla scheda originale per verificarla.
+ * Recensioni vere da Google su un solo nastro che scorre da solo, all'infinito. Si può anche scorrere col dito
+ * (o con la rotellina) e con le frecce sotto: appena lo tocchi si ferma, così si legge con calma.
+ * Ogni scheda ha il logo Google e il link alla scheda originale per verificarla.
  */
 
 function GoogleG({ className = "h-5 w-5" }: { className?: string }) {
@@ -52,11 +56,6 @@ function Card({ r }: { r: Review }) {
       <blockquote className="mt-3 flex-1 text-[0.95rem] leading-relaxed text-mute">
         <Text r={r} />
       </blockquote>
-      {r.reply && (
-        <p className="mt-4 border-l-2 border-gold-2 pl-3 text-xs leading-relaxed text-mute">
-          <b className="font-semibold text-fg">Risposta di Roberto:</b> {r.reply}
-        </p>
-      )}
       <figcaption className="mt-5 flex items-center gap-1.5 border-t border-line pt-4 text-xs text-mute">
         <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#1a73e8]" fill="currentColor" aria-hidden>
           <path d="M12 2 9.6 4.3 6.3 4l-.6 3.3L2.8 9l1.5 3-1.5 3 2.9 1.7.6 3.3 3.3-.3L12 22l2.4-2.3 3.3.3.6-3.3 2.9-1.7-1.5-3 1.5-3-2.9-1.7-.6-3.3-3.3.3zm-1.2 13.6-3.4-3.4 1.4-1.4 2 2 4.6-4.6 1.4 1.4z" />
@@ -67,26 +66,107 @@ function Card({ r }: { r: Review }) {
   );
 }
 
-/** nastro infinito: le schede sono ripetute due volte e il contenuto scorre di metà larghezza */
-function Lane({ items: base, reverse = false, speed }: { items: Review[]; reverse?: boolean; speed: number }) {
-  // ogni metà del nastro deve essere più larga dello schermo più largo: ripeto le schede fino ad almeno 8
-  const items: Review[] = [];
-  while (items.length < 8) items.push(...base);
+/** nastro infinito: tre copie delle schede, si scorre su quella in mezzo e al bordo si salta di una copia */
+function Strip() {
+  const box = useRef<HTMLDivElement>(null);
+  const list = useRef<HTMLDivElement>(null);
+  const inView = useInView(box, { amount: 0.2 });
+  const stopped = useRef(false);
+  const x = useRef(0);
+  const copy = useRef(0);
+  const settle = useRef(0);
+
+  useEffect(() => {
+    const measure = () => {
+      const el = box.current;
+      const ul = list.current;
+      if (!el || !ul) return;
+      const prev = copy.current;
+      copy.current = ul.scrollWidth / 3;
+      x.current = prev ? (x.current / prev) * copy.current : copy.current;
+      el.scrollLeft = x.current;
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  useEffect(() => {
+    if (!inView || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let raf = 0;
+    let last = performance.now();
+    const tick = (t: number) => {
+      const dt = Math.min(50, t - last);
+      last = t;
+      const el = box.current;
+      if (el && !stopped.current && copy.current) {
+        x.current += dt * 0.03;
+        if (x.current > copy.current * 1.5) x.current -= copy.current;
+        el.scrollLeft = x.current;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView]);
+
+  const stop = () => {
+    stopped.current = true;
+  };
+  // scorrendolo a mano resta infinito: a scorrimento finito, se si è vicini al bordo si salta di una copia
+  const onScroll = () => {
+    if (!stopped.current) return;
+    window.clearTimeout(settle.current);
+    settle.current = window.setTimeout(() => {
+      const el = box.current;
+      if (!el || !copy.current) return;
+      if (el.scrollLeft < copy.current * 0.5) el.scrollLeft += copy.current;
+      else if (el.scrollLeft > copy.current * 1.5) el.scrollLeft -= copy.current;
+      x.current = el.scrollLeft;
+    }, 160);
+  };
+  const step = (dir: number) => {
+    stop();
+    const card = list.current?.firstElementChild as HTMLElement | null;
+    const w = card ? card.offsetWidth + 20 : 340;
+    box.current?.scrollBy({ left: dir * w, behavior: "smooth" });
+  };
+
   return (
-    <div className="reviews-lane group relative overflow-hidden py-3 [mask-image:linear-gradient(90deg,transparent,black_6%,black_94%,transparent)]">
-      <div className={`reviews-track flex w-max gap-5 ${reverse ? "is-reverse" : ""}`} style={{ animationDuration: `${speed}s` }}>
-        {[...items, ...items].map((r, i) => (
-          <div key={i} aria-hidden={i >= items.length} className="flex">
-            <Card r={r} />
-          </div>
-        ))}
+    <>
+      <div
+        ref={box}
+        onPointerDown={stop}
+        onWheel={stop}
+        onTouchStart={stop}
+        onScroll={onScroll}
+        className="overflow-x-auto py-3 [mask-image:linear-gradient(90deg,transparent,black_6%,black_94%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        role="region"
+        aria-label="Recensioni dei clienti"
+      >
+        <div ref={list} className="flex w-max gap-5 px-6">
+          {[0, 1, 2].map((c) =>
+            reviews.map((r, i) => (
+              <div key={`${c}-${i}`} aria-hidden={c !== 1} className="flex">
+                <Card r={r} />
+              </div>
+            ))
+          )}
+        </div>
       </div>
-    </div>
+      <div className="mt-4 flex justify-center gap-4">
+        <button type="button" aria-label="Recensione precedente" onClick={() => step(-1)} className="grid h-11 w-11 place-items-center rounded-full border border-line bg-paper text-lg transition-colors hover:border-fg active:bg-paper-2">
+          ←
+        </button>
+        <button type="button" aria-label="Recensione successiva" onClick={() => step(1)} className="grid h-11 w-11 place-items-center rounded-full border border-line bg-paper text-lg transition-colors hover:border-fg active:bg-paper-2">
+          →
+        </button>
+      </div>
+    </>
   );
 }
 
 export default function Reviews() {
-  const half = Math.ceil(reviews.length / 2);
   return (
     <section className="overflow-hidden border-t border-line bg-paper-2 py-16 sm:py-28" aria-labelledby="recensioni">
       <div className="mx-auto max-w-7xl px-4 sm:px-8">
@@ -113,9 +193,8 @@ export default function Reviews() {
           </a>
         </Reveal>
       </div>
-      <div className="mt-10 grid gap-2 sm:mt-14">
-        <Lane items={reviews.slice(0, half)} speed={70} />
-        <Lane items={reviews.slice(half)} reverse speed={62} />
+      <div className="mt-10 sm:mt-14">
+        <Strip />
       </div>
     </section>
   );

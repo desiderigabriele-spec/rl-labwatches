@@ -195,6 +195,47 @@ export default function Showcase({
     return () => window.clearInterval(t);
   }, [inView, items.length, reduced]);
 
+  // sul telefono non c'è il passaggio del mouse: si accende da sola la nicchia che hai davanti
+  // (quella al centro del nastro, quando la vetrina è a metà schermo), sia scorrendo la pagina sia il nastro
+  const strip = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = strip.current;
+    if (!el || !window.matchMedia("(hover: none)").matches) return;
+    let raf = 0;
+    const check = () => {
+      raf = 0;
+      if (window.innerWidth >= 1024) return;
+      const slots = el.querySelectorAll<HTMLElement>("[data-slot]");
+      const mid = el.getBoundingClientRect().left + el.clientWidth / 2;
+      let best = -1;
+      let dist = Infinity;
+      slots.forEach((s, i) => {
+        const r = s.getBoundingClientRect();
+        const d = Math.abs(r.left + r.width / 2 - mid);
+        if (d < dist) {
+          dist = d;
+          best = i;
+        }
+      });
+      const r = slots[best]?.getBoundingClientRect();
+      const facing = !!r && r.top < window.innerHeight * 0.72 && r.bottom > window.innerHeight * 0.28;
+      setHover(facing && dist < (r?.width ?? 0) / 2 ? best : null);
+    };
+    const queue = () => {
+      if (!raf) raf = requestAnimationFrame(check);
+    };
+    queue();
+    el.addEventListener("scroll", queue, { passive: true });
+    window.addEventListener("scroll", queue, { passive: true });
+    window.addEventListener("resize", queue);
+    return () => {
+      cancelAnimationFrame(raf);
+      el.removeEventListener("scroll", queue);
+      window.removeEventListener("scroll", queue);
+      window.removeEventListener("resize", queue);
+    };
+  }, []);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setSelected(null);
     window.addEventListener("keydown", onKey);
@@ -224,7 +265,7 @@ export default function Showcase({
         </div>
 
         <div className="relative mt-16">
-          <div className="-mx-4 flex snap-x snap-mandatory overflow-x-auto px-[11vw] pb-4 [scrollbar-width:none] sm:-mx-8 sm:px-[27vw] lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-y-16 lg:snap-none lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden">
+          <div ref={strip} className="-mx-4 flex snap-x snap-mandatory overflow-x-auto px-[11vw] pb-4 [scrollbar-width:none] sm:-mx-8 sm:px-[27vw] lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-y-16 lg:snap-none lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden">
             {items.map((b, i) => (
               <Slot
                 key={b.slug}
