@@ -5,7 +5,8 @@ import BrandLogo from "./BrandLogo";
 import Spotlight, { LightPool } from "./Spotlight";
 
 /**
- * Apertura compatta della sezione di una marca: il cofanetto piccolo sotto il suo faretto, sul ripiano.
+ * Apertura della sezione di una marca: il cofanetto sotto il suo faretto, sul ripiano, abbastanza grande
+ * da riconoscere l'orologio anche sul telefono.
  * Il testo (titolo e descrizione della pagina) lo passa la pagina come children: sul computer sta accanto,
  * sul telefono sotto e centrato, perché il cofanetto abbia spazio e il testo righe piene.
  */
@@ -13,7 +14,7 @@ export default function BrandEntrance({ slug, children }: { slug: string; childr
   const brand = brandBySlug(slug)!;
   return (
     <div className="mx-auto grid max-w-6xl items-center gap-9 px-5 sm:grid-cols-[auto_1fr] sm:gap-12 sm:px-8 lg:gap-16">
-      <div className="relative mx-auto w-[8.5rem] sm:w-[11rem] lg:w-[13rem]">
+      <div className="relative mx-auto w-[16rem] max-w-[68vw] sm:w-[15rem] lg:w-[18rem]">
         <Spotlight level={1} spread={30} />
         <span className="relative mt-4 block aspect-[840/1020] w-full">
           {brand.vetrina ? (
