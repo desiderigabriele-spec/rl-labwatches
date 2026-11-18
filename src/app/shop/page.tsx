@@ -1,5 +1,6 @@
 import PageHero from "@/components/PageHero";
-import ShopGrid, { BrandNav } from "@/components/ShopGrid";
+import { BrandNav } from "@/components/ShopGrid";
+import ShopFiltri from "@/components/ShopFiltri";
 import Showcase from "@/components/Showcase";
 import { getCatalogo } from "@/data/catalogo";
 import { pageMeta } from "@/lib/seo";
@@ -32,7 +33,7 @@ export default async function ShopPage() {
         <div className="mb-12">
           <BrandNav />
         </div>
-        <ShopGrid products={products} />
+        <ShopFiltri products={products} />
       </section>
     </>
   );

@@ -12,6 +12,7 @@ type Riga = {
   slug: string; nome: string; marca: string; referenza: string; anno: string; condizione: string; descrizione: string;
   prezzo_cent: number | null; sconto_percento: number; stato: "in_vendita" | "su_richiesta" | "venduto";
   foto: string[]; colore: string | null; dettagli: [string, string][]; vista360: Product["spin"] | null;
+  movimento: string; materiale: string; diametro_mm: number | null; quadrante: string; bracciale: string; corredo: string; genere: string;
 };
 
 function inProdotto(r: Riga): Product {
@@ -32,8 +33,25 @@ function inProdotto(r: Riga): Product {
     photos: r.foto.slice(1),
     spin: r.vista360 ?? undefined,
     accent: r.colore ?? undefined,
-    details: r.dettagli,
+    // scheda tecnica: prima le caratteristiche scelte nell'area, poi le voci libere
+    details: [
+      ...([
+        ["Movimento", r.movimento],
+        ["Cassa", [r.diametro_mm ? `${String(r.diametro_mm).replace(".", ",")} mm` : "", r.materiale.toLowerCase()].filter(Boolean).join(", ")],
+        ["Quadrante", r.quadrante],
+        ["Bracciale", r.bracciale],
+        ["Corredo", r.corredo],
+      ] as [string, string][]).filter(([, v]) => v),
+      ...r.dettagli,
+    ],
     sold: r.stato === "venduto",
+    movement: r.movimento || undefined,
+    caseMaterial: r.materiale || undefined,
+    diameter: r.diametro_mm,
+    dialColor: r.quadrante || undefined,
+    strap: r.bracciale || undefined,
+    boxPapers: r.corredo || undefined,
+    gender: r.genere || undefined,
   };
 }
 

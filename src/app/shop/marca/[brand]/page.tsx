@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import BrandEntrance from "@/components/BrandEntrance";
 import JsonLd from "@/components/JsonLd";
-import ShopGrid, { BrandNav, EmptyBrand } from "@/components/ShopGrid";
+import { BrandNav, EmptyBrand } from "@/components/ShopGrid";
+import ShopFiltri from "@/components/ShopFiltri";
 import { brandBySlug, brands } from "@/data/brands";
 import { getCatalogo } from "@/data/catalogo";
 import { breadcrumbLd, pageMeta } from "@/lib/seo";
@@ -83,7 +84,7 @@ export default async function BrandPage({ params }: Props) {
         <div className="mb-14">
           <BrandNav current={b.slug} />
         </div>
-        {list.length ? <ShopGrid products={list} /> : <EmptyBrand brand={b} />}
+        {list.length ? <ShopFiltri products={list} senzaMarca /> : <EmptyBrand brand={b} />}
       </section>
       </div>
     </>

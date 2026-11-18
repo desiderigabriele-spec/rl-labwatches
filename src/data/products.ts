@@ -22,6 +22,14 @@ export type Product = {
   /** dettagli aggiuntivi mostrati nella scheda, es. ["Cassa", "Acciaio, 40 mm"] */
   details?: [string, string][];
   sold?: boolean;
+  /** caratteristiche per i filtri del negozio (dall'area clienti; per gli esempi si ricavano da details) */
+  movement?: string;
+  caseMaterial?: string;
+  diameter?: number | null;
+  dialColor?: string;
+  strap?: string;
+  boxPapers?: string;
+  gender?: string;
 };
 
 /** Percorsi dei fotogrammi della vista a 360° */
