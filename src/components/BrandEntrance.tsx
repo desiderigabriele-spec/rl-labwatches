@@ -12,12 +12,14 @@ import Spotlight, { LightPool } from "./Spotlight";
  */
 export default function BrandEntrance({ slug, children }: { slug: string; children: React.ReactNode }) {
   const brand = brandBySlug(slug)!;
+  // ora tutte le marche hanno la foto, ma una marca nuova potrebbe non averla ancora: resta il logo
+  const photo: string = brand.vetrina;
   return (
     <div className="mx-auto grid max-w-6xl items-center gap-9 px-5 sm:grid-cols-[auto_1fr] sm:gap-12 sm:px-8 lg:gap-16">
       <div className="relative mx-auto w-[16rem] max-w-[68vw] sm:w-[15rem] lg:w-[18rem]">
         <Spotlight level={1} spread={30} />
         <span className="relative mt-4 block aspect-[840/1020] w-full">
-          {brand.vetrina ? (
+          {photo ? (
             <BoxPhoto brand={brand} run eager />
           ) : (
             <span className="flex h-full items-center justify-center">

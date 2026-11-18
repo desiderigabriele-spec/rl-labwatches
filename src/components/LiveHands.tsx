@@ -9,7 +9,8 @@ import { useEffect, useRef } from "react";
  * (8 volte al secondo per i Rolex a 28.800 alternanze).
  */
 export type HandStyle = "submariner" | "nautilus";
-export type HandSprites = { ore: string; minuti: string; secondi?: string };
+/** fermo: lancetta che non gira e sta sopra le altre (il cronografo dello Speedmaster, fermo sulle 12) */
+export type HandSprites = { ore: string; minuti: string; secondi?: string; fermo?: string };
 
 const STEEL = "url(#lh-steel)";
 const LUME = "#f2eee2";
@@ -141,10 +142,18 @@ export default function LiveHands({
           )}
           {/* perno: con le lancette vere resta piccolo, così si vedono i loro anelli */}
           {/* il Nautilus ha il cappuccio del perno più grande, come nella foto */}
-          <circle r={sprites ? (style === "nautilus" ? 0.06 : 0.034) : 0.075} fill={STEEL} stroke="rgba(0,0,0,0.4)" strokeWidth={0.008} />
-          <circle r={sprites ? (style === "nautilus" ? 0.022 : 0.013) : 0.028} fill="#6d7277" />
+          {!sprites?.fermo && (
+            <>
+              <circle r={sprites ? (style === "nautilus" ? 0.06 : 0.034) : 0.075} fill={STEEL} stroke="rgba(0,0,0,0.4)" strokeWidth={0.008} />
+              <circle r={sprites ? (style === "nautilus" ? 0.022 : 0.013) : 0.028} fill="#6d7277" />
+            </>
+          )}
         </g>
       </svg>
+      {sprites?.fermo && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img data-hand="f" src={sprites.fermo} alt="" draggable={false} className="absolute inset-0 h-full w-full" style={{ filter: shadow }} />
+      )}
     </span>
   );
 }
