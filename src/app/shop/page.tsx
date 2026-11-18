@@ -1,17 +1,24 @@
 import PageHero from "@/components/PageHero";
-import ShopGrid, { BrandNav } from "@/components/ShopGrid";
+import { BrandNav } from "@/components/ShopGrid";
+import ShopFiltri from "@/components/ShopFiltri";
 import Showcase from "@/components/Showcase";
-import { products, SHOP_READY } from "@/data/products";
+import { getCatalogo } from "@/data/catalogo";
 import { pageMeta } from "@/lib/seo";
 
-export const metadata = pageMeta({
+export const revalidate = 60;
+
+export async function generateMetadata() {
+  const { reale } = await getCatalogo();
+  return pageMeta({
   title: "Orologi di lusso selezionati e revisionati",
   description: "Orologi di lusso e d'epoca selezionati da Roberto Landi a Pistoia, controllati e revisionati in laboratorio prima della vendita.",
   path: "/shop",
-  noindex: !SHOP_READY,
-});
+  noindex: !reale,
+  });
+}
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  const { products } = await getCatalogo();
   return (
     <>
       <PageHero
@@ -26,7 +33,7 @@ export default function ShopPage() {
         <div className="mb-12">
           <BrandNav />
         </div>
-        <ShopGrid products={products} />
+        <ShopFiltri products={products} />
       </section>
     </>
   );

@@ -3,12 +3,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import BrandEntrance from "@/components/BrandEntrance";
 import JsonLd from "@/components/JsonLd";
-import ShopGrid, { BrandNav, EmptyBrand } from "@/components/ShopGrid";
+import { BrandNav, EmptyBrand } from "@/components/ShopGrid";
+import ShopFiltri from "@/components/ShopFiltri";
 import { brandBySlug, brands } from "@/data/brands";
-import { products, SHOP_READY } from "@/data/products";
+import { getCatalogo } from "@/data/catalogo";
 import { breadcrumbLd, pageMeta } from "@/lib/seo";
 
 type Props = { params: Promise<{ brand: string }> };
+
+export const revalidate = 60;
 
 export function generateStaticParams() {
   return brands.map((b) => ({ brand: b.slug }));
@@ -16,12 +19,13 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const b = brandBySlug((await params).brand);
+  const { reale } = await getCatalogo();
   return b
     ? pageMeta({
         title: `Orologi ${b.name} selezionati e revisionati`,
         description: `Orologi ${b.name} in vendita a Pistoia: ogni pezzo è selezionato da Roberto Landi, revisionato in laboratorio e garantito 12 mesi.`,
         path: `/shop/marca/${b.slug}`,
-        noindex: !SHOP_READY,
+        noindex: !reale,
       })
     : {};
 }
@@ -29,6 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function BrandPage({ params }: Props) {
   const b = brandBySlug((await params).brand);
   if (!b) notFound();
+  const { products } = await getCatalogo();
   const list = products.filter((p) => p.brand.toLowerCase() === b.name.toLowerCase());
   const crumbs = [
     { name: "Orologi", path: "/shop" },
@@ -79,7 +84,7 @@ export default async function BrandPage({ params }: Props) {
         <div className="mb-14">
           <BrandNav current={b.slug} />
         </div>
-        {list.length ? <ShopGrid products={list} /> : <EmptyBrand brand={b} />}
+        {list.length ? <ShopFiltri products={list} senzaMarca /> : <EmptyBrand brand={b} />}
       </section>
       </div>
     </>

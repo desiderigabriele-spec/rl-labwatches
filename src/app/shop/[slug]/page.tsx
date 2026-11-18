@@ -5,24 +5,30 @@ import Reveal from "@/components/Reveal";
 import ProductGallery from "@/components/ProductGallery";
 import JsonLd from "@/components/JsonLd";
 import { WhatsAppIcon } from "@/components/WhatsAppButton";
-import { formatPrice, products, SHOP_READY, spinFrames } from "@/data/products";
+import { formatPrice, spinFrames } from "@/data/products";
+import { assoluto, getCatalogo } from "@/data/catalogo";
 import { breadcrumbLd, pageMeta } from "@/lib/seo";
 import { site, whatsappLink } from "@/data/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const { products } = await getCatalogo();
   return products.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const { products, reale } = await getCatalogo();
   const p = products.find((x) => x.slug === slug);
-  return p ? pageMeta({ title: `${p.brand} ${p.name}`, description: p.description, path: `/shop/${p.slug}`, noindex: !SHOP_READY }) : {};
+  return p ? pageMeta({ title: `${p.brand} ${p.name}`, description: p.description, path: `/shop/${p.slug}`, noindex: !reale }) : {};
 }
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
+  const { products, reale } = await getCatalogo();
   const p = products.find((x) => x.slug === slug);
   if (!p) notFound();
 
@@ -36,7 +42,7 @@ export default async function ProductPage({ params }: Props) {
     brand: { "@type": "Brand", name: p.brand },
     sku: p.ref,
     description: p.description,
-    image: [...photos, ...frames.slice(0, 1)].map((u) => `${site.url}${u}`),
+    image: [...photos, ...frames.slice(0, 1)].map((u) => assoluto(u, site.url)),
     itemCondition: "https://schema.org/UsedCondition",
     ...(p.price !== null && {
       offers: {
@@ -52,7 +58,7 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <section className="mx-auto max-w-7xl px-4 pt-32 pb-24 sm:px-8">
-      {SHOP_READY && <JsonLd data={productLd} />}
+      {reale && <JsonLd data={productLd} />}
       <JsonLd data={breadcrumbLd([{ name: "Orologi", path: "/shop" }, { name: `${p.brand} ${p.name}`, path: `/shop/${p.slug}` }])} />
       <Link href="/shop" className="text-xs uppercase tracking-[0.24em] text-mute hover:text-gold">← Tutti gli orologi</Link>
       <div className="mt-10 grid gap-14 lg:grid-cols-2">
@@ -67,7 +73,10 @@ export default async function ProductPage({ params }: Props) {
             <span className="chip">{p.year}</span>
             <span className="chip">{p.condition}</span>
           </div>
-          <p className="tag-mono mt-6 text-3xl text-green">{formatPrice(p.price)}</p>
+          <p className="tag-mono mt-6 text-3xl text-green">
+            {p.listPrice != null && <s className="mr-3 text-xl text-mute">{formatPrice(p.listPrice)}</s>}
+            {formatPrice(p.price)}
+          </p>
           <dl className="mt-10 divide-y divide-line border-y border-line text-sm">
             {([["Marca", p.brand], ["Referenza", p.ref], ["Anno", p.year], ["Condizioni", p.condition], ...(p.details ?? [])] as [string, string][]).map(([k, v]) => (
               <div key={k} className="flex justify-between gap-6 py-3.5">
