@@ -17,7 +17,7 @@ function DialHands({ dial, aspect, brand, run }: { dial: Dial; aspect: number; b
         height: `${dial.r * 2 * aspect}%`,
       }}
     >
-      <LiveHands style={brand.dial.hands} beats={brand.dial.beats} sprites={brand.dial.sprites} run={run} />
+      <LiveHands style={brand.dial.hands} beats={brand.dial.beats} sprites={brand.dial.sprites} seconds={!("seconds" in brand.dial) || brand.dial.seconds !== false} run={run} />
     </span>
   );
 }
