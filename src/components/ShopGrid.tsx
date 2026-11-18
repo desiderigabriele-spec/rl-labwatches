@@ -22,7 +22,8 @@ export function BrandNav({ current }: { current?: string }) {
         return (
           <Link
             key={b.slug}
-            href={`/shop/marca/${b.slug}`}
+            // si resta sulla lista degli orologi: cambia la marca, non si torna in cima alla pagina
+            href={`/shop/marca/${b.slug}#disponibili`}
             aria-current={on ? "page" : undefined}
             className={`group flex h-[4.25rem] items-center justify-center rounded-sm border px-2 transition-colors duration-300 sm:h-24 ${
               on ? "border-fg bg-fg text-gold-3" : "border-line bg-paper-2/60 text-fg/60 hover:border-fg/40 hover:text-fg"

@@ -450,11 +450,12 @@ html[data-intro="seen"] .intro-splash {
 .is-pill-anim .bezel-ring {
   transition: transform 0.7s cubic-bezier(0.3, 0.7, 0.25, 1);
 }
+/* larghezza della capsula su misura per la scritta (calcolata in ContactBezel): niente vuoto a destra */
 .is-pill .bezel-btn {
-  transform: translateX(-84px);
+  transform: translateX(var(--pill-shift, -84px));
 }
 .is-pill .bezel-ring {
-  transform: rotate(-141deg);
+  transform: rotate(var(--pill-roll, -141deg));
 }
 .bezel-pill {
   position: absolute;
@@ -475,7 +476,7 @@ html[data-intro="seen"] .intro-splash {
   -webkit-tap-highlight-color: transparent;
 }
 .is-pill .bezel-pill {
-  width: 236px;
+  width: var(--pill-w, 236px);
   opacity: 1;
   pointer-events: auto;
   transition: width 0.7s cubic-bezier(0.3, 0.7, 0.25, 1), opacity 0.15s ease;
@@ -483,7 +484,7 @@ html[data-intro="seen"] .intro-splash {
 .bezel-pill-text {
   position: absolute;
   left: 76px;
-  right: 14px;
+  width: max-content;
   top: 50%;
   translate: 8px -50%;
   display: grid;
