@@ -304,6 +304,9 @@ html[data-intro="seen"] .intro-splash {
 .reviews-track.is-reverse { animation-direction: reverse; }
 .reviews-lane:hover .reviews-track,
 .reviews-lane:active .reviews-track { animation-play-state: paused; }
+/* didascalia del lavoro che cambia nell'arco del prima e dopo */
+@keyframes fade-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .animate-\[fade-up_0\.5s_ease\] { animation: none; } }
 @keyframes reviews-scroll { to { transform: translateX(calc(-50% - 0.625rem)); } }
 @media (prefers-reduced-motion: reduce) {
   .reviews-track { animation: none; }
