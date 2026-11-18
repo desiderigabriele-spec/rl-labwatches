@@ -180,7 +180,7 @@ export default function WorksArc() {
         <span className="block text-[0.66rem] font-medium uppercase tracking-[0.22em] text-gold">{w.watch}</span>
         <span className="mt-1 block font-display text-2xl leading-tight sm:text-[1.7rem]">{w.job}</span>
       </p>
-      {/* i cerchietti scorrono da soli all'infinito; si fermano se li tocchi o li scorri, toccandone uno l'arco va lì */}
+      {/* le miniature (prima e dopo) scorrono da sole all'infinito; si fermano se le tocchi, toccandone una l'arco va lì */}
       <Reel cur={cur} onPick={(k) => go(Math.round(pos.current) + wrapD(k, Math.round(pos.current)))} />
       <div
         ref={stage}
@@ -242,24 +242,34 @@ export default function WorksArc() {
         </div>
       </div>
 
+      {/* frecce per sfogliare, più comode del trascinamento */}
+      <div className="mt-1 flex items-center justify-center gap-5">
+        <button type="button" aria-label="Lavoro precedente" onClick={() => go(Math.round(pos.current) - 1)} className="grid h-11 w-11 place-items-center rounded-full border border-line bg-paper text-lg transition-colors hover:border-fg active:bg-paper-2">
+          ←
+        </button>
+        <span className="whitespace-nowrap font-display text-lg tabular-nums text-gold">
+          {String(cur + 1).padStart(2, "0")} / {String(N).padStart(2, "0")}
+        </span>
+        <button type="button" aria-label="Lavoro successivo" onClick={() => go(Math.round(pos.current) + 1)} className="grid h-11 w-11 place-items-center rounded-full border border-line bg-paper text-lg transition-colors hover:border-fg active:bg-paper-2">
+          →
+        </button>
+      </div>
     </div>
   );
 }
 
 /**
- * Cerchietti dei lavori in un nastro che scorre da solo, all'infinito (tre copie: si scorre su quella in mezzo
- * e si salta di una copia al bordo, senza che si veda). Si ferma quando lo tocchi o lo scorri col dito e
- * riparte da solo dopo qualche secondo; si muove solo quando è sullo schermo.
+ * Miniature dei lavori (metà prima, metà dopo) in un nastro che scorre da solo, all'infinito (tre copie: si
+ * scorre su quella in mezzo e si salta di una copia al bordo, senza che si veda). Appena lo tocchi o lo scorri
+ * col dito si ferma e resta fermo, così si sceglie bene; si muove solo quando è sullo schermo.
  */
 function Reel({ cur, onPick }: { cur: number; onPick: (k: number) => void }) {
   const reel = useRef<HTMLDivElement>(null);
   const list = useRef<HTMLUListElement>(null);
   const inView = useInView(reel, { amount: 0.2 });
   const paused = useRef(false);
-  const idle = useRef(0);
   const x = useRef(0);
   const copy = useRef(0);
-  const [stopped, setStopped] = useState(false);
 
   useEffect(() => {
     const el = reel.current;
@@ -294,17 +304,10 @@ function Reel({ cur, onPick }: { cur: number; onPick: (k: number) => void }) {
     return () => cancelAnimationFrame(raf);
   }, [inView]);
 
+  // appena lo tocchi o lo scorri si ferma e resta fermo: così si sceglie con calma
   const pause = () => {
     paused.current = true;
-    setStopped(true);
-    window.clearTimeout(idle.current);
-    idle.current = window.setTimeout(() => {
-      paused.current = false;
-      setStopped(false);
-      if (reel.current) x.current = reel.current.scrollLeft;
-    }, 3500);
   };
-  useEffect(() => () => window.clearTimeout(idle.current), []);
   // scorrendolo a mano resta infinito anche lui
   const onScroll = () => {
     const el = reel.current;
@@ -340,7 +343,7 @@ function Reel({ cur, onPick }: { cur: number; onPick: (k: number) => void }) {
                     onPick(k);
                     pause();
                   }}
-                  className={`block h-11 w-11 overflow-hidden rounded-full bg-paper-2 transition duration-300 ${
+                  className={`block h-11 w-[5.5rem] overflow-hidden rounded-md bg-paper-2 transition duration-300 ${
                     k === cur ? "scale-105 opacity-100 shadow-[0_0_0_2px_var(--color-paper),0_0_0_3.5px_var(--color-gold-2)]" : "opacity-60 shadow-[0_0_0_1px_var(--color-line)] hover:opacity-100"
                   }`}
                 >
@@ -352,9 +355,6 @@ function Reel({ cur, onPick }: { cur: number; onPick: (k: number) => void }) {
           )}
         </ul>
       </div>
-      <span aria-hidden className={`pointer-events-none absolute -top-3 right-6 text-[0.55rem] uppercase tracking-[0.2em] text-gold transition-opacity duration-300 ${stopped ? "opacity-90" : "opacity-0"}`}>
-        In pausa
-      </span>
     </div>
   );
 }

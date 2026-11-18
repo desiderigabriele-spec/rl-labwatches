@@ -75,8 +75,12 @@ zoom = 1.0 if aligned or a.center else 0.9
 for tag, im in (("prima", A), ("dopo", B)):
     crop = cv2.resize(subject_crop(im, zoom), (900, 900), interpolation=cv2.INTER_AREA)
     cv2.imwrite(f"{a.out}/{a.name}-{tag}.webp", crop, [cv2.IMWRITE_WEBP_QUALITY, 86])
-    # miniatura tonda per i cerchietti che scorrono sopra l'arco (solo il "dopo")
+    # miniatura per i cerchietti sopra l'arco: metà sinistra del "prima" e metà destra del "dopo", 176x88
     if tag == "dopo":
         import os
         os.makedirs(f"{a.out}/mini", exist_ok=True)
-        cv2.imwrite(f"{a.out}/mini/{a.name}.webp", cv2.resize(crop, (112, 112), interpolation=cv2.INTER_AREA), [cv2.IMWRITE_WEBP_QUALITY, 80])
+        pa = cv2.resize(cv2.imread(f"{a.out}/{a.name}-prima.webp"), (176, 176), interpolation=cv2.INTER_AREA)
+        pb = cv2.resize(crop, (176, 176), interpolation=cv2.INTER_AREA)
+        mini = cv2.hconcat([pa[44:132, :88], pb[44:132, 88:]])
+        mini[:, 87:89] = (232, 241, 245)
+        cv2.imwrite(f"{a.out}/mini/{a.name}.webp", mini, [cv2.IMWRITE_WEBP_QUALITY, 80])
