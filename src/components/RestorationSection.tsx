@@ -1,7 +1,7 @@
 "use client";
 import { motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "motion/react";
 import useOnScreen from "@/lib/useOnScreen";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import RestorationStage from "./restauro/RestorationStage";
 import IntakeStage, { defectAt } from "./restauro/IntakeStage";
 import VerbBackdrop from "./restauro/VerbBackdrop";
@@ -60,8 +60,97 @@ function Step({ i, progress }: { i: number; progress: MotionValue<number> }) {
   );
 }
 
+/** dopo che il restauro è stato visto (o saltato) una volta, la sezione resta chiusa con "Rivedi" */
+const SEEN_KEY = "rl-restauro-visto";
+
+type Lenis = { scrollTo: (t: number, o?: object) => void; resize: () => void };
+const lenis = () => (window as unknown as { __lenis?: Lenis }).__lenis;
+/** porta la pagina subito a y, senza scorrimento morbido */
+function jump(y: number) {
+  const l = lenis();
+  if (l) {
+    l.resize();
+    l.scrollTo(y, { immediate: true, force: true });
+  } else window.scrollTo(0, y);
+}
+
 export default function RestorationSection() {
   const ref = useRef<HTMLElement>(null);
+  /**
+   * La prima volta il restauro avanza con lo scorrimento. Quando l'hai visto fino in fondo (o hai toccato
+   * "Salta") la sezione si chiude sull'orologio finito con "Rivedi il restauro": da lì in poi, anche
+   * tornando su o nelle visite successive, non va più riscorso tutto.
+   * Si chiude solo quando è fuori dallo schermo, e se era sopra la pagina viene compensata: niente salti.
+   */
+  const [collapsed, setCollapsed] = useState(false);
+  const seen = useRef(false);
+  const pending = useRef<null | { mode: "keep" | "skip"; top: number; above: boolean; anchor: number }>(null);
+  const markSeen = () => {
+    seen.current = true;
+    try {
+      localStorage.setItem(SEEN_KEY, "1");
+    } catch {}
+  };
+  const collapse = (mode: "keep" | "skip") => {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    // la sezione dopo fa da riferimento: dopo la chiusura deve restare dov'era sullo schermo
+    const anchor = el.nextElementSibling?.getBoundingClientRect().top ?? r.bottom;
+    pending.current = { mode, top: r.top + window.scrollY, above: r.bottom <= 0, anchor };
+    setCollapsed(true);
+  };
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(SEEN_KEY)) {
+        seen.current = true;
+        collapse("keep");
+      }
+    } catch {}
+  }, []);
+  useLayoutEffect(() => {
+    const p = pending.current;
+    const el = ref.current;
+    if (!collapsed || !p || !el) return;
+    pending.current = null;
+    const h = el.offsetHeight;
+    if (p.mode === "skip") {
+      // dall'inizio della sezione chiusa alla sezione successiva, con un breve scorrimento
+      jump(p.top);
+      const next = p.top + h;
+      const l = lenis();
+      if (l) l.scrollTo(next, { duration: 0.9 });
+      else window.scrollTo({ top: next, behavior: "smooth" });
+    } else if (p.above) {
+      // alcuni browser compensano da soli (scroll anchoring), altri no: misuro e correggo solo la differenza
+      const now = el.nextElementSibling?.getBoundingClientRect().top ?? el.getBoundingClientRect().bottom;
+      if (Math.abs(now - p.anchor) > 1) jump(window.scrollY + (now - p.anchor));
+    }
+  }, [collapsed]);
+  // chiusa appena esce dallo schermo, dopo che è stata vista
+  useEffect(() => {
+    if (collapsed) return;
+    const onScroll = () => {
+      const el = ref.current;
+      if (!seen.current || !el) return;
+      const r = el.getBoundingClientRect();
+      if (r.bottom <= 0 || r.top >= window.innerHeight) collapse("keep");
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [collapsed]);
+  const replay = () => {
+    const el = ref.current;
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY;
+    seen.current = false;
+    setCollapsed(false);
+    requestAnimationFrame(() => jump(top));
+  };
+  const skip = () => {
+    markSeen();
+    collapse("skip");
+  };
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const bar = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
   // alla fine compare l'orologio restaurato
@@ -69,7 +158,10 @@ export default function RestorationSection() {
   const doneScale = useTransform(scrollYProgress, [FINAL_START - 0.012, 1], [0.92, 1.04]);
   // le lancette girano solo quando l'orologio finale è visibile
   const [finalOn, setFinalOn] = useState(false);
-  useMotionValueEvent(scrollYProgress, "change", (v) => setFinalOn(v > FINAL_START - 0.015));
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    setFinalOn(v > FINAL_START - 0.015);
+    if (v > 0.985 && !seen.current && !collapsed) markSeen();
+  });
 
   // si carica quando la sezione è vicina e si ferma quando esce dallo schermo
   const near = useOnScreen(ref, "800px 0px");
@@ -78,11 +170,47 @@ export default function RestorationSection() {
     if (near) setLoaded(true);
   }, [near]);
 
+  if (collapsed) {
+    const last = steps[steps.length - 1];
+    return (
+      <section ref={ref} className="relative border-y border-line bg-paper-2" aria-label="Il restauro, passo dopo passo">
+        <div className="mx-auto grid w-full max-w-7xl items-center gap-6 px-4 pb-16 pt-14 sm:px-8 sm:py-20 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12">
+          <div className="order-2 lg:order-1">
+            <p className="eyebrow">Il restauro, passo dopo passo</p>
+            <h3 className="mt-3 font-display text-4xl font-light sm:text-5xl lg:text-6xl">{last.title}</h3>
+            <p className="mt-3 max-w-sm leading-relaxed text-mute">
+              {last.text} Sei lavori al banco, dal movimento alla cassa.
+            </p>
+            <button type="button" onClick={replay} className="btn btn-solid mt-7 inline-flex items-center gap-3">
+              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor" aria-hidden>
+                <path d="M7 4.5v15l12.5-7.5z" />
+              </svg>
+              Rivedi il restauro
+            </button>
+          </div>
+          <div className="relative order-1 mx-auto aspect-square w-full max-w-[min(78vw,30rem)] lg:order-2">
+            <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_50%_at_50%_50%,rgba(250,238,212,0.5),transparent_70%)]" />
+            <div className="watch-done relative h-full w-full">
+              <FinalWatch active={near} />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section ref={ref} className="relative h-[720vh] border-y border-line bg-paper-2 lg:h-[980vh]" aria-label="Il restauro, passo dopo passo">
       <div className="sticky top-0 flex h-dvh flex-col overflow-hidden">
-        <div className="mx-auto w-full max-w-7xl px-4 pt-20 sm:px-8 sm:pt-24">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 pt-20 sm:px-8 sm:pt-24">
           <p className="eyebrow">Il restauro, passo dopo passo</p>
+          <button
+            type="button"
+            onClick={skip}
+            className="shrink-0 rounded-full border border-line bg-paper/80 px-3.5 py-1.5 text-[0.62rem] uppercase tracking-[0.2em] text-mute backdrop-blur transition-colors hover:border-fg hover:text-fg"
+          >
+            Salta <span aria-hidden>↓</span>
+          </button>
         </div>
         <div className="relative mx-auto grid w-full max-w-7xl flex-1 grid-rows-[1fr_auto] px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:px-8 lg:pb-10 lg:grid-cols-[0.8fr_1.2fr] lg:grid-rows-1">
           <div className="relative order-2 h-48 lg:order-1 lg:h-auto">
