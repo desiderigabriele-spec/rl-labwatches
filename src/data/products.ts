@@ -7,6 +7,8 @@ export type Product = {
   ref: string;
   year: string;
   price: number | null; // null = prezzo su richiesta
+  /** prezzo pieno quando c'è uno sconto (price è già scontato) */
+  listPrice?: number | null;
   condition: string;
   description: string;
   /** foto di copertina (anteprima nella lista), es. "/orologi/rolex-5513/cover.jpg" */

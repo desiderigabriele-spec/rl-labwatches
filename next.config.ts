@@ -21,6 +21,8 @@ const wixRedirects: [string, string][] = [
 ];
 
 const nextConfig: NextConfig = {
+  // foto degli orologi caricate da Roberto nell'area clienti di Desideri&Code
+  images: { remotePatterns: [{ protocol: "https", hostname: "newyirfmizuskwhqtzuw.supabase.co", pathname: "/storage/v1/object/public/vetrine/**" }] },
   async redirects() {
     return wixRedirects.map(([source, destination]) => ({ source, destination, statusCode: 301 }));
   },

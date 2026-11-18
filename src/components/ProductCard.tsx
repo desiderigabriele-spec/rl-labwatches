@@ -45,7 +45,10 @@ export default function ProductCard({ product }: { product: Product }) {
             <span className="chip">{product.year}</span>
           </p>
         </div>
-        <p className="tag-mono shrink-0 pt-1 text-sm text-green">{formatPrice(product.price)}</p>
+        <p className="tag-mono shrink-0 pt-1 text-right text-sm text-green">
+          {product.listPrice != null && <s className="block text-xs text-mute">{formatPrice(product.listPrice)}</s>}
+          {formatPrice(product.price)}
+        </p>
       </div>
     </Link>
   );

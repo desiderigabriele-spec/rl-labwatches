@@ -1,9 +1,12 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/data/site";
-import { products, SHOP_READY } from "@/data/products";
+import { getCatalogo } from "@/data/catalogo";
 import { brands } from "@/data/brands";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const revalidate = 3600;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const { products, reale } = await getCatalogo();
   const now = new Date();
   const page = (path: string, priority: number, changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] = "monthly") => ({
     url: `${site.url}${path}`,
@@ -24,6 +27,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page("/termini-di-servizio", 0.2, "yearly"),
     page("/cookie", 0.2, "yearly"),
     page("/note-legali", 0.2, "yearly"),
-    ...(SHOP_READY ? [page("/shop", 0.8, "weekly"), ...brands.map((b) => page(`/shop/marca/${b.slug}`, 0.7, "weekly")), ...products.map((p) => page(`/shop/${p.slug}`, 0.6, "weekly"))] : []),
+    ...(reale ? [page("/shop", 0.8, "weekly"), ...brands.map((b) => page(`/shop/marca/${b.slug}`, 0.7, "weekly")), ...products.map((p) => page(`/shop/${p.slug}`, 0.6, "weekly"))] : []),
   ];
 }
