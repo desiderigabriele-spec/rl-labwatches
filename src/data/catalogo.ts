@@ -13,12 +13,16 @@ type Riga = {
   prezzo_cent: number | null; sconto_percento: number; stato: "in_vendita" | "su_richiesta" | "venduto";
   foto: string[]; colore: string | null; dettagli: [string, string][]; vista360: Product["spin"] | null;
   movimento: string; materiale: string; diametro_mm: number | null; quadrante: string; bracciale: string; corredo: string; genere: string;
+  revisionato: boolean | null; garanzia_mesi: number | null; sconto_fino_al: string | null;
 };
 
 function inProdotto(r: Riga): Product {
   const suRichiesta = r.stato === "su_richiesta" || r.prezzo_cent == null;
   const pieno = r.prezzo_cent == null ? null : r.prezzo_cent / 100;
-  const scontato = pieno != null && r.sconto_percento > 0 ? Math.round(pieno * (100 - r.sconto_percento)) / 100 : null;
+  // lo sconto vale fino alla data scelta da Roberto (compresa), poi torna il prezzo pieno
+  const oggi = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Rome" });
+  const scontoAttivo = r.sconto_percento > 0 && (!r.sconto_fino_al || r.sconto_fino_al >= oggi);
+  const scontato = pieno != null && scontoAttivo ? Math.round(pieno * (100 - r.sconto_percento)) / 100 : null;
   return {
     slug: r.slug,
     name: r.nome,
@@ -52,6 +56,8 @@ function inProdotto(r: Riga): Product {
     strap: r.bracciale || undefined,
     boxPapers: r.corredo || undefined,
     gender: r.genere || undefined,
+    revised: r.revisionato ?? true,
+    warrantyMonths: r.garanzia_mesi ?? 12,
   };
 }
 

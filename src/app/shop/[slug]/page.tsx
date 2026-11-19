@@ -7,6 +7,7 @@ import JsonLd from "@/components/JsonLd";
 import { WhatsAppIcon } from "@/components/WhatsAppButton";
 import { formatPrice, spinFrames } from "@/data/products";
 import { assoluto, getCatalogo } from "@/data/catalogo";
+import { fiducia, rigaSpecifiche } from "@/data/filtri";
 import { breadcrumbLd, pageMeta } from "@/lib/seo";
 import { site, whatsappLink } from "@/data/site";
 
@@ -34,6 +35,7 @@ export default async function ProductPage({ params }: Props) {
 
   const subject = encodeURIComponent(`Richiesta informazioni: ${p.brand} ${p.name} (${p.ref})`);
   const frames = spinFrames(p);
+  const f = fiducia(p);
   const photos = [...(p.image ? [p.image] : []), ...(p.photos ?? [])];
   const productLd = {
     "@context": "https://schema.org",
@@ -71,12 +73,39 @@ export default async function ProductPage({ params }: Props) {
           <div className="mt-5 flex flex-wrap gap-2 text-fg/65">
             <span className="chip">Ref. {p.ref}</span>
             <span className="chip">{p.year}</span>
+            {rigaSpecifiche(p) && <span className="chip">{rigaSpecifiche(p)}</span>}
             <span className="chip">{p.condition}</span>
           </div>
-          <p className="tag-mono mt-6 text-3xl text-green">
-            {p.listPrice != null && <s className="mr-3 text-xl text-mute">{formatPrice(p.listPrice)}</s>}
-            {formatPrice(p.price)}
-          </p>
+          {/* prezzo chiaro e rassicurante: barrato, cifra grande, risparmio in euro, motivi di fiducia, un solo pulsante */}
+          <div className="mt-8 border-y border-line py-6">
+            {!p.sold && p.listPrice != null && <s className="tag-mono block text-base text-mute">{formatPrice(p.listPrice)}</s>}
+            <p className={`${p.price === null ? "font-display text-4xl" : "tag-mono text-4xl sm:text-[2.6rem]"} leading-tight ${p.sold ? "text-mute" : "text-green"}`}>{formatPrice(p.price)}</p>
+            {!p.sold && p.listPrice != null && p.price != null && (
+              <p className="mt-3"><span className="bg-green px-2.5 py-1 text-[0.7rem] uppercase tracking-[0.14em] text-cream">Risparmi {formatPrice(p.listPrice - p.price)}</span></p>
+            )}
+            {!p.sold && (
+              <ul className="mt-5 grid gap-1.5 text-sm text-green">
+                {f.revisionato && <li>✓ Revisionato nel laboratorio di {site.owner.split(" ")[0]}</li>}
+                {(f.garanzia || f.corredo) && <li>✓ {[f.garanzia, f.corredo].filter(Boolean).join(" · ")}</li>}
+                <li>✓ Spedizione assicurata o ritiro a {site.address.city}</li>
+              </ul>
+            )}
+            {p.sold ? (
+              <div className="mt-2 grid gap-4">
+                <p className="text-sm uppercase tracking-[0.2em] text-mute">Questo orologio è stato venduto.</p>
+                <a href={whatsappLink(`Buongiorno, ho visto che ${p.brand} ${p.name} è stato venduto: cerco un orologio simile.`)} target="_blank" rel="noopener noreferrer" className="btn self-start">
+                  <WhatsAppIcon className="h-4 w-4" /> Cerchi un orologio simile?
+                </a>
+              </div>
+            ) : (
+              <div className="mt-6 grid gap-3">
+                <a href={whatsappLink(`Buongiorno, vorrei informazioni su ${p.brand} ${p.name} (${p.ref}).`)} target="_blank" rel="noopener noreferrer" className="btn btn-solid w-full sm:w-auto sm:self-start">
+                  <WhatsAppIcon className="h-4 w-4" /> {p.price === null ? "Chiedi il prezzo su WhatsApp" : "Chiedi su WhatsApp"}
+                </a>
+                <a href={`mailto:${site.email}?subject=${subject}`} className="text-sm text-mute underline underline-offset-4 hover:text-gold">oppure scrivi un'email</a>
+              </div>
+            )}
+          </div>
           <dl className="mt-10 divide-y divide-line border-y border-line text-sm">
             {([["Marca", p.brand], ["Referenza", p.ref], ["Anno", p.year], ["Condizioni", p.condition], ...(p.details ?? [])] as [string, string][]).map(([k, v]) => (
               <div key={k} className="flex justify-between gap-6 py-3.5">
@@ -86,16 +115,6 @@ export default async function ProductPage({ params }: Props) {
             ))}
           </dl>
           <p className="mt-8 leading-relaxed text-mute">{p.description}</p>
-          {p.sold ? (
-            <p className="mt-10 text-sm uppercase tracking-[0.2em] text-mute">Questo orologio è stato venduto.</p>
-          ) : (
-            <div className="mt-10 flex flex-wrap gap-4">
-              <a href={whatsappLink(`Buongiorno, vorrei informazioni su ${p.brand} ${p.name} (${p.ref}).`)} target="_blank" rel="noopener noreferrer" className="btn btn-solid">
-                <WhatsAppIcon className="h-4 w-4" /> Chiedi su WhatsApp
-              </a>
-              <a href={`mailto:${site.email}?subject=${subject}`} className="btn">Richiedi via email</a>
-            </div>
-          )}
         </Reveal>
       </div>
     </section>

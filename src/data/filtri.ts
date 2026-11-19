@@ -41,3 +41,25 @@ export const FASCE_DIAMETRO = [
   { id: "42", nome: "40 – 42 mm", ok: (x: number) => x >= 40 && x <= 42 },
   { id: "43", nome: "Oltre 42 mm", ok: (x: number) => x > 42 },
 ];
+
+/** Motivi di fiducia mostrati vicino al prezzo (scheda e pagina dell'orologio). */
+export function fiducia(p: Product) {
+  const g = p.warrantyMonths ?? (parseInt(voce(p, "Garanzia del laboratorio"), 10) || 0);
+  const revisionato = p.revised ?? g > 0;
+  const corredo = p.boxPapers ?? voce(p, "Corredo");
+  return {
+    revisionato,
+    garanzia: g > 0 ? `Garanzia ${g} mesi` : "",
+    corredo,
+    /** etichetta sulla foto: solo se il corredo è un punto di forza */
+    etichettaCorredo: /garanzia|scatola/i.test(corredo) && !/senza/i.test(corredo) ? corredo : "",
+    /** «Revisionato in laboratorio · Garanzia 12 mesi» */
+    riga: [revisionato ? "Revisionato in laboratorio" : "", g > 0 ? `Garanzia ${g} mesi` : ""].filter(Boolean).join(" · "),
+  };
+}
+
+/** Misura, materiale e movimento in una riga: «41 mm · Acciaio · Automatico» */
+export function rigaSpecifiche(p: Product) {
+  const c = caratteristiche(p);
+  return [c.diametro ? `${String(c.diametro).replace(".", ",")} mm` : "", c.materiale, c.movimento].filter(Boolean).join(" · ");
+}
