@@ -31,7 +31,7 @@ export const legal = {
       ],
       [
         "p",
-        "Il Sito non utilizza strumenti di analisi statistica, pubblicità o profilazione (come Google Analytics, Google Ads o Facebook Ads)."
+        "Il Sito non utilizza strumenti di analisi statistica di terze parti, pubblicità o profilazione (come Google Analytics, Google Ads o Facebook Ads). Conta soltanto, in forma anonima e aggregata, quante pagine vengono viste ogni giorno e quante volte viene toccato il pulsante WhatsApp: non usa cookie, non salva indirizzi IP né altri dati che permettano di riconoscerti."
       ],
       [
         "h",
@@ -51,7 +51,7 @@ export const legal = {
       ],
       [
         "p",
-        "I dati non sono venduti né ceduti a terzi. Possono essere trattati, solo per le finalità indicate, da fornitori che ci supportano in qualità di responsabili del trattamento: Vercel Inc. (hosting del Sito) e Resend (invio via email dei messaggi del modulo). Se scegli di contattarci tramite WhatsApp, i dati sono trattati anche da WhatsApp/Meta secondo le loro condizioni."
+        "I dati non sono venduti né ceduti a terzi. Possono essere trattati, solo per le finalità indicate, da fornitori che ci supportano in qualità di responsabili del trattamento: Vercel Inc. (hosting del Sito), Desideri&Code con Supabase (gestione del catalogo e conteggio anonimo delle visite) e Resend (invio via email dei messaggi del modulo). Se scegli di contattarci tramite WhatsApp, i dati sono trattati anche da WhatsApp/Meta secondo le loro condizioni."
       ],
       [
         "h",

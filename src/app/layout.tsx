@@ -10,6 +10,7 @@ import ReadingBezel from "@/components/ReadingBezel";
 import SmoothScroll from "@/components/SmoothScroll";
 import NavDirection from "@/components/NavDirection";
 import JsonLd from "@/components/JsonLd";
+import ContatoreVisite from "@/components/ContatoreVisite";
 import { localBusinessLd, OG_IMAGE, websiteLd } from "@/lib/seo";
 import { site } from "@/data/site";
 
@@ -43,6 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* salta l'intro se già vista in questa sessione (prima del render, senza sfarfallio) */}
         <script dangerouslySetInnerHTML={{ __html: `try{if(sessionStorage.getItem("rl-intro"))document.documentElement.dataset.intro="seen"}catch(e){}` }} />
         <IntroSplash />
+        <ContatoreVisite />
         <JsonLd data={localBusinessLd} />
         <JsonLd data={websiteLd} />
         <Header />
