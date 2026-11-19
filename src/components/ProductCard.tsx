@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { formatPrice, spinFrames, type Product } from "@/data/products";
+import { fiducia, rigaSpecifiche } from "@/data/filtri";
 
 export function WatchPlaceholder() {
   return (
@@ -19,36 +20,46 @@ export function WatchPlaceholder() {
   );
 }
 
-export default function ProductCard({ product }: { product: Product }) {
-  const cover = product.image ?? spinFrames(product)[0];
+/**
+ * Scheda di fiducia: foto 4:5 con al massimo due etichette (corredo o «Venduto» a sinistra, sconto o 360° a destra),
+ * marca e anno, modello, una riga con misura, materiale e movimento, prezzo su una riga sua e i motivi di fiducia in verde.
+ */
+export default function ProductCard({ product: p }: { product: Product }) {
+  const cover = p.image ?? spinFrames(p)[0];
+  const f = fiducia(p);
+  const specifiche = rigaSpecifiche(p);
+  const sconto = p.listPrice != null && p.price != null && p.listPrice > p.price ? Math.round((1 - p.price / p.listPrice) * 100) : 0;
+  const etichetta = "absolute top-3 px-2.5 py-1 text-[0.65rem] uppercase tracking-[0.16em]";
   return (
-    <Link href={`/shop/${product.slug}`} className="group block">
+    <Link href={`/shop/${p.slug}`} className="group block">
       <div className="relative flex aspect-[4/5] items-center justify-center overflow-hidden border border-line bg-paper-2 transition-colors duration-500 group-hover:border-gold/50">
         {cover ? (
-          <Image src={cover} alt={`${product.brand} ${product.name}`} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+          <Image src={cover} alt={`${p.brand} ${p.name}`} fill sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
         ) : (
           <div className="flex h-full w-full items-center justify-center transition-transform duration-700 group-hover:scale-105">
             <WatchPlaceholder />
           </div>
         )}
-        {product.spin && (
-          <span className="absolute right-4 top-4 bg-paper/90 px-3 py-1 text-[0.7rem] uppercase tracking-[0.2em] text-fg">360°</span>
-        )}
-        {product.sold && <span className="absolute left-4 top-4 bg-fg px-3 py-1 text-[0.7rem] uppercase tracking-[0.2em] text-paper">Venduto</span>}
+        {p.sold ? (
+          <span className={`${etichetta} left-3 bg-fg text-paper`}>Venduto</span>
+        ) : f.etichettaCorredo ? (
+          <span className={`${etichetta} left-3 bg-paper/95 text-fg`}>{f.etichettaCorredo}</span>
+        ) : null}
+        {!p.sold && sconto > 0 ? (
+          <span className={`${etichetta} right-3 bg-green text-cream`}>−{sconto}%</span>
+        ) : p.spin ? (
+          <span className={`${etichetta} right-3 bg-paper/95 text-fg`}>360°</span>
+        ) : null}
       </div>
-      <div className="mt-5 flex items-start justify-between gap-4">
-        <div>
-          <p className="text-[0.7rem] uppercase tracking-[0.24em] text-mute">{product.brand}</p>
-          <h3 className="mt-1 font-display text-2xl">{product.name}</h3>
-          <p className="mt-2 flex flex-wrap gap-1.5 text-fg/60">
-            <span className="chip">Ref. {product.ref}</span>
-            <span className="chip">{product.year}</span>
-          </p>
-        </div>
-        <p className="tag-mono shrink-0 pt-1 text-right text-sm text-green">
-          {product.listPrice != null && <s className="block text-xs text-mute">{formatPrice(product.listPrice)}</s>}
-          {formatPrice(product.price)}
+      <div className="mt-5">
+        <p className="text-[0.7rem] uppercase tracking-[0.24em] text-mute">{[p.brand, p.year].filter(Boolean).join(" · ")}</p>
+        <h3 className="mt-1 font-display text-[1.65rem] leading-tight">{p.name}</h3>
+        {specifiche && <p className="mt-1.5 text-sm text-fg/70">{specifiche}</p>}
+        <p className="mt-4 flex flex-wrap items-baseline gap-x-3 border-t border-line pt-3">
+          <span className={`${p.price === null ? "font-display text-xl" : "tag-mono text-[1.35rem]"} ${p.sold ? "text-mute" : "text-green"}`}>{formatPrice(p.price)}</span>
+          {!p.sold && p.listPrice != null && <s className="tag-mono text-xs text-mute">{formatPrice(p.listPrice)}</s>}
         </p>
+        {!p.sold && f.riga && <p className="mt-2 text-xs text-green">✓ {f.riga}</p>}
       </div>
     </Link>
   );

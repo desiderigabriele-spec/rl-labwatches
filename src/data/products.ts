@@ -30,6 +30,10 @@ export type Product = {
   strap?: string;
   boxPapers?: string;
   gender?: string;
+  /** revisionato nel laboratorio di Roberto */
+  revised?: boolean;
+  /** mesi di garanzia del laboratorio (0 = nessuna) */
+  warrantyMonths?: number | null;
 };
 
 /** Percorsi dei fotogrammi della vista a 360° */
@@ -111,4 +115,5 @@ export const SHOP_READY = false; // metti true quando il catalogo contiene orolo
 export const formatPrice = (p: number | null) =>
   p === null
     ? "Prezzo su richiesta"
-    : new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(p);
+    : // «5.000 €» e non «5000 €»: in italiano il punto delle migliaia di serie parte da 10.000
+    new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0, useGrouping: "always" } as Intl.NumberFormatOptions).format(p);
