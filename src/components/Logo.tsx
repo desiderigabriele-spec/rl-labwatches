@@ -18,11 +18,14 @@ export default function Logo({
   animate = "none",
   delay = 0,
   className = "",
+  priority = false,
 }: {
   version?: LogoVersion;
   animate?: "intro" | "hover" | "none";
   delay?: number;
   className?: string;
+  /** logo del primo schermo (intestazione): le scritte arrivano con i font, non dietro le foto più in basso */
+  priority?: boolean;
 }) {
   const part = LOGO_PARTS[version];
   const svgRef = useRef<SVGSVGElement>(null);
@@ -60,7 +63,7 @@ export default function Logo({
       onTouchStart={spin}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={part.words} alt="" aria-hidden className="absolute inset-0 h-full w-full" draggable={false} loading={animate === "intro" ? "lazy" : undefined} />
+      <img src={part.words} alt="" aria-hidden className="absolute inset-0 h-full w-full" draggable={false} loading={animate === "intro" ? "lazy" : undefined} fetchPriority={priority ? "high" : undefined} />
       <svg
         ref={svgRef}
         xmlns="http://www.w3.org/2000/svg"

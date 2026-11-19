@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useInView } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { useWarm } from "@/lib/warm";
 import { brands, type Brand } from "@/data/brands";
 import { whatsappLink } from "@/data/site";
 import { WhatsAppIcon } from "./WhatsAppButton";
@@ -133,6 +134,8 @@ function Slot({
   );
 }
 
+const WARM_VETRINA = brands.flatMap((b) => [b.vetrina, ...(b.dial?.sprites ? Object.values(b.dial.sprites) : [])]).filter(Boolean) as string[];
+
 export default function Showcase({
   eyebrow = "La vetrina",
   title = "Scegli la tua marca",
@@ -149,6 +152,8 @@ export default function Showcase({
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.35 });
   const visible = useInView(ref, { amount: 0.05 }); // le lancette girano solo con la vetrina sullo schermo
+  // cofanetti e lancette: in cache quando la vetrina è a due schermate e mezzo, così all'arrivo sono già lì (lib/warm)
+  useWarm(WARM_VETRINA, ref, { idle: false, margin: "250% 0px" });
   const [introLit, setIntroLit] = useState(-1); // quanti faretti si sono già accesi all'ingresso
   const [hover, setHover] = useState<number | null>(null);
   const [selected, setSelected] = useState<number | null>(null);

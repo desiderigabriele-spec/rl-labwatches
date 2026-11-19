@@ -145,6 +145,15 @@ body {
     repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.04) 6px 7px, transparent 7px 12px);
 }
 /* riflesso che attraversa lentamente il guilloché, come inclinando il polso */
+/* animazioni infinite in pausa quando sono fuori schermo (OffscreenPause): nessun lavoro per ciò che non si vede */
+[data-offscreen],
+[data-offscreen]::before,
+[data-offscreen]::after,
+[data-offscreen] *,
+[data-offscreen] *::before,
+[data-offscreen] *::after {
+  animation-play-state: paused !important;
+}
 .sheen {
   overflow: hidden;
   isolation: isolate;
@@ -309,22 +318,46 @@ html[data-intro="seen"] .intro-splash {
   to { opacity: 1; }
 }
 
-/* pulviscolo che galleggia nel fascio dei faretti */
+/* pulviscolo che galleggia nel fascio dei faretti.
+   Tre strati di puntini, ciascuno spostato con transform invece che con background-position: stesso disegno,
+   stesso spostamento in 26 s, ma lo muove la scheda grafica senza ridipingere il fascio a ogni fotogramma.
+   Ogni strato sborda di 120px (più dello spostamento massimo) e lo stato di pausa arriva dal contenitore. */
 .spot-dust {
-  background-image:
-    radial-gradient(circle, rgba(255, 246, 225, 0.9) 0 1px, transparent 1.6px),
-    radial-gradient(circle, rgba(255, 246, 225, 0.6) 0 0.8px, transparent 1.3px),
-    radial-gradient(circle, rgba(255, 246, 225, 0.5) 0 1.2px, transparent 2px);
-  background-size: 37px 53px, 23px 31px, 61px 79px;
-  background-position: 0 0, 11px 7px, 29px 17px;
+  overflow: hidden;
   opacity: 0.35;
-  animation: spot-dust 26s linear infinite;
 }
-@keyframes spot-dust {
-  to { background-position: 18px -106px, -12px -93px, 40px -79px; }
+.spot-dust > i {
+  position: absolute;
+  inset: -120px;
+  background-repeat: repeat;
+  animation: 26s linear infinite;
+  animation-play-state: inherit;
+  will-change: transform;
 }
+.spot-dust > i:nth-child(1) {
+  background-image: radial-gradient(circle, rgba(255, 246, 225, 0.9) 0 1px, transparent 1.6px);
+  background-size: 37px 53px;
+  background-position: 120px 120px;
+  animation-name: spot-dust-1;
+}
+.spot-dust > i:nth-child(2) {
+  background-image: radial-gradient(circle, rgba(255, 246, 225, 0.6) 0 0.8px, transparent 1.3px);
+  background-size: 23px 31px;
+  background-position: 131px 127px;
+  animation-name: spot-dust-2;
+}
+.spot-dust > i:nth-child(3) {
+  background-image: radial-gradient(circle, rgba(255, 246, 225, 0.5) 0 1.2px, transparent 2px);
+  background-size: 61px 79px;
+  background-position: 149px 137px;
+  animation-name: spot-dust-3;
+}
+/* spostamenti uguali a prima: da 0 0 / 11px 7px / 29px 17px a 18px -106px / -12px -93px / 40px -79px */
+@keyframes spot-dust-1 { to { transform: translate(18px, -106px); } }
+@keyframes spot-dust-2 { to { transform: translate(-23px, -100px); } }
+@keyframes spot-dust-3 { to { transform: translate(11px, -96px); } }
 @media (prefers-reduced-motion: reduce) {
-  .spot-dust { animation: none; }
+  .spot-dust > i { animation: none; }
 }
 
 /* vetrina ingrandita: invito a toccare (bottone che pulsa, mano che tocca) */
@@ -447,12 +480,15 @@ html[data-intro="seen"] .intro-splash {
 .is-pill .bezel-ring {
   transform: rotate(var(--pill-roll, -141deg));
 }
+.bezel-dock {
+  --b: 68px;
+}
 .bezel-pill {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 68px;
-  height: 60px;
+  width: var(--b);
+  height: calc(var(--b) * 0.88);
   translate: -50% -50%;
   border-radius: 9999px;
   border: 1.5px solid transparent;
@@ -462,18 +498,19 @@ html[data-intro="seen"] .intro-splash {
   box-shadow: 0 14px 28px -10px rgb(0 20 12 / 0.6);
   opacity: 0;
   pointer-events: none;
-  transition: width 0.7s cubic-bezier(0.3, 0.7, 0.25, 1), opacity 0.2s ease 0.5s;
+  transition: width 0.7s cubic-bezier(0.3, 0.7, 0.25, 1), translate 0.7s cubic-bezier(0.3, 0.7, 0.25, 1), opacity 0.2s ease 0.5s;
   -webkit-tap-highlight-color: transparent;
 }
 .is-pill .bezel-pill {
   width: var(--pill-w, 236px);
+  translate: calc(-50% + var(--pill-x, 0px)) -50%;
   opacity: 1;
   pointer-events: auto;
-  transition: width 0.7s cubic-bezier(0.3, 0.7, 0.25, 1), opacity 0.15s ease;
+  transition: width 0.7s cubic-bezier(0.3, 0.7, 0.25, 1), translate 0.7s cubic-bezier(0.3, 0.7, 0.25, 1), opacity 0.15s ease;
 }
 .bezel-pill-text {
   position: absolute;
-  left: 76px;
+  left: calc(var(--b) + 8px);
   width: max-content;
   top: 50%;
   translate: 8px -50%;
@@ -584,6 +621,39 @@ html[data-intro="seen"] .intro-splash {
   opacity: 1;
   translate: -50% 0;
   transition-delay: 0.15s;
+}
+/* computer: lunetta più grande nell'angolo in basso a destra, ventaglio in alto e a sinistra */
+@media (min-width: 1024px) {
+  .bezel-dock {
+    --b: 88px;
+  }
+  .bezel-btn:hover {
+    scale: 1.04;
+  }
+  .is-open .bezel-item {
+    transform: translate(calc(-50% + var(--xd)), calc(-26px + var(--yd))) scale(1);
+  }
+  .bezel-medal {
+    width: 60px;
+    height: 60px;
+  }
+  .is-primary .bezel-medal {
+    width: 70px;
+    height: 70px;
+  }
+  .bezel-pill-text em {
+    font-size: 1.6rem;
+  }
+  .bezel-ask {
+    left: auto;
+    right: 0;
+    bottom: 236px;
+    translate: 0 8px;
+    font-size: 1.6rem;
+  }
+  .is-open .bezel-ask {
+    translate: 0 0;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .bezel-ring, .bezel-item, .bezel-ask { transition-duration: 0s !important; transition-delay: 0s !important; }

@@ -5,7 +5,7 @@ import LiveHands from "./LiveHands";
 type Dial = { x: number; y: number; r: number };
 
 /** Lancette vive sopra un quadrante: x e r in % della larghezza della foto, y in % dell'altezza; aspect = larghezza/altezza */
-function DialHands({ dial, aspect, brand, run }: { dial: Dial; aspect: number; brand: Brand; run: boolean }) {
+function DialHands({ dial, aspect, brand, run, eager }: { dial: Dial; aspect: number; brand: Brand; run: boolean; eager?: boolean }) {
   if (!brand.dial) return null;
   return (
     <span
@@ -17,7 +17,7 @@ function DialHands({ dial, aspect, brand, run }: { dial: Dial; aspect: number; b
         height: `${dial.r * 2 * aspect}%`,
       }}
     >
-      <LiveHands style={brand.dial.hands} beats={brand.dial.beats} sprites={brand.dial.sprites} seconds={!("seconds" in brand.dial) || brand.dial.seconds !== false} run={run} />
+      <LiveHands style={brand.dial.hands} beats={brand.dial.beats} sprites={brand.dial.sprites} seconds={!("seconds" in brand.dial) || brand.dial.seconds !== false} run={run} eager={eager} />
     </span>
   );
 }
@@ -45,7 +45,7 @@ export default function BoxPhoto({ brand, run, eager = false }: { brand: Brand; 
         loading={eager ? "eager" : "lazy"}
         className="h-full w-full select-none object-contain object-bottom drop-shadow-[0_18px_24px_rgba(0,0,0,0.55)]"
       />
-      {brand.dial && !close && <DialHands dial={brand.dial} aspect={840 / 1020} brand={brand} run={run} />}
+      {brand.dial && !close && <DialHands dial={brand.dial} aspect={840 / 1020} brand={brand} run={run} eager={eager} />}
       {close && brand.dial && (
         <span
           data-closeup
@@ -68,7 +68,7 @@ export default function BoxPhoto({ brand, run, eager = false }: { brand: Brand; 
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={close.src} alt="" aria-hidden draggable={false} loading={eager ? "eager" : "lazy"} className="h-full w-full" />
-          <DialHands dial={close} aspect={1024 / 1536} brand={brand} run={run} />
+          <DialHands dial={close} aspect={1024 / 1536} brand={brand} run={run} eager={eager} />
         </span>
       )}
     </>
@@ -83,7 +83,7 @@ export function CloseUp({ brand, run, ref }: { brand: Brand; run: boolean; ref?:
     <span ref={ref} className="relative block aspect-[1024/1536] w-full overflow-hidden rounded-[18px] shadow-[0_30px_60px_rgba(0,0,0,0.55)]">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={close.src} alt={`Orologio ${brand.name} da vicino`} draggable={false} className="h-full w-full select-none" />
-      {brand.dial && <DialHands dial={close} aspect={1024 / 1536} brand={brand} run={run} />}
+      {brand.dial && <DialHands dial={close} aspect={1024 / 1536} brand={brand} run={run} eager />}
     </span>
   );
 }
