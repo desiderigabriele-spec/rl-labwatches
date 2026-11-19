@@ -74,7 +74,10 @@ export default function Home() {
                   src="/images/roberto-landi-ritratto.webp"
                   alt="Roberto Landi, orologiaio a Pistoia"
                   fill
-                  priority
+                  // il ritratto è l'elemento LCP: subito e con priorità alta. Niente preload in testa (sconsigliato
+                  // da Next quando l'immagine LCP cambia con lo schermo); le due versioni puntano allo stesso file
+                  loading="eager"
+                  fetchPriority="high"
                   sizes="50vw"
                   // la foto sfuma verso sinistra e in basso: niente riquadro dietro al testo
                   className="object-contain object-bottom [mask-composite:intersect] [mask-image:linear-gradient(90deg,transparent,black_38%),linear-gradient(to_bottom,black_80%,transparent)] [-webkit-mask-composite:source-in]"
@@ -87,7 +90,8 @@ export default function Home() {
               src="/images/roberto-landi-ritratto.webp"
               alt="Roberto Landi, orologiaio a Pistoia"
               fill
-              priority
+              loading="eager"
+              fetchPriority="high"
               sizes="45vw"
               className="object-contain object-bottom [mask-image:linear-gradient(to_bottom,black_82%,transparent)]"
             />

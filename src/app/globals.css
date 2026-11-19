@@ -145,6 +145,15 @@ body {
     repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.04) 6px 7px, transparent 7px 12px);
 }
 /* riflesso che attraversa lentamente il guilloché, come inclinando il polso */
+/* animazioni infinite in pausa quando sono fuori schermo (OffscreenPause): nessun lavoro per ciò che non si vede */
+[data-offscreen],
+[data-offscreen]::before,
+[data-offscreen]::after,
+[data-offscreen] *,
+[data-offscreen] *::before,
+[data-offscreen] *::after {
+  animation-play-state: paused !important;
+}
 .sheen {
   overflow: hidden;
   isolation: isolate;
@@ -187,29 +196,151 @@ body {
   60%, 100% { opacity: 1; }
 }
 
-/* Intro con il logo */
-.intro-splash {
-  animation: intro-out 0.8s ease 2.3s forwards;
+/* Intro "la lunetta" (IntroSplash): si sincronizza sull'ora vera e scende al posto della lunetta dei contatti */
+.intro-paper {
+  background: radial-gradient(circle at 50% 42%, #fbf6ea 0, #f1e9d8 45%, #e6dbc2 100%);
+  animation: intro-fade 0.6s ease 2.2s forwards;
 }
-.intro-splash .intro-logo {
-  animation: intro-in 1s cubic-bezier(0.22, 1, 0.36, 1) both, intro-logo-out 0.8s ease 2.3s forwards;
+.intro-paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-radial-gradient(circle at 50% 42%, transparent 0 9px, rgb(168 126 50 / 0.07) 9px 10px);
 }
-@keyframes intro-logo-out {
-  to { transform: scale(0.94); opacity: 0; }
+.intro-name {
+  top: calc(42% + min(26vw, 150px) + 28px);
+  color: var(--color-green);
+  animation: intro-rise 0.7s ease 0.9s both, intro-fade 0.3s ease 2s forwards;
 }
-@media (max-width: 1023px) {
-  .intro-splash { animation-delay: 1.5s; animation-duration: 0.7s; }
-  .intro-splash .intro-logo { animation: intro-in 1s cubic-bezier(0.22, 1, 0.36, 1) both, intro-logo-out 0.7s ease 1.5s forwards; }
+.intro-name b {
+  display: block;
+  font-weight: 500;
+  font-size: clamp(1.6rem, 7vw, 2.4rem);
+  letter-spacing: 0.14em;
+  line-height: 1;
 }
-.intro-logo {
-  animation: intro-in 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+.intro-name span {
+  display: block;
+  margin-top: 0.7rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--color-gold-2);
 }
-@keyframes intro-in {
-  from { opacity: 0; transform: translateY(14px) scale(0.97); }
-  to { opacity: 1; transform: none; }
+.intro-lun {
+  position: fixed;
+  left: 50%;
+  top: 42%;
+  width: min(52vw, 300px);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  filter: drop-shadow(0 14px 18px rgb(0 20 12 / 0.35));
+  animation: intro-lun-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both, intro-lun-dock 0.9s cubic-bezier(0.6, 0, 0.2, 1) 2.1s forwards,
+    intro-lun-out 0.25s ease 3.05s forwards;
 }
-@keyframes intro-out {
+.intro-lun img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.intro-lun .intro-dial,
+.intro-lun .intro-hand {
+  inset: 12.8%;
+  width: 74.4%;
+  height: 74.4%;
+  border-radius: 9999px;
+}
+.intro-hand {
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.55));
+}
+.intro-ring {
+  animation: intro-ring 1.4s steps(40, end) 0.35s both;
+}
+.intro-h {
+  rotate: var(--intro-h, 300deg);
+  animation: intro-hand-h 1.6s cubic-bezier(0.3, 0, 0.1, 1) 0.3s both;
+}
+.intro-m {
+  rotate: var(--intro-m, 60deg);
+  animation: intro-hand-m 1.6s cubic-bezier(0.3, 0, 0.1, 1) 0.3s both;
+}
+.intro-s {
+  rotate: var(--intro-s, 180deg);
+  animation: intro-hand-s 1.6s cubic-bezier(0.3, 0, 0.1, 1) 0.3s both;
+}
+.intro-skip {
+  position: absolute;
+  top: calc(18px + env(safe-area-inset-top));
+  right: 18px;
+  padding: 10px 14px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-green);
+  opacity: 0;
+  animation: intro-skip-in 0.4s ease 0.5s forwards, intro-fade 0.3s ease 2.1s forwards;
+}
+@keyframes intro-lun-in {
+  from { opacity: 0; scale: 0.82; }
+}
+/* stessa posizione e misura della lunetta dei contatti (ContactBezel): 68px a 14px dal fondo, al centro */
+@keyframes intro-lun-dock {
+  to { top: calc(100% - 48px - env(safe-area-inset-bottom)); width: 68px; filter: drop-shadow(0 10px 14px rgb(0 20 12 / 0.45)); }
+}
+/* su computer: 88px nell'angolo in basso a destra, a 32px dai bordi */
+@keyframes intro-lun-dock-desk {
+  to { top: calc(100% - 76px); left: calc(100% - 76px); width: 88px; filter: drop-shadow(0 10px 14px rgb(0 20 12 / 0.45)); }
+}
+@media (min-width: 1024px) {
+  .intro-lun {
+    animation: intro-lun-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both, intro-lun-dock-desk 0.9s cubic-bezier(0.6, 0, 0.2, 1) 2.1s forwards,
+      intro-lun-out 0.25s ease 3.05s forwards;
+  }
+}
+@keyframes intro-lun-out {
   to { opacity: 0; visibility: hidden; }
+}
+@keyframes intro-ring {
+  from { rotate: 0deg; }
+  to { rotate: -120deg; }
+}
+@keyframes intro-hand-h {
+  from { rotate: calc(var(--intro-h, 300deg) - 720deg); }
+}
+@keyframes intro-hand-m {
+  from { rotate: calc(var(--intro-m, 60deg) - 1440deg); }
+}
+@keyframes intro-hand-s {
+  from { rotate: calc(var(--intro-s, 180deg) - 1800deg); }
+}
+@keyframes intro-rise {
+  from { opacity: 0; translate: 0 12px; }
+}
+@keyframes intro-skip-in {
+  to { opacity: 0.7; }
+}
+@keyframes intro-fade {
+  to { opacity: 0; visibility: hidden; }
+}
+/* la carta lascia passare i clic appena svanisce */
+.intro-splash {
+  animation: intro-pass 0s linear 2.5s forwards;
+}
+@keyframes intro-pass {
+  to { pointer-events: none; }
+}
+/* durante l'intro la lunetta vera è nascosta: compare quando quella dell'intro arriva al suo posto */
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-intro="seen"]) .bezel-dock {
+    opacity: 0;
+    animation: intro-bezel-show 0s linear 3.05s forwards;
+  }
+}
+@keyframes intro-bezel-show {
+  to { opacity: 1; }
 }
 html[data-intro="seen"] .intro-splash {
   display: none;
@@ -309,22 +440,46 @@ html[data-intro="seen"] .intro-splash {
   to { opacity: 1; }
 }
 
-/* pulviscolo che galleggia nel fascio dei faretti */
+/* pulviscolo che galleggia nel fascio dei faretti.
+   Tre strati di puntini, ciascuno spostato con transform invece che con background-position: stesso disegno,
+   stesso spostamento in 26 s, ma lo muove la scheda grafica senza ridipingere il fascio a ogni fotogramma.
+   Ogni strato sborda di 120px (più dello spostamento massimo) e lo stato di pausa arriva dal contenitore. */
 .spot-dust {
-  background-image:
-    radial-gradient(circle, rgba(255, 246, 225, 0.9) 0 1px, transparent 1.6px),
-    radial-gradient(circle, rgba(255, 246, 225, 0.6) 0 0.8px, transparent 1.3px),
-    radial-gradient(circle, rgba(255, 246, 225, 0.5) 0 1.2px, transparent 2px);
-  background-size: 37px 53px, 23px 31px, 61px 79px;
-  background-position: 0 0, 11px 7px, 29px 17px;
+  overflow: hidden;
   opacity: 0.35;
-  animation: spot-dust 26s linear infinite;
 }
-@keyframes spot-dust {
-  to { background-position: 18px -106px, -12px -93px, 40px -79px; }
+.spot-dust > i {
+  position: absolute;
+  inset: -120px;
+  background-repeat: repeat;
+  animation: 26s linear infinite;
+  animation-play-state: inherit;
+  will-change: transform;
 }
+.spot-dust > i:nth-child(1) {
+  background-image: radial-gradient(circle, rgba(255, 246, 225, 0.9) 0 1px, transparent 1.6px);
+  background-size: 37px 53px;
+  background-position: 120px 120px;
+  animation-name: spot-dust-1;
+}
+.spot-dust > i:nth-child(2) {
+  background-image: radial-gradient(circle, rgba(255, 246, 225, 0.6) 0 0.8px, transparent 1.3px);
+  background-size: 23px 31px;
+  background-position: 131px 127px;
+  animation-name: spot-dust-2;
+}
+.spot-dust > i:nth-child(3) {
+  background-image: radial-gradient(circle, rgba(255, 246, 225, 0.5) 0 1.2px, transparent 2px);
+  background-size: 61px 79px;
+  background-position: 149px 137px;
+  animation-name: spot-dust-3;
+}
+/* spostamenti uguali a prima: da 0 0 / 11px 7px / 29px 17px a 18px -106px / -12px -93px / 40px -79px */
+@keyframes spot-dust-1 { to { transform: translate(18px, -106px); } }
+@keyframes spot-dust-2 { to { transform: translate(-23px, -100px); } }
+@keyframes spot-dust-3 { to { transform: translate(11px, -96px); } }
 @media (prefers-reduced-motion: reduce) {
-  .spot-dust { animation: none; }
+  .spot-dust > i { animation: none; }
 }
 
 /* vetrina ingrandita: invito a toccare (bottone che pulsa, mano che tocca) */
@@ -447,12 +602,15 @@ html[data-intro="seen"] .intro-splash {
 .is-pill .bezel-ring {
   transform: rotate(var(--pill-roll, -141deg));
 }
+.bezel-dock {
+  --b: 68px;
+}
 .bezel-pill {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 68px;
-  height: 60px;
+  width: var(--b);
+  height: calc(var(--b) * 0.88);
   translate: -50% -50%;
   border-radius: 9999px;
   border: 1.5px solid transparent;
@@ -462,18 +620,19 @@ html[data-intro="seen"] .intro-splash {
   box-shadow: 0 14px 28px -10px rgb(0 20 12 / 0.6);
   opacity: 0;
   pointer-events: none;
-  transition: width 0.7s cubic-bezier(0.3, 0.7, 0.25, 1), opacity 0.2s ease 0.5s;
+  transition: width 0.7s cubic-bezier(0.3, 0.7, 0.25, 1), translate 0.7s cubic-bezier(0.3, 0.7, 0.25, 1), opacity 0.2s ease 0.5s;
   -webkit-tap-highlight-color: transparent;
 }
 .is-pill .bezel-pill {
   width: var(--pill-w, 236px);
+  translate: calc(-50% + var(--pill-x, 0px)) -50%;
   opacity: 1;
   pointer-events: auto;
-  transition: width 0.7s cubic-bezier(0.3, 0.7, 0.25, 1), opacity 0.15s ease;
+  transition: width 0.7s cubic-bezier(0.3, 0.7, 0.25, 1), translate 0.7s cubic-bezier(0.3, 0.7, 0.25, 1), opacity 0.15s ease;
 }
 .bezel-pill-text {
   position: absolute;
-  left: 76px;
+  left: calc(var(--b) + 8px);
   width: max-content;
   top: 50%;
   translate: 8px -50%;
@@ -584,6 +743,39 @@ html[data-intro="seen"] .intro-splash {
   opacity: 1;
   translate: -50% 0;
   transition-delay: 0.15s;
+}
+/* computer: lunetta più grande nell'angolo in basso a destra, ventaglio in alto e a sinistra */
+@media (min-width: 1024px) {
+  .bezel-dock {
+    --b: 88px;
+  }
+  .bezel-btn:hover {
+    scale: 1.04;
+  }
+  .is-open .bezel-item {
+    transform: translate(calc(-50% + var(--xd)), calc(-26px + var(--yd))) scale(1);
+  }
+  .bezel-medal {
+    width: 60px;
+    height: 60px;
+  }
+  .is-primary .bezel-medal {
+    width: 70px;
+    height: 70px;
+  }
+  .bezel-pill-text em {
+    font-size: 1.6rem;
+  }
+  .bezel-ask {
+    left: auto;
+    right: 0;
+    bottom: 236px;
+    translate: 0 8px;
+    font-size: 1.6rem;
+  }
+  .is-open .bezel-ask {
+    translate: 0 0;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .bezel-ring, .bezel-item, .bezel-ask { transition-duration: 0s !important; transition-delay: 0s !important; }

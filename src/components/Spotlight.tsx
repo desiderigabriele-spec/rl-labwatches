@@ -47,7 +47,11 @@ export default function Spotlight({ level, flicker = false, spread = 30 }: { lev
             maskImage: `conic-gradient(from ${180 - spread}deg at 50% 0%, transparent 0deg, #000 ${spread * 0.5}deg, #000 ${spread * 1.5}deg, transparent ${spread * 2}deg)`,
             WebkitMaskImage: `conic-gradient(from ${180 - spread}deg at 50% 0%, transparent 0deg, #000 ${spread * 0.5}deg, #000 ${spread * 1.5}deg, transparent ${spread * 2}deg)`,
           }}
-        />
+        >
+          <i />
+          <i />
+          <i />
+        </span>
       </span>
     </>
   );

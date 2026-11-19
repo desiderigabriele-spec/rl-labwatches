@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import { onBeat } from "@/lib/beatClock";
 
 /**
  * L'orologio restaurato alla fine della sezione: foto frontale vera, con sopra il quadrante senza lancette
@@ -9,8 +10,8 @@ import { useEffect, useRef } from "react";
  * Posizioni misurate sulle foto: quadrante centrato a (47.4%, 47.4%) con diametro 59.8% della foto.
  */
 // foto con lo sfondo bianco reso trasparente: sta bene su qualsiasi fondo (il "multiply" non funziona dentro un livello in dissolvenza)
-const PHOTO = "/models/daytona-6239/fronte-trasparente.webp";
-const DIAL = "/models/daytona-6239/quadrante.webp";
+export const PHOTO = "/models/daytona-6239/fronte-trasparente.webp";
+export const DIAL = "/models/daytona-6239/quadrante.webp";
 const DIAL_BOX = { left: 17.5, top: 17.5, size: 59.8 };
 // in raggi del quadrante, y verso l'alto (come nel modello 3D)
 const PIVOT = [0, 0.027] as const;
@@ -36,10 +37,9 @@ export default function FinalWatch({ active }: { active: boolean }) {
 
   useEffect(() => {
     if (!active) return;
-    let raf = 0;
     const start = performance.now();
-    const tick = () => {
-      const now = new Date();
+    // 5 battiti al secondo con il timer condiviso (lib/beatClock): le lancette scattavano già solo 5 volte al secondo
+    return onBeat(5, (now) => {
       // piccoli secondi a scatti di 1/5 di secondo
       const s = now.getSeconds() + Math.floor(now.getMilliseconds() / 200) / 5;
       const m = now.getMinutes() + now.getSeconds() / 60;
@@ -52,10 +52,7 @@ export default function FinalWatch({ active }: { active: boolean }) {
       chrono.current?.setAttribute("transform", `rotate(${c * 6})`);
       chronoMin.current?.setAttribute("transform", `rotate(${(c / 60) * 12})`);
       chronoHr.current?.setAttribute("transform", `rotate(${(c / 3600) * 30})`);
-      raf = requestAnimationFrame(tick);
-    };
-    tick();
-    return () => cancelAnimationFrame(raf);
+    });
   }, [active]);
 
   const at = (p: readonly [number, number]) => `translate(${p[0]} ${-p[1]})`;
@@ -69,13 +66,13 @@ export default function FinalWatch({ active }: { active: boolean }) {
   return (
     <div className="relative aspect-square h-full w-full">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={PHOTO} alt="Il Daytona 6239 dopo il restauro" loading="lazy" className="absolute inset-0 h-full w-full [mask-image:radial-gradient(circle,black_60%,transparent_71%)]" />
+      <img src={PHOTO} alt="Il Daytona 6239 dopo il restauro" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full [mask-image:radial-gradient(circle,black_60%,transparent_71%)]" />
       <div
         className="absolute overflow-hidden rounded-full shadow-[inset_0_0_14px_rgba(0,0,0,0.45)]"
         style={{ left: `${DIAL_BOX.left}%`, top: `${DIAL_BOX.top}%`, width: `${DIAL_BOX.size}%`, height: `${DIAL_BOX.size}%` }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={DIAL} alt="" aria-hidden className="h-full w-full" />
+        <img src={DIAL} alt="" aria-hidden loading="lazy" decoding="async" className="h-full w-full" />
         <svg viewBox="-1 -1 2 2" className="absolute inset-0 h-full w-full" aria-hidden>
           <defs>
             <linearGradient id="steel" x1="0" x2="1">

@@ -5,8 +5,9 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import RestorationStage from "./restauro/RestorationStage";
 import IntakeStage, { defectAt } from "./restauro/IntakeStage";
 import VerbBackdrop from "./restauro/VerbBackdrop";
-import { CHAPTERS, CH_LEN, CH_START, DEFECTS, FINAL_START, INTAKE_END } from "./restauro/chapters";
-import FinalWatch from "./restauro/FinalWatch";
+import { CHAPTERS, CH_LEN, CH_START, DEFECTS, DIAL_WORN, FINAL_START, INTAKE_END } from "./restauro/chapters";
+import FinalWatch, { DIAL, PHOTO } from "./restauro/FinalWatch";
+import { useWarm } from "@/lib/warm";
 
 
 // i passaggi seguono i tempi di restauro/chapters.ts (con un piccolo stacco tra uno e l'altro)
@@ -152,6 +153,9 @@ export default function RestorationSection() {
 
   // si carica quando la sezione è vicina e si ferma quando esce dallo schermo
   const near = useOnScreen(ref, "800px 0px");
+  // il quadrante d'ingresso e l'orologio finale: pronti in cache prima che la sezione arrivi (lib/warm),
+  // uno alla volta nell'ordine della scena, così il quadrante usurato (il primo che si vede) arriva per primo
+  useWarm([DIAL_WORN, DIAL, PHOTO], ref, { serial: true });
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     if (near) setLoaded(true);

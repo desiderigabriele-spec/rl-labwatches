@@ -55,9 +55,36 @@ export default function RestorationStage({ progress, active }: { progress: Motio
     const ro = new ResizeObserver(size);
     ro.observe(cv);
     size();
+    // si disegna solo con il banco sullo schermo: fuori (sopra o sotto la sezione) il ciclo si ferma.
+    // Le immagini si caricano comunque prima (active = sezione vicina), così all'arrivo è tutto pronto
+    let onScreen = false;
+    let cleared = false;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        onScreen = e.isIntersecting;
+        if (onScreen && !raf) raf = requestAnimationFrame(frame);
+      },
+      { rootMargin: "120px 0px" }
+    );
+    io.observe(cv);
     const frame = (time: number) => {
+      if (!onScreen) {
+        raf = 0;
+        return;
+      }
       raf = requestAnimationFrame(frame);
       const v = progress.get();
+      // prima del primo lavoro e dopo l'ultimo il banco è trasparente: basta pulirlo una volta
+      if (v < CH_START || v >= CH_START + CHAPTERS.length * CH_LEN) {
+        if (!cleared) {
+          cv.style.opacity = "0";
+          g.setTransform(1, 0, 0, 1, 0, 0);
+          g.clearRect(0, 0, cv.width, cv.height);
+          cleared = true;
+        }
+        return;
+      }
+      cleared = false;
       const i = Math.min(CHAPTERS.length - 1, Math.max(0, Math.floor((v - CH_START) / CH_LEN)));
       const local = (v - CH_START - i * CH_LEN) / CH_LEN;
       // il lavoro occupa la parte centrale del capitolo; ai bordi il pezzo appare e scompare
@@ -76,9 +103,9 @@ export default function RestorationStage({ progress, active }: { progress: Motio
       g.restore();
       cv.setAttribute("aria-label", CHAPTERS[i].label);
     };
-    raf = requestAnimationFrame(frame);
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
       ro.disconnect();
     };
   }, [active, progress]);

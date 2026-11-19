@@ -99,7 +99,7 @@ export default function Header() {
     >
       <div className={`relative z-10 mx-auto flex max-w-7xl items-center justify-between px-4 transition-all duration-500 sm:px-8 ${scrolled ? "h-16" : "h-20 sm:h-28"}`}>
         <Link href="/" aria-label="Roberto Landi Lab Watches – Home" className={`relative transition-opacity duration-300 ${open ? "pointer-events-none opacity-0" : ""}`}>
-          <Logo version="RL-orizzontale-metallo" animate="hover" className={`transition-[height,opacity] duration-500 ${scrolled ? "h-9 sm:h-10" : "h-11 sm:h-14"} ${dark ? "opacity-0" : ""}`} />
+          <Logo version="RL-orizzontale-metallo" animate="hover" priority className={`transition-[height,opacity] duration-500 ${scrolled ? "h-9 sm:h-10" : "h-11 sm:h-14"} ${dark ? "opacity-0" : ""}`} />
           {everDark && (
             <Logo version="RL-orizzontale-negativo" className={`!absolute left-0 top-0 transition-[height,opacity] duration-500 ${scrolled ? "h-9 sm:h-10" : "h-11 sm:h-14"} ${dark ? "" : "opacity-0"}`} />
           )}

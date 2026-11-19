@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import { onBeat } from "@/lib/beatClock";
 
 /**
  * Lancette sopra la foto di un quadrante senza lancette, che segnano l'ora reale.
@@ -57,12 +58,15 @@ export default function LiveHands({
   beats = 8,
   sprites,
   seconds = true,
+  eager = false,
 }: {
   style: HandStyle;
   run: boolean;
   beats?: number;
   sprites?: HandSprites | null;
   seconds?: boolean;
+  /** true dove l'orologio è già a schermo all'apertura; altrove le lancette si caricano quando servono */
+  eager?: boolean;
 }) {
   const hour = useRef<SVGGElement>(null);
   const minute = useRef<SVGGElement>(null);
@@ -73,8 +77,7 @@ export default function LiveHands({
 
   useEffect(() => {
     let lastBeat = -1;
-    const set = () => {
-      const now = new Date();
+    const set = (now: Date) => {
       // si aggiorna solo quando i secondi scattano, non a ogni fotogramma: molto meno lavoro sul telefono
       const beat = Math.floor((now.getTime() * beats) / 1000);
       if (beat === lastBeat) return;
@@ -89,15 +92,12 @@ export default function LiveHands({
       if (minuteImg.current) minuteImg.current.style.transform = `rotate(${m * 6}deg)`;
       if (secondImg.current) secondImg.current.style.transform = `rotate(${s * 6}deg)`;
     };
-    set();
-    if (!run) return;
-    let raf = 0;
-    const tick = () => {
-      set();
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    if (!run) {
+      set(new Date());
+      return;
+    }
+    // un solo timer condiviso da tutti gli orologi con la stessa frequenza (lib/beatClock)
+    return onBeat(beats, set);
   }, [run, beats]);
 
   const shadow = "drop-shadow(0 1.5px 1.5px rgba(0,0,0,0.6))";
@@ -106,12 +106,12 @@ export default function LiveHands({
       {sprites && (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img ref={hourImg} data-hand="h" src={sprites.ore} alt="" draggable={false} className="absolute inset-0 h-full w-full" style={{ filter: shadow }} />
+          <img ref={hourImg} data-hand="h" src={sprites.ore} alt="" draggable={false} loading={eager ? undefined : "lazy"} decoding="async" className="absolute inset-0 h-full w-full" style={{ filter: shadow }} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img ref={minuteImg} data-hand="m" src={sprites.minuti} alt="" draggable={false} className="absolute inset-0 h-full w-full" style={{ filter: shadow }} />
+          <img ref={minuteImg} data-hand="m" src={sprites.minuti} alt="" draggable={false} loading={eager ? undefined : "lazy"} decoding="async" className="absolute inset-0 h-full w-full" style={{ filter: shadow }} />
           {sprites.secondi && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img ref={secondImg} data-hand="s" src={sprites.secondi} alt="" draggable={false} className="absolute inset-0 h-full w-full" style={{ filter: shadow }} />
+            <img ref={secondImg} data-hand="s" src={sprites.secondi} alt="" draggable={false} loading={eager ? undefined : "lazy"} decoding="async" className="absolute inset-0 h-full w-full" style={{ filter: shadow }} />
           )}
         </>
       )}
@@ -152,7 +152,7 @@ export default function LiveHands({
       </svg>
       {sprites?.fermo && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img data-hand="f" src={sprites.fermo} alt="" draggable={false} className="absolute inset-0 h-full w-full" style={{ filter: shadow }} />
+        <img data-hand="f" src={sprites.fermo} alt="" draggable={false} loading={eager ? undefined : "lazy"} decoding="async" className="absolute inset-0 h-full w-full" style={{ filter: shadow }} />
       )}
     </span>
   );

@@ -4,11 +4,11 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import IntroSplash from "@/components/IntroSplash";
-import WhatsAppButton from "@/components/WhatsAppButton";
 import ContactBezel from "@/components/ContactBezel";
 import ReadingBezel from "@/components/ReadingBezel";
 import SmoothScroll from "@/components/SmoothScroll";
 import NavDirection from "@/components/NavDirection";
+import OffscreenPause from "@/components/OffscreenPause";
 import JsonLd from "@/components/JsonLd";
 import ContatoreVisite from "@/components/ContatoreVisite";
 import { localBusinessLd, OG_IMAGE, websiteLd } from "@/lib/seo";
@@ -50,11 +50,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
-        <WhatsAppButton />
         <ContactBezel />
         <ReadingBezel />
         <SmoothScroll />
         <NavDirection />
+        <OffscreenPause />
       </body>
     </html>
   );

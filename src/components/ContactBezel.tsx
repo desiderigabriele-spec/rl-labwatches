@@ -3,12 +3,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { site, whatsappLink } from "@/data/site";
+import { onBeat } from "@/lib/beatClock";
 import { WhatsAppIcon } from "./WhatsAppButton";
 
 /** raggio dell'arco su cui si aprono i contatti, in px dal centro della lunetta */
 const ARC = 104;
 /** Chiama a sinistra, Preventivo in alto al centro, WhatsApp a destra: gradi dalla verticale */
 const ANGLES = [-58, 0, 58];
+/** su computer la lunetta sta nell'angolo in basso a destra: il ventaglio si apre in alto e a sinistra */
+const ARC_DESK = 150;
+const ANGLES_DESK = [-90, -45, 0];
 /** scritte del richiamo, a turno: riga piccola in maiuscoletto, riga grande in corsivo */
 const MESSAGES = [
   ["Chiedi a", "Roberto"],
@@ -18,7 +22,8 @@ const MESSAGES = [
 const BEATS = 8;
 
 /**
- * Contatti su telefono: una lunetta da subacqueo in basso al centro, al posto della barra.
+ * Contatti: una lunetta da subacqueo in basso al centro su telefono, nell'angolo in basso a destra (più grande)
+ * su computer.
  * Ghiera, quadrante e lancette sono foto (public/lunetta, originali in VETRINA/lunetta) e le lancette
  * segnano l'ora vera. Al tocco la ghiera ruota a scatti come una vera ghiera e si aprono a ventaglio
  * Chiama, Preventivo e WhatsApp. Resta sempre visibile e ogni tanto si apre in una capsula con una scritta.
@@ -39,14 +44,22 @@ export default function ContactBezel() {
       const t = pillText.current;
       const d = dock.current;
       if (!t || !d) return;
-      const w = Math.ceil(76 + t.scrollWidth + 26);
-      const shift = -(w / 2 - 34);
+      // b = diametro della lunetta (68px su telefono, 88px su computer)
+      const b = d.offsetWidth || 68;
+      const w = Math.ceil(b + 8 + t.scrollWidth + 26);
+      // su telefono la capsula si apre da entrambi i lati; su computer, nell'angolo, solo verso sinistra
+      const corner = window.matchMedia("(min-width: 1024px)").matches;
+      const pillX = corner ? -(w - b) / 2 : 0;
+      const shift = corner ? -(w - b) : -(w / 2 - b / 2);
       d.style.setProperty("--pill-w", `${w}px`);
+      d.style.setProperty("--pill-x", `${pillX}px`);
       d.style.setProperty("--pill-shift", `${shift}px`);
-      d.style.setProperty("--pill-roll", `${(shift / (Math.PI * 68)) * 360}deg`);
+      d.style.setProperty("--pill-roll", `${(shift / (Math.PI * b)) * 360}deg`);
     };
     fit();
     document.fonts?.ready.then(fit); // rimisura quando i caratteri sono caricati
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
   }, [msg]);
   const hourHand = useRef<HTMLImageElement>(null);
   const minuteHand = useRef<HTMLImageElement>(null);
@@ -59,23 +72,18 @@ export default function ContactBezel() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const beats = reduced ? 1 : BEATS;
     let lastBeat = -1;
-    let raf = 0;
-    const tick = () => {
-      const now = new Date();
+    // un solo timer condiviso con le lancette della vetrina (lib/beatClock), invece di un ciclo a ogni fotogramma
+    return onBeat(beats, (now) => {
       const beat = Math.floor((now.getTime() * beats) / 1000);
-      if (beat !== lastBeat) {
-        lastBeat = beat;
-        const sec = now.getSeconds() + Math.floor((now.getMilliseconds() / 1000) * beats) / beats;
-        const min = now.getMinutes() + now.getSeconds() / 60;
-        const hr = (now.getHours() % 12) + min / 60;
-        if (hourHand.current) hourHand.current.style.transform = `rotate(${hr * 30}deg)`;
-        if (minuteHand.current) minuteHand.current.style.transform = `rotate(${min * 6}deg)`;
-        if (secondHand.current) secondHand.current.style.transform = `rotate(${sec * 6}deg)`;
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+      if (beat === lastBeat) return;
+      lastBeat = beat;
+      const sec = now.getSeconds() + Math.floor((now.getMilliseconds() / 1000) * beats) / beats;
+      const min = now.getMinutes() + now.getSeconds() / 60;
+      const hr = (now.getHours() % 12) + min / 60;
+      if (hourHand.current) hourHand.current.style.transform = `rotate(${hr * 30}deg)`;
+      if (minuteHand.current) minuteHand.current.style.transform = `rotate(${min * 6}deg)`;
+      if (secondHand.current) secondHand.current.style.transform = `rotate(${sec * 6}deg)`;
+    });
   }, []);
 
   // resta sempre visibile; se la pagina scorre mentre i contatti sono aperti, si richiudono
@@ -130,7 +138,7 @@ export default function ContactBezel() {
   ];
 
   return (
-    <div className="lg:hidden">
+    <div>
       {/* sfondo: la pagina si sfoca e si scurisce, restano in evidenza solo i contatti */}
       <div
         aria-hidden
@@ -140,7 +148,7 @@ export default function ContactBezel() {
       <div
         ref={dock}
         style={{ viewTransitionName: "mobile-bar" }}
-        className={`bezel-dock fixed bottom-[calc(14px+env(safe-area-inset-bottom))] left-1/2 z-40 h-[68px] w-[68px] -translate-x-1/2 ${open ? "is-open" : ""} ${
+        className={`bezel-dock fixed bottom-[calc(14px+env(safe-area-inset-bottom))] left-1/2 z-40 h-[68px] w-[68px] -translate-x-1/2 lg:bottom-8 lg:left-auto lg:right-8 lg:h-[88px] lg:w-[88px] lg:translate-x-0 ${open ? "is-open" : ""} ${
           pill && !open ? "is-pill-anim" : ""
         } ${pill === 1 && !open ? "is-pill" : ""}`}
       >
@@ -153,7 +161,14 @@ export default function ContactBezel() {
         <ul id="contatti-lunetta" aria-label="Contatti">
           {items.map((it, i) => {
             const a = (ANGLES[i] * Math.PI) / 180;
-            const style = { "--x": `${Math.sin(a) * ARC}px`, "--y": `${-Math.cos(a) * ARC}px`, "--d": `${i * 45}ms` } as React.CSSProperties;
+            const ad = (ANGLES_DESK[i] * Math.PI) / 180;
+            const style = {
+              "--x": `${Math.sin(a) * ARC}px`,
+              "--y": `${-Math.cos(a) * ARC}px`,
+              "--xd": `${Math.sin(ad) * ARC_DESK}px`,
+              "--yd": `${-Math.cos(ad) * ARC_DESK}px`,
+              "--d": `${i * 45}ms`,
+            } as React.CSSProperties;
             const cls = `bezel-item ${it.primary ? "is-primary" : ""}`;
             const inner = (
               <>
