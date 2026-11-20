@@ -119,6 +119,58 @@ body {
 }
 .btn-link:hover { color: var(--color-gold); }
 /* bottone WhatsApp in due righe: cosa fare e chi risponde */
+/* bottone "filetto d'oro": contorno oro sottile, testo crema, freccia oro (vetrina, avviso, zoom) */
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  white-space: nowrap;
+  padding: 0.85rem 1.4rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-gold-3);
+  color: var(--color-cream);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+.btn-gold span { color: var(--color-gold-3); transition: transform 0.3s ease, color 0.3s ease; }
+.btn-gold:hover { background: rgb(215 179 104 / 0.12); }
+.btn-gold:hover span { transform: translateX(3px); }
+.btn-gold-quiet { border-color: rgb(245 241 232 / 0.3); }
+.btn-gold-quiet:hover { border-color: var(--color-gold-3); }
+/* scelta acquistare / vendere nel modulo d'avviso */
+.notify-pick {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  border-radius: 0.8rem;
+  border: 1px solid rgb(245 241 232 / 0.2);
+  padding: 0.75rem 0.85rem;
+  font-size: 0.85rem;
+  color: rgb(245 241 232 / 0.75);
+  transition: border-color 0.25s ease, background-color 0.25s ease, color 0.25s ease;
+}
+.notify-pick.is-on { border-color: var(--color-gold-3); background: rgb(215 179 104 / 0.1); color: var(--color-cream); }
+.notify-pick:has(:focus-visible) { outline: 2px solid var(--color-gold-3); outline-offset: 2px; }
+.notify-tick {
+  display: grid;
+  place-items: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 0.3rem;
+  border: 1px solid rgb(245 241 232 / 0.4);
+  font-size: 0.7rem;
+  color: #0b100d;
+}
+.notify-pick.is-on .notify-tick { background: var(--color-gold-3); border-color: var(--color-gold-3); }
+/* tappe della vendita su fondo scuro */
+.sell-dark .sell-bead { box-shadow: 0 0 0 7px #0b100d, 0 16px 24px -12px rgb(0 0 0 / 0.6); background: #111; }
+.sell-dark .sell-step.is-key .sell-bead { border-color: var(--color-gold-3); box-shadow: 0 0 0 7px #0b100d, 0 0 0 8px var(--color-gold-3), 0 0 26px rgb(215 179 104 / 0.35); }
+.sell-dark .sell-step.is-key h4 { color: var(--color-gold-3); }
+.sell-dark .sell-badge { background: var(--color-gold-3); color: #0b100d; }
+
 /* frecce della vetrina */
 .vet-arrow {
   display: grid;
