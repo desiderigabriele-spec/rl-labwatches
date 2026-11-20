@@ -7,7 +7,6 @@ import Reviews from "@/components/Reviews";
 import BrandStrip from "@/components/BrandStrip";
 import QuickContact from "@/components/QuickContact";
 import Showcase from "@/components/Showcase";
-import SellWithMe from "@/components/SellWithMe";
 import ServicesRail from "@/components/ServicesRail";
 import SplitText from "@/components/SplitText";
 import ParallaxImage from "@/components/ParallaxImage";
@@ -104,11 +103,9 @@ export default function Home() {
       {/* le garanzie, subito: tolgono il rischio dove si decide */}
       <TrustBar />
 
-      {/* VETRINA: una riga che scorre da sola, il cofanetto al centro si accende; gli orologi da gennaio 2027 */}
+      {/* COMPRAVENDITA: la vetrina che scorre (con il posto vuoto "il tuo orologio qui?") e, sotto, come vendere con Roberto */}
       <Showcase />
 
-      {/* COMPRAVENDITA: vendere con Roberto, restaurato prima della vendita */}
-      <SellWithMe />
 
       {/* la prova: prima e dopo, e come funziona in tre passi */}
       <BeforeAfter />

@@ -27,6 +27,10 @@ export const legal = {
       ],
       [
         "p",
+        "Avviso di apertura della vetrina: se chiedi di essere avvisato quando apre la vetrina online (gennaio 2027) raccogliamo nome, cognome, indirizzo email o numero di telefono, se ti interessa acquistare, vendere o entrambe le cose ed eventualmente la marca che stavi guardando."
+      ],
+      [
+        "p",
         "Dati di navigazione: i server che ospitano il Sito registrano automaticamente dati tecnici necessari al suo funzionamento e alla sua sicurezza (ad esempio indirizzo IP, tipo di browser, pagine richieste, data e ora). Questi dati non sono usati per identificarti né per profilazione."
       ],
       [
@@ -44,6 +48,10 @@ export const legal = {
       [
         "p",
         "Il conferimento dei dati contrassegnati come obbligatori nel modulo è necessario per poterti rispondere."
+      ],
+      [
+        "p",
+        "I dati dell'avviso di apertura della vetrina sono trattati solo sulla base del tuo consenso (art. 6.1.a GDPR), per avvisarti quando gli orologi sono disponibili e per ricontattarti sull'acquisto o sulla vendita che hai indicato. Non sono usati per newsletter o pubblicità. Puoi revocare il consenso in qualsiasi momento scrivendo a rlabwatches@gmail.com o rispondendo al messaggio di avviso; la revoca non tocca quanto fatto prima."
       ],
       [
         "h",
@@ -70,6 +78,10 @@ export const legal = {
         "I dati delle richieste sono conservati per il tempo necessario a gestirle e, se diventi cliente, per la durata del rapporto e per i tempi previsti dalla legge (ad esempio 10 anni per i documenti fiscali). Le richieste a cui non segue un servizio sono cancellate entro 24 mesi."
       ],
       [
+        "p",
+        "I dati dell'avviso di apertura della vetrina sono conservati fino all'invio dell'avviso e alla conclusione dell'eventuale trattativa, e comunque non oltre 12 mesi dall'apertura della vetrina, salvo revoca anticipata del consenso."
+      ],
+      [
         "h",
         "7. I tuoi diritti"
       ],
@@ -87,7 +99,7 @@ export const legal = {
       ],
       [
         "note",
-        "Ultimo aggiornamento: 07/11/2026"
+        "Ultimo aggiornamento: 20/11/2026"
       ]
     ]
   },

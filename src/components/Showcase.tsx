@@ -10,7 +10,8 @@ import BrandLogo from "./BrandLogo";
 import { openZoom } from "@/lib/zoomEntrance";
 import BoxPhoto from "./BoxPhoto";
 import Spotlight, { BoxLight, LightPool } from "./Spotlight";
-import NotifyDialog from "./NotifyDialog";
+import NotifyDialog, { type Intent } from "./NotifyDialog";
+import Image from "next/image";
 
 /**
  * Vetrina con faretti, una nicchia per marca: su ogni ripiano c'è il modello più famoso della marca,
@@ -135,6 +136,45 @@ function Slot({
   );
 }
 
+/** Nicchia vuota nella fila: "Il tuo orologio qui?". Toccandola si apre l'avviso con "vendere" già scelto. */
+function EmptySlot({ light, onSelect }: { light: Light; onSelect: () => void }) {
+  const lvl = light === "on" ? 1 : light === "idle" ? 0.22 : 0;
+  const on = light === "on";
+  return (
+    <div data-slot className="relative flex w-[66vw] shrink-0 flex-col items-center px-3 sm:w-[40vw] lg:w-[25vw] lg:px-6 xl:w-[22rem]">
+      <button type="button" onClick={onSelect} aria-label="Il tuo orologio qui? Vendilo con me" className="group relative block w-full cursor-pointer outline-none">
+        <Spotlight level={lvl} flicker={false} />
+        <span className="relative mt-6 block aspect-[840/1020] w-full">
+          <span
+            className={`absolute inset-x-[14%] bottom-[2%] top-[26%] grid place-items-center rounded-2xl border-[1.5px] border-dashed text-center transition-[border-color,background-color] duration-700 ${
+              on ? "border-gold-3/80 bg-[radial-gradient(ellipse_at_50%_0%,rgba(255,236,180,0.18),transparent_70%)]" : "border-gold-3/35"
+            }`}
+          >
+            <span className="px-4">
+              <span className={`mx-auto grid h-11 w-11 place-items-center rounded-full border text-2xl transition-colors duration-700 ${on ? "border-gold-3 text-gold-3" : "border-gold-3/40 text-gold-3/50"}`}>+</span>
+              <span className={`mt-4 block font-display text-[1.6rem] italic leading-[1.05] transition-colors duration-700 ${on ? "text-[#f6e5b0]" : "text-cream/45"}`}>Il tuo orologio qui?</span>
+              <span className="mt-3 block text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-gold-3">Vendilo con me</span>
+            </span>
+          </span>
+        </span>
+        <LightPool level={lvl} />
+      </button>
+      <span aria-hidden className="relative z-10 mt-1 block h-3 w-[calc(100%+1.5rem)] bg-gradient-to-b from-[#3d4440] to-[#161a17] shadow-[0_18px_40px_rgba(0,0,0,0.6)] lg:w-[calc(100%+3rem)]" />
+      <div className="mt-9 flex h-9 items-center lg:h-14">
+        <span className={`font-display text-xl italic transition-colors duration-500 lg:text-2xl ${on ? "text-gold-3" : "text-gold-3/45"}`}>Il tuo</span>
+      </div>
+    </div>
+  );
+}
+
+/** le quattro tappe di chi vende, sotto il ripiano */
+const SELL_STEPS = [
+  { img: "/vendi/valutazione.webp", title: "Valutazione gratuita", text: "Mi mandi le foto o me lo porti: ti dico quanto vale oggi, e quanto può valere dopo." },
+  { img: "/vendi/restauro.webp", title: "Restauro prima della vendita", text: "Movimento, lucidatura, ricambi originali. Lo facciamo solo se conviene.", badge: "Solo da me" },
+  { img: "/vendi/vetrina.webp", title: "In vetrina", text: "Foto curate e scheda completa sul sito, con la vetrina online da gennaio 2027." },
+  { img: "/vendi/canali.webp", title: "Su ogni mio canale", text: "Lo promuovo su Instagram, su Facebook e sul sito, finché non trova il suo nuovo polso." },
+];
+
 const WARM_VETRINA = brands.flatMap((b) => [b.vetrina, ...(b.dial?.sprites ? Object.values(b.dial.sprites) : [])]).filter(Boolean) as string[];
 
 /** copie della fila: si scorre su quella in mezzo e al bordo si salta di una copia, senza che si veda */
@@ -143,9 +183,9 @@ const COPIES = 3;
 const SPEED = 0.032;
 
 export default function Showcase({
-  eyebrow = "La vetrina · da gennaio 2027",
-  title = "Orologi scelti uno a uno",
-  intro = "Tocca un cofanetto per avvicinare l\u2019orologio. Ogni pezzo in vendita sarà revisionato nel mio laboratorio: gli orologi disponibili arrivano a gennaio 2027, e se vuoi ti avviso io.",
+  eyebrow = "Compravendita · vetrina da gennaio 2027",
+  title = "",
+  intro = "Ogni orologio in vetrina passa dal mio banco. Tocca un cofanetto per avvicinarlo: gli orologi in vendita arrivano a gennaio 2027. E se vuoi vendere il tuo, prima lo restauro: vale di più.",
   cta,
   locked = true,
 }: {
@@ -158,7 +198,9 @@ export default function Showcase({
   locked?: boolean;
 }) {
   const items = brands;
-  const slots = Array.from({ length: items.length * COPIES }, (_, k) => items[k % items.length]);
+  // una copia della fila: due marche, la nicchia vuota ("il tuo orologio qui?"), le altre marche
+  const one: (Brand | null)[] = [...items.slice(0, 2), null, ...items.slice(2)];
+  const slots = Array.from({ length: one.length * COPIES }, (_, k) => one[k % one.length]);
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.25 });
   const visible = useInView(ref, { amount: 0.05 }); // scorre e le lancette girano solo con la vetrina sullo schermo
@@ -169,28 +211,32 @@ export default function Showcase({
   const [selected, setSelected] = useState<number | null>(null);
   const [reduced, setReduced] = useState(false);
   const [entering, setEntering] = useState<number | null>(null);
-  const [notify, setNotify] = useState<{ open: boolean; brand?: string }>({ open: false });
+  const [notify, setNotify] = useState<{ open: boolean; brand?: string; image?: string; intent?: Intent }>({ open: false });
   const router = useRouter();
 
-  const openNotify = (brand?: string) => setNotify({ open: true, brand });
-  const href = (k: number) => `/shop/marca/${slots[k].slug}`;
+  const openNotify = (o: { brand?: Brand; intent?: Intent } = {}) =>
+    setNotify({ open: true, brand: o.brand?.name, image: o.brand?.vicino?.src ?? (o.intent === "vendere" ? "/vendi/restauro.webp" : undefined), intent: o.intent });
+  const href = (k: number) => `/shop/marca/${slots[k]?.slug}`;
   const zoom = (k: number) => {
     const shot = ref.current?.querySelectorAll<HTMLElement>("[data-slot]")[k]?.querySelector<HTMLElement>("[data-boxshot]");
     if (reduced || !shot) return false;
     return openZoom(shot, {
-      name: slots[k].name,
+      name: slots[k]!.name,
       href: href(k),
       go: (h) => router.push(h),
       onClose: () => setEntering(null),
-      onTap: locked ? () => openNotify(slots[k].name) : undefined,
+      onTap: locked ? () => openNotify({ brand: slots[k]! }) : undefined,
     });
   };
   // primo tocco: luce e ingrandimento dell'orologio; toccandolo, l'avviso (fino a gennaio) o la marca
   const pick = (k: number) => {
     if (entering !== null) return;
+    const b = slots[k];
+    // la nicchia vuota: vendere
+    if (!b) return openNotify({ intent: "vendere" });
     if (!locked) router.prefetch(href(k));
-    if (!slots[k].vicino || reduced) {
-      if (selected === k) return locked ? openNotify(slots[k].name) : router.push(href(k));
+    if (!b.vicino || reduced) {
+      if (selected === k) return locked ? openNotify({ brand: b }) : router.push(href(k));
       return setSelected(k);
     }
     setSelected(k);
@@ -333,6 +379,7 @@ export default function Showcase({
 
   // il riquadro della marca sotto la vetrina compare quando l'ingrandimento è chiuso, non mentre è aperto
   const sel = selected !== null && entering === null ? slots[selected] : null;
+  const title2 = title || null;
 
   return (
     <section id="vetrina" ref={ref} className="guilloche sheen relative scroll-mt-20 overflow-hidden bg-[#0b100d] py-16 text-cream sm:py-24" aria-labelledby="vetrina-titolo">
@@ -341,14 +388,27 @@ export default function Showcase({
         <div className="grid gap-6 lg:grid-cols-[1fr_0.8fr] lg:items-end lg:gap-16">
           <div>
             <p className="eyebrow !text-gold-3">{eyebrow}</p>
-            <h2 id="vetrina-titolo" className="mt-4 font-display text-4xl font-light sm:text-6xl">{title}</h2>
+            <h2 id="vetrina-titolo" className="mt-4 font-display text-4xl font-light leading-[1.04] sm:text-6xl">
+              {title2 ?? (
+                <>
+                  Compri o vendi.
+                  <br />
+                  <em className="text-gold-3">Sempre passato dal mio banco.</em>
+                </>
+              )}
+            </h2>
           </div>
           <div>
             <p className="text-[0.95rem] leading-relaxed text-cream/60 sm:text-base">{intro}</p>
             {locked && (
-              <button type="button" onClick={() => openNotify()} className="btn mt-6 !border-gold-3/60 !text-gold-3 hover:!bg-gold-3 hover:!text-green-2">
-                Avvisami quando apre
-              </button>
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <button type="button" onClick={() => openNotify()} className="btn-gold">
+                  Avvisami quando apre <span aria-hidden>→</span>
+                </button>
+                <a href="#vendi" className="btn-gold btn-gold-quiet">
+                  Vendi il tuo
+                </a>
+              </div>
             )}
           </div>
         </div>
@@ -371,7 +431,10 @@ export default function Showcase({
         // spazio sopra le plafoniere: l'alone dei faretti sfuma invece di essere tagliato dal bordo della fila
         className="relative mt-0 flex cursor-grab overflow-x-auto pb-4 pt-14 [scrollbar-width:none] active:cursor-grabbing sm:mt-4 [&::-webkit-scrollbar]:hidden"
       >
-        {slots.map((b, k) => (
+        {slots.map((b, k) =>
+          b === null ? (
+            <EmptySlot key={k} light={lightOf(k)} onSelect={() => pick(k)} />
+          ) : (
           <Slot
             key={k}
             brand={b}
@@ -382,7 +445,8 @@ export default function Showcase({
             onHover={(h) => setHover((cur) => (h ? k : cur === k ? null : cur))}
             onSelect={() => pick(k)}
           />
-        ))}
+          )
+        )}
       </div>
         {/* frecce: un cofanetto avanti o indietro */}
         {(["prev", "next"] as const).map((d) => (
@@ -426,8 +490,8 @@ export default function Showcase({
                 </p>
                 <div className="mt-7 flex flex-wrap items-center gap-3">
                   {locked ? (
-                    <button type="button" onClick={() => openNotify(sel.name)} className="btn !border-gold-3 !bg-gold-3 !text-green-2 hover:!bg-cream">
-                      Avvisami: orologi {sel.name}
+                    <button type="button" onClick={() => openNotify({ brand: sel })} className="btn-gold">
+                      Avvisami · orologi {sel.name} <span aria-hidden>→</span>
                     </button>
                   ) : (
                     <button type="button" onClick={() => selected !== null && router.push(href(selected))} className="btn !border-gold-3 !bg-gold-3 !text-green-2 hover:!bg-cream">
@@ -447,8 +511,43 @@ export default function Showcase({
         </AnimatePresence>
       </div>
 
+      {/* chi vende: le quattro tappe, sullo stesso fondo, sotto il ripiano */}
+      {locked && (
+        <div id="vendi" className="relative mx-auto mt-14 max-w-7xl scroll-mt-24 px-4 sm:mt-20 sm:px-8">
+          <div className="flex flex-wrap items-end justify-between gap-5 border-t border-cream/10 pt-10">
+            <h3 className="font-display text-3xl font-light leading-[1.05] sm:text-5xl">
+              Vuoi vendere il tuo? <em className="text-gold-3">Prima lo restauro.</em>
+            </h3>
+            <p className="max-w-sm text-sm leading-relaxed text-cream/60">Un rivenditore lo compra com&apos;è. Io prima lo valuto e, se conviene, lo restauro: si vende meglio e a un prezzo più alto.</p>
+          </div>
+          <div className="sell-track sell-dark -mx-4 mt-8 overflow-x-auto px-4 pb-2 pt-3 sm:mx-0 sm:mt-12 sm:overflow-visible sm:px-0">
+            <ol className="sell-rail relative grid min-w-[56rem] grid-cols-4 gap-6 sm:min-w-0">
+              {SELL_STEPS.map((st, i) => (
+                <li key={st.title} className={`sell-step ${st.badge ? "is-key" : ""}`}>
+                  <span className="sell-bead">
+                    <Image src={st.img} alt="" width={240} height={240} sizes="112px" className="h-full w-full object-cover" />
+                  </span>
+                  <span className="mt-5 block font-mono text-[0.7rem] tracking-[0.12em] text-gold-3">{String(i + 1).padStart(2, "0")}</span>
+                  {st.badge && <span className="sell-badge">{st.badge}</span>}
+                  <h4 className="mt-2 font-display text-[1.55rem] leading-[1.08]">{st.title}</h4>
+                  <p className="mt-2 text-sm leading-relaxed text-cream/60">{st.text}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div className="mt-9 flex flex-wrap items-center gap-5">
+            <button type="button" onClick={() => openNotify({ intent: "vendere" })} className="btn-gold">
+              Affidami il tuo orologio <span aria-hidden>→</span>
+            </button>
+            <a href={whatsappLink("Buongiorno Roberto, vorrei affidarle un orologio da vendere.")} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-cream/70 hover:text-gold-3">
+              <WhatsAppIcon className="h-4 w-4" /> o scrivimi su WhatsApp
+            </a>
+          </div>
+        </div>
+      )}
+
       {cta && <div className="relative mt-12 text-center sm:mt-16">{cta}</div>}
-      <NotifyDialog open={notify.open} brand={notify.brand} onClose={() => setNotify((n) => ({ ...n, open: false }))} />
+      <NotifyDialog open={notify.open} brand={notify.brand} image={notify.image} intent={notify.intent} onClose={() => setNotify((n) => ({ ...n, open: false }))} />
     </section>
   );
 }

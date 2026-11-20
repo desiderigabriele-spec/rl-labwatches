@@ -12,7 +12,7 @@ const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
 const isPhone = (v: string) => /^\+?[\d\s().-]{7,20}$/.test(v);
 
 export async function POST(req: Request) {
-  let data: { contact?: string; brand?: string; consent?: boolean; website?: string };
+  let data: { nome?: string; cognome?: string; contact?: string; acquistare?: boolean; vendere?: boolean; brand?: string; consent?: boolean; website?: string };
   try {
     data = await req.json();
   } catch {
@@ -20,10 +20,13 @@ export async function POST(req: Request) {
   }
   if (data.website) return NextResponse.json({ ok: true }); // antispam
 
+  const nome = clean(data.nome, 60);
+  const cognome = clean(data.cognome, 60);
   const contact = clean(data.contact, 120);
   const brand = clean(data.brand, 60);
-  if (!(isEmail(contact) || isPhone(contact)) || data.consent !== true) {
-    return NextResponse.json({ ok: false, error: "Scrivi un'email o un numero di telefono validi e dai il consenso." }, { status: 422 });
+  const interessi = [data.acquistare && "acquistare", data.vendere && "vendere"].filter(Boolean) as string[];
+  if (!nome || !cognome || !(isEmail(contact) || isPhone(contact)) || !interessi.length || data.consent !== true) {
+    return NextResponse.json({ ok: false, error: "Compila nome, cognome, un'email o un telefono validi, scegli acquistare o vendere e dai il consenso." }, { status: 422 });
   }
 
   const key = process.env.RESEND_API_KEY;
@@ -32,10 +35,12 @@ export async function POST(req: Request) {
   const lines = [
     "Nuova richiesta di avviso per la vetrina (gennaio 2027)",
     "",
+    `Nome: ${nome} ${cognome}`,
     `Contatto: ${contact}`,
-    `Marca di interesse: ${brand || "qualsiasi"}`,
+    `Interessato a: ${interessi.join(" e ")}`,
+    `Marca: ${brand || "-"}`,
     "",
-    "Ha dato il consenso a essere contattato per questo avviso.",
+    "Ha dato il consenso (informativa privacy, avviso di apertura della vetrina).",
   ];
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -44,7 +49,7 @@ export async function POST(req: Request) {
       from: process.env.CONTACT_FROM || "Sito RL Lab Watches <onboarding@resend.dev>",
       to: [process.env.CONTACT_TO || site.email],
       ...(isEmail(contact) ? { reply_to: contact } : {}),
-      subject: `Avviso vetrina${brand ? ` – ${brand}` : ""} – ${contact}`,
+      subject: `Avviso vetrina (${interessi.join(" e ")})${brand ? ` – ${brand}` : ""} – ${nome} ${cognome}`,
       text: lines.join("\n"),
     }),
   });
