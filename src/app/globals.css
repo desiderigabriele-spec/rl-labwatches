@@ -108,6 +108,87 @@ body {
 }
 .btn-link:hover { color: var(--color-gold); }
 /* bottone WhatsApp in due righe: cosa fare e chi risponde */
+/* "Vendilo con me": linea d'oro con le quattro tappe */
+.sell-rail::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 55px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-gold-2), #f0d590 50%, var(--color-gold-2));
+}
+.sell-step {
+  position: relative;
+}
+.sell-bead {
+  display: block;
+  width: 112px;
+  height: 112px;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 3px solid var(--color-gold-2);
+  background: var(--color-paper-2);
+  box-shadow: 0 0 0 7px var(--color-paper), 0 16px 24px -12px rgb(0 0 0 / 0.45);
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.sell-step:hover .sell-bead {
+  transform: scale(1.05);
+}
+.sell-step.is-key .sell-bead {
+  border-color: var(--color-green-2);
+  box-shadow: 0 0 0 7px var(--color-paper), 0 0 0 8px var(--color-gold-2), 0 16px 24px -12px rgb(0 0 0 / 0.45);
+}
+.sell-step.is-key h3 {
+  color: var(--color-green);
+}
+.sell-badge {
+  display: inline-block;
+  margin-left: 0.6rem;
+  vertical-align: 1px;
+  padding: 0.35rem 0.55rem;
+  border-radius: 9999px;
+  background: var(--color-green-2);
+  color: var(--color-gold-3);
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.sell-track {
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 1rem;
+  scrollbar-width: none;
+}
+.sell-track::-webkit-scrollbar {
+  display: none;
+}
+.sell-step {
+  scroll-snap-align: start;
+}
+.sell-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  align-self: flex-start;
+  padding: 0.6rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-gold-2);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--color-green-2);
+}
+.sell-notice i {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--color-gold-2);
+  box-shadow: 0 0 0 4px rgb(189 146 60 / 0.22);
+}
+@media (min-width: 640px) {
+  .sell-notice { align-self: auto; }
+}
+
 /* le due porte dell'apertura: restauro (chiara) e compravendita (verde) */
 .door {
   display: grid;
