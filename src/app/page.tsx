@@ -7,6 +7,7 @@ import Reviews from "@/components/Reviews";
 import BrandStrip from "@/components/BrandStrip";
 import QuickContact from "@/components/QuickContact";
 import Showcase from "@/components/Showcase";
+import SellWithMe from "@/components/SellWithMe";
 import ServicesRail from "@/components/ServicesRail";
 import SplitText from "@/components/SplitText";
 import ParallaxImage from "@/components/ParallaxImage";
@@ -83,12 +84,7 @@ export default function Home() {
                     <WhatsAppIcon className="h-4 w-4" /> Mandami una foto
                   </em>
                 </a>
-                <a
-                  href={whatsappLink("Buongiorno Roberto, vorrei affidarle un orologio da vendere.")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="door door-dark"
-                >
+                <a href="#vendi" className="door door-dark">
                   <small><span className="hidden sm:inline">Compravendita · vetrina </span>da gennaio 2027</small>
                   <b>Vuoi vendere il tuo orologio?</b>
                   <span>La vetrina online apre a gennaio 2027. Affidamelo già da ora: lo restauro, lo espongo e lo promuovo su ogni mio canale.</span>
@@ -113,6 +109,9 @@ export default function Home() {
 
       {/* le garanzie, subito: tolgono il rischio dove si decide */}
       <TrustBar />
+
+      {/* COMPRAVENDITA: vendere con Roberto, restaurato prima della vendita */}
+      <SellWithMe />
 
       {/* la prova: prima e dopo, e come funziona in tre passi */}
       <BeforeAfter />
