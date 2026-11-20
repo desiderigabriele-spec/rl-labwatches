@@ -32,6 +32,8 @@ export const metadata: Metadata = {
   formatDetection: { telephone: false },
   openGraph: { type: "website", locale: "it_IT", siteName: site.name, images: [OG_IMAGE] },
   twitter: { card: "summary_large_image", images: [OG_IMAGE.url] },
+  // verifica del dominio per Facebook/Meta, ripresa dal vecchio sito Wix (senza, il dominio risulta non verificato)
+  verification: { other: { "facebook-domain-verification": "qtqe9cpgkwlon0ykwszunirfqg6n84" } },
 };
 
 // viewport-fit=cover: la barra in basso arriva fino al bordo dello schermo (iPhone)
