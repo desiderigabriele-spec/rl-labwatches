@@ -69,6 +69,17 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  /* l'oro si dipinge solo dentro il riquadro: margine per le code e l'inclinazione del corsivo, compensato */
+  padding: 0 0.12em 0.28em;
+  margin: 0 -0.12em -0.28em;
+}
+/* fessura di SplitText: alta abbastanza per le code delle lettere, senza cambiare l'impaginazione */
+.split-slot {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0 0.12em 0.3em;
+  margin: 0 -0.12em -0.3em;
 }
 
 .btn {
