@@ -11,11 +11,12 @@ export default function IrisReveal({ children, className = "" }: { children: Rea
       className={`relative ${className}`}
       initial="closed"
       whileInView="open"
-      viewport={{ once: true, margin: "-15% 0px" }}
+      // parte appena la foto sta per entrare nello schermo, così è già aperta mentre si scorre
+      viewport={{ once: true, margin: "0px 0px 20% 0px" }}
     >
       <motion.div
         variants={{ closed: { clipPath: "circle(0% at 50% 50%)" }, open: { clipPath: "circle(75% at 50% 50%)" } }}
-        transition={{ duration: 1.3, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
       >
         {children}
       </motion.div>
@@ -25,7 +26,7 @@ export default function IrisReveal({ children, className = "" }: { children: Rea
         className="pointer-events-none absolute left-1/2 top-1/2 aspect-square rounded-full border-[6px] border-dashed border-gold-2/80"
         style={{ x: "-50%", y: "-50%" }}
         variants={{ closed: { width: "22%", rotate: 0, opacity: 1 }, open: { width: "150%", rotate: -110, opacity: 0 } }}
-        transition={{ duration: 1.3, ease: [0.22, 1, 0.36, 1], opacity: { duration: 0.9, delay: 0.35 } }}
+        transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1], opacity: { duration: 0.6, delay: 0.2 } }}
       />
     </motion.div>
   );
