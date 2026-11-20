@@ -78,7 +78,8 @@ export default function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+  const isActive = (href: string, also: readonly string[] = []) =>
+    href === "/" ? pathname === "/" : [href, ...also].some((h) => pathname.startsWith(h));
 
   return (
     <>
@@ -105,17 +106,17 @@ export default function Header() {
           )}
         </Link>
 
-        <nav className="hidden items-center gap-6 lg:flex xl:gap-8" aria-label="Menu principale">
+        <nav className="hidden items-center gap-8 lg:flex xl:gap-11" aria-label="Menu principale">
           {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={`relative text-[0.72rem] uppercase tracking-[0.2em] transition-colors duration-500 ${
-                isActive(item.href) ? (dark ? "text-gold-3" : "text-gold") : dark ? "text-cream/80 hover:text-cream" : "text-fg/75 hover:text-fg"
+                isActive(item.href, item.also) ? (dark ? "text-gold-3" : "text-gold") : dark ? "text-cream/80 hover:text-cream" : "text-fg/75 hover:text-fg"
               }`}
             >
               {item.label}
-              {isActive(item.href) && <motion.span layoutId="nav-underline" className={`absolute -bottom-2 left-0 right-0 h-px ${dark ? "bg-gold-3" : "bg-gold"}`} />}
+              {isActive(item.href, item.also) && <motion.span layoutId="nav-underline" className={`absolute -bottom-2 left-0 right-0 h-px ${dark ? "bg-gold-3" : "bg-gold"}`} />}
             </Link>
           ))}
           <Link href="/preventivo" className="btn btn-solid !px-4 !py-2.5 !text-[0.7rem]">Preventivo</Link>
@@ -151,12 +152,17 @@ export default function Header() {
               animate={open ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
               transition={{ delay: open ? 0.25 + i * 0.05 : 0, duration: 0.45 }}
             >
-              <Link href={item.href} tabIndex={open ? 0 : -1} className={`block py-1.5 font-display text-4xl ${isActive(item.href) ? "text-gold-3" : "text-cream"}`}>
+              <Link href={item.href} tabIndex={open ? 0 : -1} className={`block py-1.5 font-display text-4xl ${isActive(item.href, item.also) ? "text-gold-3" : "text-cream"}`}>
                 {item.label}
               </Link>
             </motion.li>
           ))}
         </ul>
+        {/* le pagine secondarie, piccole: marche e domande frequenti */}
+        <motion.p initial={false} animate={{ opacity: open ? 1 : 0 }} transition={{ delay: open ? 0.5 : 0 }} className="mb-6 flex gap-6 text-sm uppercase tracking-[0.2em] text-cream/70">
+          <Link href="/marche" tabIndex={open ? 0 : -1} className="hover:text-gold-3">Marche</Link>
+          <Link href="/faq" tabIndex={open ? 0 : -1} className="hover:text-gold-3">FAQ</Link>
+        </motion.p>
         <motion.div initial={false} animate={{ opacity: open ? 1 : 0 }} transition={{ delay: open ? 0.55 : 0 }} className="space-y-4 border-t border-cream/15 pt-6">
           <Link href="/preventivo" tabIndex={open ? 0 : -1} className="btn w-full justify-center !border-gold-3 !bg-gold-3 !text-green-2">Richiedi un preventivo</Link>
           <p className="tag-mono text-center text-xs text-cream/60">{site.address.street} · {site.address.city}</p>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { legalNav, nav, site, whatsappLink } from "@/data/site";
+import { legalNav, site, siteMap, whatsappLink } from "@/data/site";
 
 export default function Footer() {
   return (
@@ -35,7 +35,7 @@ export default function Footer() {
         <div>
           <p className="eyebrow mb-4 !text-gold-3">Naviga</p>
           <ul className="space-y-1 text-sm text-cream/80">
-            {nav.map((n) => (
+            {siteMap.map((n) => (
               <li key={n.href}><Link href={n.href} className="inline-block py-1 hover:text-gold-3">{n.label}</Link></li>
             ))}
             <li><Link href="/preventivo" className="hover:text-gold-3">Richiedi un preventivo</Link></li>
