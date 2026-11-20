@@ -126,8 +126,8 @@ function Slot({
 
       {/* targhetta sotto il ripiano: logo della marca */}
       <div className="mt-9 flex flex-col items-center text-center">
-        <span className="flex h-9 items-center">
-          <BrandLogo brand={brand} className={`transition-colors duration-500 ${light === "on" ? "text-cream" : "text-cream/40"} ${brand.ratio > 3 ? "h-4" : "h-8"}`} />
+        <span className="flex h-9 items-center lg:h-14">
+          <BrandLogo brand={brand} className={`transition-colors duration-500 ${light === "on" ? "text-cream" : "text-cream/40"} ${brand.ratio > 3 ? "h-4 lg:h-6" : "h-8 lg:h-12"}`} />
         </span>
         <p className={`mt-3 h-4 text-[0.65rem] uppercase tracking-[0.22em] text-gold-3 transition-opacity duration-500 ${selected && !brand.vicino ? "opacity-100" : "opacity-0"}`}>Tocca di nuovo</p>
       </div>
@@ -211,6 +211,49 @@ export default function Showcase({
   const copy = useRef(0);
   const pauseUntil = useRef(0);
   const hovering = useRef(false);
+  // trascinamento col mouse (tieni premuto e sposta): niente clic sul cofanetto se hai trascinato
+  const dragging = useRef(false);
+  const drag = useRef<{ x: number; left: number; moved: boolean } | null>(null);
+  const onDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    pauseUntil.current = performance.now() + 4000;
+    if (e.pointerType !== "mouse" || e.button !== 0) return;
+    drag.current = { x: e.clientX, left: strip.current?.scrollLeft ?? 0, moved: false };
+  };
+  const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    const el = strip.current;
+    if (!d || !el) return;
+    const dx = e.clientX - d.x;
+    if (!d.moved && Math.abs(dx) < 6) return;
+    if (!d.moved) {
+      d.moved = true;
+      dragging.current = true;
+      el.setPointerCapture(e.pointerId);
+    }
+    el.scrollLeft = d.left - dx;
+    pauseUntil.current = performance.now() + 4000;
+  };
+  const onUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    drag.current = null;
+    if (!d?.moved) return;
+    dragging.current = false;
+    strip.current?.releasePointerCapture?.(e.pointerId);
+    // il rilascio dopo un trascinamento non è un clic sul cofanetto
+    const stop = (ev: MouseEvent) => {
+      ev.stopPropagation();
+      ev.preventDefault();
+    };
+    window.addEventListener("click", stop, { capture: true, once: true });
+    window.setTimeout(() => window.removeEventListener("click", stop, { capture: true }), 50);
+  };
+  // frecce: un cofanetto avanti o indietro
+  const step = (dir: 1 | -1) => {
+    const el = strip.current;
+    const w = el?.querySelector<HTMLElement>("[data-slot]")?.offsetWidth ?? 300;
+    pauseUntil.current = performance.now() + 4000;
+    el?.scrollBy({ left: dir * w, behavior: "smooth" });
+  };
   const busy = entering !== null || notify.open;
   const busyRef = useRef(busy);
   busyRef.current = busy;
@@ -262,8 +305,9 @@ export default function Showcase({
       const dt = Math.min(50, t - last);
       last = t;
       const el = strip.current;
-      if (el && copy.current && !hovering.current && !busyRef.current && t > pauseUntil.current) {
-        x.current += dt * SPEED;
+      if (el && copy.current && !dragging.current && !busyRef.current && t > pauseUntil.current) {
+        // col mouse sopra rallenta (si sceglie con calma), ma non si ferma
+        x.current += dt * SPEED * (hovering.current ? 0.3 : 1);
         if (x.current > copy.current * 1.5) x.current -= copy.current;
         el.scrollLeft = x.current;
         written.current = el.scrollLeft;
@@ -311,6 +355,7 @@ export default function Showcase({
       </div>
 
       {/* la fila: a tutta larghezza, una sola riga anche su computer */}
+      <div className="relative">
       <div
         ref={strip}
         onPointerEnter={(e) => e.pointerType === "mouse" && (hovering.current = true)}
@@ -319,8 +364,12 @@ export default function Showcase({
           hovering.current = false;
           pauseUntil.current = performance.now() + 900;
         }}
-        onPointerDown={() => (pauseUntil.current = performance.now() + 4000)}
-        className="relative mt-8 flex overflow-x-auto pb-4 [scrollbar-width:none] sm:mt-16 [&::-webkit-scrollbar]:hidden"
+        onPointerDown={onDown}
+        onPointerMove={onMove}
+        onPointerUp={onUp}
+        onPointerCancel={onUp}
+        // spazio sopra le plafoniere: l'alone dei faretti sfuma invece di essere tagliato dal bordo della fila
+        className="relative mt-0 flex cursor-grab overflow-x-auto pb-4 pt-14 [scrollbar-width:none] active:cursor-grabbing sm:mt-4 [&::-webkit-scrollbar]:hidden"
       >
         {slots.map((b, k) => (
           <Slot
@@ -333,6 +382,19 @@ export default function Showcase({
             onHover={(h) => setHover((cur) => (h ? k : cur === k ? null : cur))}
             onSelect={() => pick(k)}
           />
+        ))}
+      </div>
+        {/* frecce: un cofanetto avanti o indietro */}
+        {(["prev", "next"] as const).map((d) => (
+          <button
+            key={d}
+            type="button"
+            onClick={() => step(d === "next" ? 1 : -1)}
+            aria-label={d === "next" ? "Cofanetto successivo" : "Cofanetto precedente"}
+            className={`vet-arrow absolute top-[42%] z-20 ${d === "next" ? "right-3 sm:right-6" : "left-3 sm:left-6"}`}
+          >
+            {d === "next" ? "→" : "←"}
+          </button>
         ))}
       </div>
 
