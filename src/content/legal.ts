@@ -15,7 +15,7 @@ export const legal = {
       ],
       [
         "p",
-        "Il titolare del trattamento dei dati personali raccolti tramite il sito www.rl-labwatches.it (di seguito il \"Sito\") è Roberto Landi, Via Padre Giovanni Antonelli 69, 51100 Pistoia (PT), Italia – email rlabwatches@gmail.com – tel. +39 328 772 5925."
+        "Il titolare del trattamento dei dati personali raccolti tramite il sito www.rl-labwatches.it (di seguito il \"Sito\") è Roberto Landi (ditta individuale Landi Roberto, sede legale Via Boccaccini 139, 51100 Pistoia (PT), P.IVA 02060070477, C.F. LNDRRT85T16G713X, REA PO 612053), con laboratorio in Via Padre Giovanni Antonelli 69, 51100 Pistoia (PT), Italia – email rlabwatches@gmail.com – tel. +39 328 772 5925."
       ],
       [
         "h",
@@ -96,7 +96,7 @@ export const legal = {
     "blocks": [
       [
         "p",
-        "Benvenuto su www.rl-labwatches.it. Questo sito è di proprietà e gestito da Roberto Landi. I seguenti termini e condizioni regolano l'utilizzo del nostro sito web e l'accesso ai servizi che offriamo."
+        "Benvenuto su www.rl-labwatches.it. Questo sito è di proprietà e gestito da Roberto Landi (ditta individuale Landi Roberto, sede legale Via Boccaccini 139, 51100 Pistoia (PT), P.IVA 02060070477, C.F. LNDRRT85T16G713X, REA PO 612053). I seguenti termini e condizioni regolano l'utilizzo del nostro sito web e l'accesso ai servizi che offriamo."
       ],
       [
         "p",
@@ -221,7 +221,7 @@ export const legal = {
       ],
       [
         "p",
-        "Il titolare del trattamento è Roberto Landi, Via Padre Giovanni Antonelli 69, 51100 Pistoia (PT), Italia – email rlabwatches@gmail.com – tel. +39 328 772 5925. Per maggiori informazioni consulta l'Informativa sulla Privacy."
+        "Il titolare del trattamento è Roberto Landi (ditta individuale Landi Roberto, sede legale Via Boccaccini 139, 51100 Pistoia (PT), P.IVA 02060070477, C.F. LNDRRT85T16G713X, REA PO 612053), con laboratorio in Via Padre Giovanni Antonelli 69, 51100 Pistoia (PT), Italia – email rlabwatches@gmail.com – tel. +39 328 772 5925. Per maggiori informazioni consulta l'Informativa sulla Privacy."
       ],
       [
         "note",
@@ -286,6 +286,18 @@ export const legal = {
     "title": "Note legali",
     "blocks": [
       [
+        "h",
+        "Titolare del sito"
+      ],
+      [
+        "p",
+        "Landi Roberto, ditta individuale – sede legale Via Boccaccini 139, 51100 Pistoia (PT), Italia. Laboratorio: Via Padre Giovanni Antonelli 69, 51100 Pistoia (PT). Partita IVA 02060070477 – Codice fiscale LNDRRT85T16G713X – CCIAA e numero REA PO 612053. Email rlabwatches@gmail.com – tel. +39 328 772 5925."
+      ],
+      [
+        "h",
+        "Disclaimer"
+      ],
+      [
         "p",
         "Questo sito web è di proprietà e gestito da Roberto Landi (\"noi\", \"nostro\" o \"ci\"). L'uso di www.rl-labwatches.it (\"sito web\") è soggetto al seguente disclaimer."
       ],
@@ -315,7 +327,7 @@ export const legal = {
       ],
       [
         "note",
-        "Ultimo aggiornamento: 29/06/2023"
+        "Ultimo aggiornamento: 20/11/2026"
       ]
     ]
   }
