@@ -60,7 +60,14 @@ const el = (tag: string, css: string, html = "") => {
  */
 export function openZoom(
   shot: HTMLElement,
-  o: { name: string; href: string; go: (href: string) => void; onClose: () => void }
+  o: {
+    name: string;
+    href: string;
+    go: (href: string) => void;
+    onClose: () => void;
+    /** vetrina non ancora aperta: toccando l'orologio non si entra, si chiama `onTap` (avviso di gennaio 2027) */
+    onTap?: () => void;
+  }
 ) {
   const piece = shot.querySelector<HTMLElement>("[data-closeup]");
   if (!piece || window.__rlZoom) return false;
@@ -88,7 +95,7 @@ export function openZoom(
   closeEl.querySelectorAll("img").forEach((i) => (i.loading = "eager"));
   closeEl.style.cursor = "pointer";
   closeEl.setAttribute("role", "button");
-  closeEl.setAttribute("aria-label", `Vedi gli orologi ${o.name} disponibili`);
+  closeEl.setAttribute("aria-label", o.onTap ? `Orologi ${o.name}: avvisami quando arrivano` : `Vedi gli orologi ${o.name} disponibili`);
   closeEl.tabIndex = 0;
   // penombra in basso per la didascalia, sopra l'orologio ingrandito
   const shade = el("div", "position:absolute;inset:auto 0 0 0;height:34%;background:linear-gradient(to top,rgba(11,16,13,.92),rgba(11,16,13,0));pointer-events:none;opacity:0");
@@ -96,10 +103,13 @@ export function openZoom(
     "div",
     `position:absolute;left:0;right:0;bottom:${phone ? 92 : 44}px;text-align:center;color:#f5f1e8;pointer-events:none;opacity:0;padding:0 16px`,
     `<div style="font-family:var(--font-cormorant),Georgia,serif;font-weight:300;font-size:${phone ? 34 : 46}px;line-height:1">Orologi <em style="color:#d7b368">${o.name}</em></div>` +
+      (o.onTap
+        ? `<div style="margin-top:8px;font:600 ${phone ? 10 : 11}px/1.3 var(--font-montserrat),system-ui,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:#d7b368">In vetrina da gennaio 2027</div>`
+        : "") +
       // invito ben visibile: bottone dorato che pulsa, con la mano che tocca
       `<button type="button" data-cta class="zoom-cta" style="pointer-events:auto;margin-top:${phone ? 14 : 18}px;display:inline-flex;align-items:center;gap:10px;white-space:nowrap;border:0;border-radius:999px;background:#d7b368;color:#0b100d;padding:${phone ? "12px 18px" : "14px 26px"};font:600 ${phone ? 11 : 12}px/1.2 var(--font-montserrat),system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;cursor:pointer">` +
       `<svg class="zoom-tap" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M12 10.5V9a1.5 1.5 0 0 1 3 0v2"/><path d="M15 10.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-2.7L3.6 14.6a1.5 1.5 0 0 1 2.5-1.7L9 16"/><path d="M6 4.5 4.5 3M13 3.5 14.5 2M9.5 2V.5" opacity=".7"/></svg>` +
-      `${phone ? "Tocca · vedi i disponibili" : "Tocca l'orologio · vedi quelli disponibili"}</button>`
+      `${o.onTap ? "Avvisami quando arrivano" : phone ? "Tocca · vedi i disponibili" : "Tocca l'orologio · vedi quelli disponibili"}</button>`
   );
   const close = el(
     "button",
@@ -140,7 +150,7 @@ export function openZoom(
 
   const onKey = (e: KeyboardEvent) => {
     if (e.key === "Escape") shut();
-    if ((e.key === "Enter" || e.key === " ") && document.activeElement === closeEl) enter();
+    if ((e.key === "Enter" || e.key === " ") && document.activeElement === closeEl) (o.onTap ? o.onTap() : enter());
   };
   const onWheel = () => shut();
   window.addEventListener("keydown", onKey);
@@ -202,9 +212,11 @@ export function openZoom(
       };
     }, 900);
   }
-  boxEl.addEventListener("click", enter);
-  closeEl.addEventListener("click", enter);
-  caption.querySelector("[data-cta]")?.addEventListener("click", enter);
+  // vetrina chiusa fino a gennaio: l'orologio resta ingrandito e si apre l'avviso sopra
+  const tap = o.onTap ? () => !done && o.onTap!() : enter;
+  boxEl.addEventListener("click", tap);
+  closeEl.addEventListener("click", tap);
+  caption.querySelector("[data-cta]")?.addEventListener("click", tap);
   back.addEventListener("click", shut);
   close.addEventListener("click", shut);
   return true;
