@@ -11,7 +11,7 @@ const ARC = 104;
 /** Chiama a sinistra, Preventivo in alto al centro, WhatsApp a destra: gradi dalla verticale */
 const ANGLES = [-58, 0, 58];
 /** su computer la lunetta sta nell'angolo in basso a destra: il ventaglio si apre in alto e a sinistra */
-const ARC_DESK = 150;
+const ARC_DESK = 112;
 const ANGLES_DESK = [-90, -45, 0];
 /** scritte del richiamo, a turno: riga piccola in maiuscoletto, riga grande in corsivo */
 const MESSAGES = [
@@ -148,7 +148,7 @@ export default function ContactBezel() {
       <div
         ref={dock}
         style={{ viewTransitionName: "mobile-bar" }}
-        className={`bezel-dock fixed bottom-[calc(14px+env(safe-area-inset-bottom))] left-1/2 z-40 h-[68px] w-[68px] -translate-x-1/2 lg:bottom-8 lg:left-auto lg:right-8 lg:h-[88px] lg:w-[88px] lg:translate-x-0 ${open ? "is-open" : ""} ${
+        className={`bezel-dock fixed bottom-[calc(14px+env(safe-area-inset-bottom))] left-1/2 z-40 h-[68px] w-[68px] -translate-x-1/2 lg:bottom-8 lg:left-auto lg:right-8 lg:h-[60px] lg:w-[60px] lg:translate-x-0 ${open ? "is-open" : ""} ${
           pill && !open ? "is-pill-anim" : ""
         } ${pill === 1 && !open ? "is-pill" : ""}`}
       >
@@ -191,6 +191,9 @@ export default function ContactBezel() {
             );
           })}
         </ul>
+
+        {/* su computer, al passaggio del mouse: cosa fa la lunetta */}
+        <span aria-hidden className="bezel-hint">Contattami</span>
 
         {/* capsula del richiamo: si allarga dietro la lunetta, che rotola sul lato sinistro */}
         <button type="button" tabIndex={-1} aria-hidden onClick={toggle} className="bezel-pill">

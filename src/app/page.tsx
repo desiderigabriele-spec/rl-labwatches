@@ -36,38 +36,21 @@ export default function Home() {
         {/* filigrana del quadrante dietro il ritratto, con una luce più chiara che lo stacca dal fondo */}
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_74%_42%,rgba(255,251,240,0.9),rgba(255,251,240,0)_58%)]" />
         <Filigrana className="absolute right-[-38%] top-[18%] h-[min(120vw,640px)] w-auto opacity-[0.2] sm:right-[-14%] lg:right-[-6%] lg:top-[-6%] lg:h-[118%]" />
-        <div className="relative mx-auto grid max-w-7xl px-4 pt-20 sm:px-8 sm:pt-28 lg:min-h-[calc(100dvh-5rem)] lg:grid-cols-[1.05fr_0.95fr] lg:items-end lg:gap-8">
+        <div className="relative mx-auto grid max-w-7xl px-4 pt-20 sm:px-8 sm:pt-28 lg:min-h-[calc(100dvh-5rem)] lg:grid-cols-[1.3fr_0.7fr] lg:items-end lg:gap-4">
           <div className="relative z-10 lg:self-center lg:pb-16">
             <Reveal>
-              <p className="eyebrow">{site.owner} · Orologiaio a Pistoia</p>
+              <p className="eyebrow"><span className="hidden sm:inline">{site.owner} · </span>Orologiaio a Pistoia</p>
             </Reveal>
-            <h1 className="mt-5 font-display text-5xl font-light leading-[1.02] sm:text-7xl xl:text-[5.5rem]">
-              <SplitText text="Il tuo orologio," className="block" delay={0.1} />{" "}
-              <SplitText text="*nelle mie mani.*" className="block" delay={0.25} />
+            <h1 className="mt-4 font-display text-[2.15rem] font-light leading-[1.04] sm:mt-5 sm:text-6xl lg:text-[3.6rem] xl:text-[4.1rem]">
+              <SplitText text="Restauro l'orologio che hai." className="block" delay={0.1} />{" "}
+              <SplitText text="*Vendo quello che cerchi.*" className="block" delay={0.25} />
             </h1>
             {/* su telefono il testo sta a sinistra, accanto al ritratto */}
-            <div className="relative mt-4 flex min-h-[50svh] items-end sm:mt-8 lg:block lg:min-h-0">
-              <Reveal delay={0.45} className="relative z-10 max-w-[64%] pb-6 pr-3 sm:max-w-none lg:pb-0">
-                <p className="max-w-md text-[0.95rem] leading-relaxed text-mute sm:text-lg">
-                  Restauro e revisione di Rolex, Patek Philippe, Audemars Piguet e Omega. Ogni orologio lo apro io, e ti rispondo di persona.
+            <div className="relative mt-3 flex min-h-[33svh] items-end sm:mt-6 lg:block lg:min-h-0">
+              <Reveal delay={0.45} className="relative z-10 max-w-[58%] pb-3 pr-3 sm:max-w-none lg:pb-0">
+                <p className="max-w-md text-[0.9rem] leading-relaxed text-mute sm:text-lg">
+                  Rolex, Patek Philippe, Audemars Piguet e Omega. Ogni orologio lo apro io, al mio banco di Pistoia.
                 </p>
-                <div className="mt-6 flex flex-col items-start gap-4 sm:mt-8 sm:flex-row sm:items-center sm:gap-6">
-                  <a
-                    href={whatsappLink("Buongiorno Roberto, le mando una foto del mio orologio per un preventivo.")}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-wa whitespace-nowrap"
-                  >
-                    <WhatsAppIcon className="h-5 w-5" />
-                    <span>
-                      <b>Mandami una foto</b>
-                      <small>Rispondo io, su WhatsApp</small>
-                    </span>
-                  </a>
-                  <Link href="/preventivo" className="btn-link">
-                    o chiedi un preventivo
-                  </Link>
-                </div>
               </Reveal>
               <div className="absolute inset-y-0 right-[-18%] w-[72%] sm:right-[-6%] sm:w-[48%] lg:hidden">
                 <Image
@@ -84,6 +67,35 @@ export default function Home() {
                 />
               </div>
             </div>
+            {/* le due attività, subito: restauro e compravendita */}
+            <Reveal delay={0.55}>
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-4 lg:max-w-[41rem]">
+                <a
+                  href={whatsappLink("Buongiorno Roberto, le mando una foto del mio orologio per un preventivo.")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="door"
+                >
+                  <small>Restauro</small>
+                  <b>Hai un orologio da sistemare?</b>
+                  <span>Revisione, lucidatura, ricambi originali. Mandami una foto: ti rispondo io.</span>
+                  <em>
+                    <WhatsAppIcon className="h-4 w-4" /> Mandami una foto
+                  </em>
+                </a>
+                <a
+                  href={whatsappLink("Buongiorno Roberto, vorrei affidarle un orologio da vendere.")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="door door-dark"
+                >
+                  <small><span className="hidden sm:inline">Compravendita · vetrina </span>da gennaio 2027</small>
+                  <b>Vuoi vendere il tuo orologio?</b>
+                  <span>La vetrina online apre a gennaio 2027. Affidamelo già da ora: lo restauro, lo espongo e lo promuovo su ogni mio canale.</span>
+                  <em>Affidamelo ora →</em>
+                </a>
+              </div>
+            </Reveal>
           </div>
           <div className="relative hidden h-[78dvh] lg:block">
             <Image

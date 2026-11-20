@@ -42,11 +42,21 @@ export const site = {
 export const whatsappLink = (text?: string) =>
   `https://wa.me/${site.whatsapp}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
 
-export const nav = [
+// Menu principale: le due attività prima, poi chi è Roberto e i contatti. Marche e FAQ stanno dentro il restauro
+// (`also`: pagine che accendono la voce) e nel piè di pagina; la home si raggiunge dal logo.
+export const nav: readonly { href: string; label: string; also?: readonly string[] }[] = [
+  { href: "/servizi", label: "Restauro", also: ["/marche", "/faq"] },
+  { href: "/shop", label: "Compravendita" },
+  { href: "/chi-sono", label: "Chi sono" },
+  { href: "/contatti", label: "Contatti" },
+];
+
+/** tutte le pagine, per il piè di pagina e il menu da telefono */
+export const siteMap = [
   { href: "/", label: "Home" },
-  { href: "/servizi", label: "Servizi" },
+  { href: "/servizi", label: "Restauro e servizi" },
   { href: "/marche", label: "Marche" },
-  { href: "/shop", label: "Orologi" },
+  { href: "/shop", label: "Compravendita" },
   { href: "/chi-sono", label: "Chi sono" },
   { href: "/faq", label: "FAQ" },
   { href: "/contatti", label: "Contatti" },
