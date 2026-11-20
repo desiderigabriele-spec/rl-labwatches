@@ -180,7 +180,7 @@ export default function WorksArc() {
         <span className="block text-[0.66rem] font-medium uppercase tracking-[0.22em] text-gold">{w.watch}</span>
         <span className="mt-1 block font-display text-2xl leading-tight sm:text-[1.7rem]">{w.job}</span>
       </p>
-      {/* le miniature (prima e dopo) scorrono da sole all'infinito; si fermano se le tocchi, toccandone una l'arco va lì */}
+      {/* i cerchietti (metà prima e metà dopo) scorrono da soli all'infinito; si fermano se li tocchi, toccandone uno l'arco va lì */}
       <Reel cur={cur} onPick={(k) => go(Math.round(pos.current) + wrapD(k, Math.round(pos.current)))} />
       <div
         ref={stage}
@@ -367,7 +367,7 @@ function Reel({ cur, onPick }: { cur: number; onPick: (k: number) => void }) {
                     onPick(k);
                     pause();
                   }}
-                  className={`block h-11 w-[5.5rem] overflow-hidden rounded-md bg-paper-2 transition duration-300 ${
+                  className={`block h-12 w-12 overflow-hidden rounded-full bg-paper-2 transition duration-300 ${
                     k === cur ? "scale-105 opacity-100 shadow-[0_0_0_2px_var(--color-paper),0_0_0_3.5px_var(--color-gold-2)]" : "opacity-60 shadow-[0_0_0_1px_var(--color-line)] hover:opacity-100"
                   }`}
                 >
