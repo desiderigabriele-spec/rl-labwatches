@@ -119,6 +119,30 @@ body {
 }
 .btn-link:hover { color: var(--color-gold); }
 /* bottone WhatsApp in due righe: cosa fare e chi risponde */
+/* frecce della vetrina */
+.vet-arrow {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(215 179 104 / 0.55);
+  background: rgb(11 16 13 / 0.6);
+  color: var(--color-gold-3);
+  font-size: 1.05rem;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+.vet-arrow:hover {
+  background: var(--color-gold-3);
+  color: var(--color-green-2);
+  transform: scale(1.06);
+}
+@media (min-width: 1024px) {
+  .vet-arrow { width: 3.25rem; height: 3.25rem; }
+}
+
 /* "Vendilo con me": linea d'oro con le quattro tappe */
 .sell-rail::before {
   content: "";
