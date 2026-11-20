@@ -10,6 +10,7 @@ import BrandLogo from "./BrandLogo";
 import { openZoom } from "@/lib/zoomEntrance";
 import BoxPhoto from "./BoxPhoto";
 import Spotlight, { BoxLight, LightPool } from "./Spotlight";
+import NotifyDialog from "./NotifyDialog";
 
 /**
  * Vetrina con faretti, una nicchia per marca: su ogni ripiano c'è il modello più famoso della marca,
@@ -71,7 +72,7 @@ function Slot({
   const photo: string = brand.vetrina;
   const lvl = light === "on" ? 1 : light === "idle" ? 0.22 : 0;
   return (
-    <div data-slot className="relative flex w-[78vw] shrink-0 snap-center flex-col items-center px-3 sm:w-[46vw] lg:w-auto lg:px-6">
+    <div data-slot className="relative flex w-[66vw] shrink-0 flex-col items-center px-3 sm:w-[40vw] lg:w-[25vw] lg:px-6 xl:w-[22rem]">
       <button
         type="button"
         onMouseEnter={() => onHover(true)}
@@ -121,14 +122,14 @@ function Slot({
       </button>
 
       {/* ripiano in pietra (continuo da una nicchia all'altra) */}
-      <span aria-hidden className="relative z-10 -mx-3 mt-1 block h-3 w-[calc(100%+1.5rem)] bg-gradient-to-b from-[#3d4440] to-[#161a17] shadow-[0_18px_40px_rgba(0,0,0,0.6)] lg:-mx-6 lg:w-[calc(100%+3rem)]" />
+      <span aria-hidden className="relative z-10 mt-1 block h-3 w-[calc(100%+1.5rem)] bg-gradient-to-b from-[#3d4440] to-[#161a17] shadow-[0_18px_40px_rgba(0,0,0,0.6)] lg:w-[calc(100%+3rem)]" />
 
       {/* targhetta sotto il ripiano: logo della marca */}
       <div className="mt-9 flex flex-col items-center text-center">
         <span className="flex h-9 items-center">
           <BrandLogo brand={brand} className={`transition-colors duration-500 ${light === "on" ? "text-cream" : "text-cream/40"} ${brand.ratio > 3 ? "h-4" : "h-8"}`} />
         </span>
-        <p className={`mt-3 h-4 text-[0.65rem] uppercase tracking-[0.22em] text-gold-3 transition-opacity duration-500 ${selected && !brand.vicino ? "opacity-100" : "opacity-0"}`}>Tocca di nuovo per entrare</p>
+        <p className={`mt-3 h-4 text-[0.65rem] uppercase tracking-[0.22em] text-gold-3 transition-opacity duration-500 ${selected && !brand.vicino ? "opacity-100" : "opacity-0"}`}>Tocca di nuovo</p>
       </div>
     </div>
   );
@@ -136,113 +137,142 @@ function Slot({
 
 const WARM_VETRINA = brands.flatMap((b) => [b.vetrina, ...(b.dial?.sprites ? Object.values(b.dial.sprites) : [])]).filter(Boolean) as string[];
 
+/** copie della fila: si scorre su quella in mezzo e al bordo si salta di una copia, senza che si veda */
+const COPIES = 3;
+/** velocità dello scorrimento automatico, in px al millisecondo */
+const SPEED = 0.032;
+
 export default function Showcase({
-  eyebrow = "La vetrina",
-  title = "Scegli la tua marca",
-  intro = "Ogni orologio in vendita è selezionato e revisionato nel mio laboratorio. Tocca un cofanetto: si accende la luce e l\u2019orologio si avvicina. Toccalo ancora per vedere gli orologi disponibili di quella marca.",
+  eyebrow = "La vetrina · da gennaio 2027",
+  title = "Orologi scelti uno a uno",
+  intro = "Tocca un cofanetto per avvicinare l\u2019orologio. Ogni pezzo in vendita sarà revisionato nel mio laboratorio: gli orologi disponibili arrivano a gennaio 2027, e se vuoi ti avviso io.",
   cta,
+  locked = true,
 }: {
   eyebrow?: string;
   title?: string;
   intro?: string;
   /** pulsante in fondo alla vetrina, dentro la stessa sezione (stesso fondo e stessa trama) */
   cta?: React.ReactNode;
+  /** vetrina non ancora aperta (fino a gennaio 2027): il tocco sull'orologio apre l'avviso invece della marca */
+  locked?: boolean;
 }) {
   const items = brands;
+  const slots = Array.from({ length: items.length * COPIES }, (_, k) => items[k % items.length]);
   const ref = useRef<HTMLElement>(null);
-  const inView = useInView(ref, { once: true, amount: 0.35 });
-  const visible = useInView(ref, { amount: 0.05 }); // le lancette girano solo con la vetrina sullo schermo
+  const inView = useInView(ref, { once: true, amount: 0.25 });
+  const visible = useInView(ref, { amount: 0.05 }); // scorre e le lancette girano solo con la vetrina sullo schermo
   // cofanetti e lancette: in cache quando la vetrina è a due schermate e mezzo, così all'arrivo sono già lì (lib/warm)
   useWarm(WARM_VETRINA, ref, { idle: false, margin: "250% 0px" });
-  const [introLit, setIntroLit] = useState(-1); // quanti faretti si sono già accesi all'ingresso
+  const [center, setCenter] = useState(-1); // cofanetto al centro della fila: ha la luce piena
   const [hover, setHover] = useState<number | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
   const [reduced, setReduced] = useState(false);
   const [entering, setEntering] = useState<number | null>(null);
+  const [notify, setNotify] = useState<{ open: boolean; brand?: string }>({ open: false });
   const router = useRouter();
 
-  // primo tocco: luce e ingrandimento dell'orologio; toccandolo si va agli orologi disponibili della marca
-  const href = (i: number) => `/shop/marca/${items[i].slug}`;
-  const zoom = (i: number) => {
-    const shot = ref.current?.querySelectorAll<HTMLElement>("[data-slot]")[i]?.querySelector<HTMLElement>("[data-boxshot]");
+  const openNotify = (brand?: string) => setNotify({ open: true, brand });
+  const href = (k: number) => `/shop/marca/${slots[k].slug}`;
+  const zoom = (k: number) => {
+    const shot = ref.current?.querySelectorAll<HTMLElement>("[data-slot]")[k]?.querySelector<HTMLElement>("[data-boxshot]");
     if (reduced || !shot) return false;
-    return openZoom(shot, { name: items[i].name, href: href(i), go: (h) => router.push(h), onClose: () => setEntering(null) });
+    return openZoom(shot, {
+      name: slots[k].name,
+      href: href(k),
+      go: (h) => router.push(h),
+      onClose: () => setEntering(null),
+      onTap: locked ? () => openNotify(slots[k].name) : undefined,
+    });
   };
-  const pick = (i: number) => {
+  // primo tocco: luce e ingrandimento dell'orologio; toccandolo, l'avviso (fino a gennaio) o la marca
+  const pick = (k: number) => {
     if (entering !== null) return;
-    router.prefetch(`/shop/marca/${items[i].slug}`);
-    // marche senza foto ravvicinata: primo tocco la luce, secondo tocco la sezione
-    if (!items[i].vicino || reduced) {
-      if (selected === i) return router.push(href(i));
-      return setSelected(i);
+    if (!locked) router.prefetch(href(k));
+    if (!slots[k].vicino || reduced) {
+      if (selected === k) return locked ? openNotify(slots[k].name) : router.push(href(k));
+      return setSelected(k);
     }
-    setSelected(i);
-    setEntering(i);
+    setSelected(k);
+    setEntering(k);
     // prima si accende il faretto, poi parte l'ingrandimento
     window.setTimeout(() => {
-      if (!zoom(i)) setEntering(null);
+      if (!zoom(k)) setEntering(null);
     }, 420);
   };
-  const enter = (i: number) => router.push(href(i));
 
   useEffect(() => setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches), []);
 
-  // all'ingresso i faretti si accendono uno dopo l'altro, poi restano a luce soffusa
-  useEffect(() => {
-    if (!inView) return;
-    if (reduced) {
-      setIntroLit(items.length + 1);
-      return;
-    }
-    let i = 0;
-    const t = window.setInterval(() => {
-      i++;
-      setIntroLit(i);
-      if (i > items.length) window.clearInterval(t);
-    }, 300);
-    return () => window.clearInterval(t);
-  }, [inView, items.length, reduced]);
-
-  // sul telefono non c'è il passaggio del mouse: si accende da sola la nicchia che hai davanti
-  // (quella al centro del nastro, quando la vetrina è a metà schermo), sia scorrendo la pagina sia il nastro
+  // la fila scorre da sola, all'infinito; si ferma sotto il mouse o al tocco e riparte da sola.
+  // Il cofanetto che passa al centro si accende, gli altri restano a luce soffusa.
   const strip = useRef<HTMLDivElement>(null);
+  const x = useRef(0);
+  const written = useRef(0);
+  const copy = useRef(0);
+  const pauseUntil = useRef(0);
+  const hovering = useRef(false);
+  const busy = entering !== null || notify.open;
+  const busyRef = useRef(busy);
+  busyRef.current = busy;
+
+  const findCenter = () => {
+    const el = strip.current;
+    const first = el?.querySelector<HTMLElement>("[data-slot]");
+    if (!el || !first) return;
+    const w = first.offsetWidth;
+    const k = Math.round((el.scrollLeft + el.clientWidth / 2 - first.offsetLeft - w / 2) / w);
+    setCenter((c) => (c === k ? c : k));
+  };
+
   useEffect(() => {
     const el = strip.current;
-    if (!el || !window.matchMedia("(hover: none)").matches) return;
-    let raf = 0;
-    const check = () => {
-      raf = 0;
-      if (window.innerWidth >= 1024) return;
-      const slots = el.querySelectorAll<HTMLElement>("[data-slot]");
-      const mid = el.getBoundingClientRect().left + el.clientWidth / 2;
-      let best = -1;
-      let dist = Infinity;
-      slots.forEach((s, i) => {
-        const r = s.getBoundingClientRect();
-        const d = Math.abs(r.left + r.width / 2 - mid);
-        if (d < dist) {
-          dist = d;
-          best = i;
-        }
-      });
-      const r = slots[best]?.getBoundingClientRect();
-      const facing = !!r && r.top < window.innerHeight * 0.72 && r.bottom > window.innerHeight * 0.28;
-      setHover(facing && dist < (r?.width ?? 0) / 2 ? best : null);
+    if (!el) return;
+    const measure = () => {
+      copy.current = el.scrollWidth / COPIES;
+      if (!x.current) x.current = copy.current;
+      el.scrollLeft = x.current;
+      written.current = el.scrollLeft;
+      findCenter();
     };
-    const queue = () => {
-      if (!raf) raf = requestAnimationFrame(check);
+    measure();
+    window.addEventListener("resize", measure);
+    // scorrimento a mano (dito, rotellina, trackpad): pausa, e salto di una copia ai bordi
+    const onScroll = () => {
+      const v = el.scrollLeft;
+      if (Math.abs(v - written.current) > 2) {
+        pauseUntil.current = performance.now() + 4000;
+        if (v < copy.current * 0.5) el.scrollLeft = v + copy.current;
+        else if (v > copy.current * 1.5) el.scrollLeft = v - copy.current;
+        x.current = written.current = el.scrollLeft;
+      }
+      findCenter();
     };
-    queue();
-    el.addEventListener("scroll", queue, { passive: true });
-    window.addEventListener("scroll", queue, { passive: true });
-    window.addEventListener("resize", queue);
+    el.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      cancelAnimationFrame(raf);
-      el.removeEventListener("scroll", queue);
-      window.removeEventListener("scroll", queue);
-      window.removeEventListener("resize", queue);
+      window.removeEventListener("resize", measure);
+      el.removeEventListener("scroll", onScroll);
     };
   }, []);
+
+  useEffect(() => {
+    if (!visible || reduced) return;
+    let raf = 0;
+    let last = performance.now();
+    const tick = (t: number) => {
+      const dt = Math.min(50, t - last);
+      last = t;
+      const el = strip.current;
+      if (el && copy.current && !hovering.current && !busyRef.current && t > pauseUntil.current) {
+        x.current += dt * SPEED;
+        if (x.current > copy.current * 1.5) x.current -= copy.current;
+        el.scrollLeft = x.current;
+        written.current = el.scrollLeft;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [visible, reduced]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setSelected(null);
@@ -250,45 +280,63 @@ export default function Showcase({
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const lightOf = (i: number): Light => {
-    if (introLit < 0) return "off";
-    if (introLit <= items.length && i === introLit - 1) return "on"; // quello che si sta accendendo
-    if (i >= introLit && introLit <= items.length) return "off";
-    if (selected !== null) return i === selected || i === hover ? "on" : "off";
-    if (hover !== null) return i === hover ? "on" : "idle";
-    return "idle";
+  const lightOf = (k: number): Light => {
+    if (!inView) return "off";
+    if (selected !== null) return k === selected ? "on" : "idle";
+    if (hover !== null) return k === hover ? "on" : "idle";
+    return k === center ? "on" : "idle";
   };
 
   // il riquadro della marca sotto la vetrina compare quando l'ingrandimento è chiuso, non mentre è aperto
-  const sel = selected !== null && entering === null ? items[selected] : null;
+  const sel = selected !== null && entering === null ? slots[selected] : null;
 
   return (
-    <section ref={ref} className="guilloche sheen relative overflow-hidden bg-[#0b100d] py-20 text-cream sm:py-32" aria-labelledby="vetrina-titolo">
+    <section id="vetrina" ref={ref} className="guilloche sheen relative scroll-mt-20 overflow-hidden bg-[#0b100d] py-16 text-cream sm:py-24" aria-labelledby="vetrina-titolo">
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0,69,42,0.35),transparent_60%)]" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-8">
-        <div className="max-w-2xl">
-          <p className="eyebrow !text-gold-3">{eyebrow}</p>
-          <h2 id="vetrina-titolo" className="mt-4 font-display text-4xl font-light sm:text-6xl">{title}</h2>
-          <p className="mt-6 leading-relaxed text-cream/60">{intro}</p>
-        </div>
-
-        <div className="relative mt-16">
-          <div ref={strip} className="-mx-4 flex snap-x snap-mandatory overflow-x-auto px-[11vw] pb-4 [scrollbar-width:none] sm:-mx-8 sm:px-[27vw] lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-y-16 lg:snap-none lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden">
-            {items.map((b, i) => (
-              <Slot
-                key={b.slug}
-                brand={b}
-                light={lightOf(i)}
-                selected={selected === i}
-                reduced={reduced}
-                running={visible}
-                onHover={(h) => setHover((cur) => (h ? i : cur === i ? null : cur))}
-                onSelect={() => pick(i)}
-              />
-            ))}
+        <div className="grid gap-6 lg:grid-cols-[1fr_0.8fr] lg:items-end lg:gap-16">
+          <div>
+            <p className="eyebrow !text-gold-3">{eyebrow}</p>
+            <h2 id="vetrina-titolo" className="mt-4 font-display text-4xl font-light sm:text-6xl">{title}</h2>
+          </div>
+          <div>
+            <p className="text-[0.95rem] leading-relaxed text-cream/60 sm:text-base">{intro}</p>
+            {locked && (
+              <button type="button" onClick={() => openNotify()} className="btn mt-6 !border-gold-3/60 !text-gold-3 hover:!bg-gold-3 hover:!text-green-2">
+                Avvisami quando apre
+              </button>
+            )}
           </div>
         </div>
+      </div>
 
+      {/* la fila: a tutta larghezza, una sola riga anche su computer */}
+      <div
+        ref={strip}
+        onPointerEnter={(e) => e.pointerType === "mouse" && (hovering.current = true)}
+        onPointerLeave={(e) => {
+          if (e.pointerType !== "mouse") return;
+          hovering.current = false;
+          pauseUntil.current = performance.now() + 900;
+        }}
+        onPointerDown={() => (pauseUntil.current = performance.now() + 4000)}
+        className="relative mt-8 flex overflow-x-auto pb-4 [scrollbar-width:none] sm:mt-16 [&::-webkit-scrollbar]:hidden"
+      >
+        {slots.map((b, k) => (
+          <Slot
+            key={k}
+            brand={b}
+            light={lightOf(k)}
+            selected={selected === k}
+            reduced={reduced}
+            running={visible && Math.abs(k - center) <= 2}
+            onHover={(h) => setHover((cur) => (h ? k : cur === k ? null : cur))}
+            onSelect={() => pick(k)}
+          />
+        ))}
+      </div>
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-8">
         <AnimatePresence mode="wait">
           {sel && (
             <motion.div
@@ -297,7 +345,7 @@ export default function Showcase({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 12 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="relative mt-12 grid gap-10 border-t border-cream/10 pt-10 md:grid-cols-[1.2fr_1fr]"
+              className="relative mt-10 grid gap-8 border-t border-cream/10 pt-10 md:grid-cols-[1.2fr_1fr]"
             >
               <div>
                 <BrandLogo brand={sel} className={`text-gold-3 ${sel.ratio > 3 ? "h-6" : "h-12"}`} />
@@ -305,13 +353,25 @@ export default function Showcase({
                   Orologi <em className="text-gold-3">{sel.name}</em>
                 </h3>
                 <p className="mt-5 max-w-xl leading-relaxed text-cream/65">
-                  Ogni {sel.name} in vendita è controllato e revisionato nel mio laboratorio prima di arrivare in vetrina, con 12 mesi di garanzia.
+                  Ogni {sel.name} in vendita sarà controllato e revisionato nel mio laboratorio prima di arrivare in vetrina, con 12 mesi di garanzia.
                 </p>
               </div>
               <div className="flex flex-col justify-end">
-                <p className="leading-relaxed text-cream/60">Entra per vedere i pezzi disponibili, con le foto di ogni orologio. Cerchi un modello preciso? Scrivimi: se non ce l&apos;ho, lo cerco per te.</p>
+                <p className="leading-relaxed text-cream/60">
+                  {locked
+                    ? "Gli orologi disponibili arrivano a gennaio 2027. Cerchi un modello preciso? Scrivimi: se non ce l\u2019ho, lo cerco per te."
+                    : "Entra per vedere i pezzi disponibili, con le foto di ogni orologio. Cerchi un modello preciso? Scrivimi: se non ce l\u2019ho, lo cerco per te."}
+                </p>
                 <div className="mt-7 flex flex-wrap items-center gap-3">
-                  <button type="button" onClick={() => selected !== null && enter(selected)} className="btn !border-gold-3 !bg-gold-3 !text-green-2 hover:!bg-cream">Entra: orologi {sel.name}</button>
+                  {locked ? (
+                    <button type="button" onClick={() => openNotify(sel.name)} className="btn !border-gold-3 !bg-gold-3 !text-green-2 hover:!bg-cream">
+                      Avvisami: orologi {sel.name}
+                    </button>
+                  ) : (
+                    <button type="button" onClick={() => selected !== null && router.push(href(selected))} className="btn !border-gold-3 !bg-gold-3 !text-green-2 hover:!bg-cream">
+                      Entra: orologi {sel.name}
+                    </button>
+                  )}
                   <a href={whatsappLink(`Buongiorno, cerco un orologio ${sel.name}.`)} target="_blank" rel="noopener noreferrer" className="btn !border-cream/40 !text-cream hover:!bg-cream hover:!text-green-2">
                     <WhatsAppIcon className="h-4 w-4" /> Scrivimi
                   </a>
@@ -326,6 +386,7 @@ export default function Showcase({
       </div>
 
       {cta && <div className="relative mt-12 text-center sm:mt-16">{cta}</div>}
+      <NotifyDialog open={notify.open} brand={notify.brand} onClose={() => setNotify((n) => ({ ...n, open: false }))} />
     </section>
   );
 }

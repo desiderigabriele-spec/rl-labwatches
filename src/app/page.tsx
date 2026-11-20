@@ -40,18 +40,36 @@ export default function Home() {
         <div className="relative mx-auto grid max-w-7xl px-4 pt-20 sm:px-8 sm:pt-28 lg:min-h-[calc(100dvh-5rem)] lg:grid-cols-[1.3fr_0.7fr] lg:items-end lg:gap-4">
           <div className="relative z-10 lg:self-center lg:pb-16">
             <Reveal>
-              <p className="eyebrow"><span className="hidden sm:inline">{site.owner} · </span>Orologiaio a Pistoia</p>
+              <p className="eyebrow">{site.owner} · Orologiaio a Pistoia</p>
             </Reveal>
-            <h1 className="mt-4 font-display text-[2.15rem] font-light leading-[1.04] sm:mt-5 sm:text-6xl lg:text-[3.6rem] xl:text-[4.1rem]">
+            <h1 className="mt-5 font-display text-[2.3rem] font-light leading-[1.04] sm:text-6xl lg:text-[3.6rem] xl:text-[4.1rem]">
               <SplitText text="Restauro l'orologio che hai." className="block" delay={0.1} />{" "}
               <SplitText text="*Vendo quello che cerchi.*" className="block" delay={0.25} />
             </h1>
             {/* su telefono il testo sta a sinistra, accanto al ritratto */}
-            <div className="relative mt-3 flex min-h-[33svh] items-end sm:mt-6 lg:block lg:min-h-0">
-              <Reveal delay={0.45} className="relative z-10 max-w-[58%] pb-3 pr-3 sm:max-w-none lg:pb-0">
-                <p className="max-w-md text-[0.9rem] leading-relaxed text-mute sm:text-lg">
-                  Rolex, Patek Philippe, Audemars Piguet e Omega. Ogni orologio lo apro io, al mio banco di Pistoia.
+            <div className="relative mt-4 flex min-h-[50svh] items-end sm:mt-8 lg:block lg:min-h-0">
+              <Reveal delay={0.45} className="relative z-10 max-w-[64%] pb-6 pr-3 sm:max-w-none lg:pb-0">
+                <p className="max-w-md text-[0.95rem] leading-relaxed text-mute sm:text-lg">
+                  Rolex, Patek Philippe, Audemars Piguet e Omega. Ogni orologio lo apro io, e ti rispondo di persona.
                 </p>
+                <div className="mt-6 flex flex-col items-start gap-4 sm:mt-8 sm:flex-row sm:items-center sm:gap-6">
+                  <a
+                    href={whatsappLink("Buongiorno Roberto, le mando una foto del mio orologio per un preventivo.")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-wa whitespace-nowrap"
+                  >
+                    <WhatsAppIcon className="h-5 w-5" />
+                    <span>
+                      <b>Mandami una foto</b>
+                      <small>Rispondo io, su WhatsApp</small>
+                    </span>
+                  </a>
+                  {/* il bivio: subito sotto c'è la vetrina */}
+                  <a href="#vetrina" className="btn-link">
+                    o guarda la vetrina ↓
+                  </a>
+                </div>
               </Reveal>
               <div className="absolute inset-y-0 right-[-18%] w-[72%] sm:right-[-6%] sm:w-[48%] lg:hidden">
                 <Image
@@ -68,30 +86,6 @@ export default function Home() {
                 />
               </div>
             </div>
-            {/* le due attività, subito: restauro e compravendita */}
-            <Reveal delay={0.55}>
-              <div className="mt-4 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-4 lg:max-w-[41rem]">
-                <a
-                  href={whatsappLink("Buongiorno Roberto, le mando una foto del mio orologio per un preventivo.")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="door"
-                >
-                  <small>Restauro</small>
-                  <b>Hai un orologio da sistemare?</b>
-                  <span>Revisione, lucidatura, ricambi originali. Mandami una foto: ti rispondo io.</span>
-                  <em>
-                    <WhatsAppIcon className="h-4 w-4" /> Mandami una foto
-                  </em>
-                </a>
-                <a href="#vendi" className="door door-dark">
-                  <small><span className="hidden sm:inline">Compravendita · vetrina </span>da gennaio 2027</small>
-                  <b>Vuoi vendere il tuo orologio?</b>
-                  <span>La vetrina online apre a gennaio 2027. Affidamelo già da ora: lo restauro, lo espongo e lo promuovo su ogni mio canale.</span>
-                  <em>Affidamelo ora →</em>
-                </a>
-              </div>
-            </Reveal>
           </div>
           <div className="relative hidden h-[78dvh] lg:block">
             <Image
@@ -110,6 +104,9 @@ export default function Home() {
       {/* le garanzie, subito: tolgono il rischio dove si decide */}
       <TrustBar />
 
+      {/* VETRINA: una riga che scorre da sola, il cofanetto al centro si accende; gli orologi da gennaio 2027 */}
+      <Showcase />
+
       {/* COMPRAVENDITA: vendere con Roberto, restaurato prima della vendita */}
       <SellWithMe />
 
@@ -125,14 +122,7 @@ export default function Home() {
       {/* SERVIZI: scorrimento orizzontale */}
       <ServicesRail />
 
-      {/* VETRINA con i faretti */}
-      <Showcase
-        cta={
-          <Link href="/shop#orologi" className="btn !border-cream/40 !text-cream hover:!bg-cream hover:!text-green-2">
-            Vedi tutti gli orologi
-          </Link>
-        }
-      />
+
 
       <BrandStrip />
 
