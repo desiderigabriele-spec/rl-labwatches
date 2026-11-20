@@ -29,8 +29,14 @@ export const site = {
     facebook: "https://www.facebook.com/robertolandi.labwatches",
   },
   instagramHandle: "@rl_labwatches",
-  // Partita IVA: per legge va indicata sul sito di un'attività. Inseriscila qui (es. "01234567890").
-  vat: "" as string,
+  // Dati fiscali della ditta individuale (obbligatori sul sito di un'attività): piè di pagina, note legali, dati per Google
+  vat: "02060070477" as string,
+  fiscal: {
+    holder: "Landi Roberto",
+    seat: "Via Boccaccini 139, 51100 Pistoia (PT)",
+    taxCode: "LNDRRT85T16G713X",
+    rea: "PO 612053",
+  },
 } as const;
 
 export const whatsappLink = (text?: string) =>
