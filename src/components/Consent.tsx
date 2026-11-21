@@ -7,9 +7,10 @@ import { useEffect, useState } from "react";
  * Finché non accetti non si carica niente: nessuno script, nessun cookie. La scelta resta nel browser
  * (localStorage "rl-consenso": "si" | "no") e si cambia da "Preferenze cookie" nel piè di pagina.
  * Gli script si caricano a pagina ferma (requestIdleCallback), così non tolgono fluidità allo scorrimento.
- * ID: NEXT_PUBLIC_GA_ID (predefinito quello del vecchio sito) e NEXT_PUBLIC_CLARITY_ID (predefinito il progetto di Roberto).
+ * ID: NEXT_PUBLIC_GTM_ID (contenitore Google), NEXT_PUBLIC_GA_ID (predefinito quello del vecchio sito) e NEXT_PUBLIC_CLARITY_ID (predefinito il progetto di Roberto).
  */
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-YGHF9C9R6K";
+const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "GTM-NVF9DRQP";
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID || "zh3obcyaoc";
 const KEY = "rl-consenso";
 const attivo = process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
@@ -32,6 +33,15 @@ function loadStats() {
       const s = document.createElement("script");
       s.async = true;
       s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+      document.head.appendChild(s);
+    }
+    if (GTM_ID) {
+      // contenitore Google (Tag Manager) del nuovo account Analytics
+      w.dataLayer = w.dataLayer || [];
+      w.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
+      const s = document.createElement("script");
+      s.async = true;
+      s.src = `https://www.googletagmanager.com/gtm.js?id=${GTM_ID}`;
       document.head.appendChild(s);
     }
     if (CLARITY_ID) {
