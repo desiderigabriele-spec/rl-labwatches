@@ -32,9 +32,6 @@ export const FEATHER = "radial-gradient(ellipse 50% 50% at 50% 42%, #000 70%, tr
  */
 export default function BoxPhoto({ brand, run, eager = false }: { brand: Brand; run: boolean; eager?: boolean }) {
   const close = brand.vicino && brand.dial ? brand.vicino : null;
-  // dimensioni della foto ravvicinata nel riquadro, perché il suo quadrante coincida con quello del cofanetto
-  const w = close && brand.dial ? brand.dial.r / close.r : 0; // in frazioni della larghezza del riquadro
-  const h = w * (1536 / 1024) * (840 / 1020); // in frazioni dell'altezza del riquadro
   return (
     <>
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -46,32 +43,46 @@ export default function BoxPhoto({ brand, run, eager = false }: { brand: Brand; 
         className="h-full w-full select-none object-contain object-bottom drop-shadow-[0_18px_24px_rgba(0,0,0,0.55)]"
       />
       {brand.dial && !close && <DialHands dial={brand.dial} aspect={840 / 1020} brand={brand} run={run} eager={eager} />}
-      {close && brand.dial && (
-        <span
-          data-closeup
-          className="absolute"
-          style={{
-            left: `${brand.dial.x - close.x * w}%`,
-            top: `${brand.dial.y - close.y * h}%`,
-            width: `${w * 100}%`,
-            height: `${h * 100}%`,
-            // la sfumatura si allarga (maskSize) mentre si entra nella marca, fino a mostrare la foto intera
-            maskImage: FEATHER,
-            WebkitMaskImage: FEATHER,
-            maskSize: "100% 100%",
-            WebkitMaskSize: "100% 100%",
-            maskPosition: "50% 42%",
-            WebkitMaskPosition: "50% 42%",
-            maskRepeat: "no-repeat",
-            WebkitMaskRepeat: "no-repeat",
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={close.src} alt="" aria-hidden draggable={false} loading={eager ? "eager" : "lazy"} className="h-full w-full" />
-          <DialHands dial={close} aspect={1024 / 1536} brand={brand} run={run} eager={eager} />
-        </span>
-      )}
+      <CloseupPiece brand={brand} run={run} eager={eager} />
     </>
+  );
+}
+
+/**
+ * La foto ravvicinata dentro il cofanetto, sfumata ai bordi e allineata quadrante su quadrante, con le lancette vive.
+ * È il pezzo che lib/zoomEntrance ingrandisce ([data-closeup]). Nella fila della vetrina c'è già, cotto nella foto
+ * (scripts/vetrina-fila.mjs): questo si monta solo sul cofanetto toccato, un attimo prima dell'ingrandimento.
+ */
+export function CloseupPiece({ brand, run, eager = false }: { brand: Brand; run: boolean; eager?: boolean }) {
+  const close = brand.vicino && brand.dial ? brand.vicino : null;
+  if (!close || !brand.dial) return null;
+  // dimensioni della foto ravvicinata nel riquadro, perché il suo quadrante coincida con quello del cofanetto
+  const w = brand.dial.r / close.r; // in frazioni della larghezza del riquadro
+  const h = w * (1536 / 1024) * (840 / 1020); // in frazioni dell'altezza del riquadro
+  return (
+    <span
+      data-closeup
+      className="absolute"
+      style={{
+        left: `${brand.dial.x - close.x * w}%`,
+        top: `${brand.dial.y - close.y * h}%`,
+        width: `${w * 100}%`,
+        height: `${h * 100}%`,
+        // la sfumatura si allarga (maskSize) mentre si entra nella marca, fino a mostrare la foto intera
+        maskImage: FEATHER,
+        WebkitMaskImage: FEATHER,
+        maskSize: "100% 100%",
+        WebkitMaskSize: "100% 100%",
+        maskPosition: "50% 42%",
+        WebkitMaskPosition: "50% 42%",
+        maskRepeat: "no-repeat",
+        WebkitMaskRepeat: "no-repeat",
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={close.src} alt="" aria-hidden draggable={false} loading={eager ? "eager" : "lazy"} className="h-full w-full" />
+      <DialHands dial={close} aspect={1024 / 1536} brand={brand} run={run} eager={eager} />
+    </span>
   );
 }
 

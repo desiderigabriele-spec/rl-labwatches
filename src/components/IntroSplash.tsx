@@ -44,9 +44,9 @@ export default function IntroSplash() {
       <div className="intro-lun">
         {/* eslint-disable @next/next/no-img-element */}
         <img src="/lunetta/quadrante.webp" alt="" draggable={false} className="intro-dial" />
-        <img src="/lunetta/ore.webp" alt="" draggable={false} className="intro-hand intro-h" />
-        <img src="/lunetta/minuti.webp" alt="" draggable={false} className="intro-hand intro-m" />
-        <img src="/lunetta/secondi.webp" alt="" draggable={false} className="intro-hand intro-s" />
+        <img src="/lunetta/ore-ombra.webp" alt="" draggable={false} className="intro-hand intro-h" />
+        <img src="/lunetta/minuti-ombra.webp" alt="" draggable={false} className="intro-hand intro-m" />
+        <img src="/lunetta/secondi-ombra.webp" alt="" draggable={false} className="intro-hand intro-s" />
         <img src="/lunetta/ghiera.webp" alt="" draggable={false} className="intro-ring" />
         {/* eslint-enable @next/next/no-img-element */}
       </div>

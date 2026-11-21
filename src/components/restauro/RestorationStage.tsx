@@ -16,7 +16,9 @@ const load = (src?: string) =>
     if (!src) return ok(null);
     const i = new Image();
     i.decoding = "async";
-    i.onload = () => ok(i);
+    // decodificata subito, fuori dal thread principale: altrimenti la decodifica avviene al primo disegno, cioè
+    // proprio mentre si scorre dentro il capitolo, e il fotogramma salta
+    i.onload = () => (i.decode ? i.decode() : Promise.resolve()).catch(() => {}).then(() => ok(i));
     i.onerror = () => ok(null);
     i.src = src;
   });
@@ -59,6 +61,10 @@ export default function RestorationStage({ progress, active }: { progress: Motio
     // Le immagini si caricano comunque prima (active = sezione vicina), così all'arrivo è tutto pronto
     let onScreen = false;
     let cleared = false;
+    // ultima posizione disegnata: a pagina ferma, con il pezzo ancora da lavorare o già finito, il disegno è
+    // identico e non si rifà (le animazioni nel tempo, bolle e scintille, ci sono solo mentre si lavora)
+    let drawn = -1;
+    let drawnChapter = -1;
     const io = new IntersectionObserver(
       ([e]) => {
         onScreen = e.isIntersecting;
@@ -76,6 +82,7 @@ export default function RestorationStage({ progress, active }: { progress: Motio
       const v = progress.get();
       // prima del primo lavoro e dopo l'ultimo il banco è trasparente: basta pulirlo una volta
       if (v < CH_START || v >= CH_START + CHAPTERS.length * CH_LEN) {
+        drawn = -1;
         if (!cleared) {
           cv.style.opacity = "0";
           g.setTransform(1, 0, 0, 1, 0, 0);
@@ -89,6 +96,10 @@ export default function RestorationStage({ progress, active }: { progress: Motio
       const local = (v - CH_START - i * CH_LEN) / CH_LEN;
       // il lavoro occupa la parte centrale del capitolo; ai bordi il pezzo appare e scompare
       const p = workOf(local);
+      const ready = !!imgs.current?.[i];
+      if (v === drawn && i === drawnChapter && (p <= 0 || p >= 1) && ready) return;
+      drawn = ready ? v : -1;
+      drawnChapter = i;
       cv.style.opacity = String(ss(0, 0.07, local) * (1 - ss(0.93, 1, local)));
       g.setTransform(1, 0, 0, 1, 0, 0);
       g.clearRect(0, 0, cv.width, cv.height);

@@ -43,6 +43,11 @@ function warm(srcs: string[], first = false, serial = false) {
   pump();
 }
 
+/** Scarica subito (davanti alla coda) immagini che stanno per servire: es. la foto ravvicinata del cofanetto al centro */
+export function warmSoon(srcs: string[]) {
+  warm(srcs, true);
+}
+
 let idle: Promise<void> | null = null;
 /** subito dopo l'evento "load": l'elemento LCP è già arrivato, la banda ora è libera */
 function afterLoadIdle() {

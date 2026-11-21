@@ -70,7 +70,7 @@ function jump(y: number) {
   if (l) {
     l.resize();
     l.scrollTo(y, { immediate: true, force: true });
-  } else window.scrollTo(0, y);
+  } else window.scrollTo({ top: y, behavior: "instant" }); // istantaneo anche con scroll-behavior: smooth
 }
 
 export default function RestorationSection() {

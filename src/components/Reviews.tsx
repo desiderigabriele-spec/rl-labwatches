@@ -94,7 +94,9 @@ function Strip() {
   }, []);
 
   useEffect(() => {
-    if (!inView || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // su telefono e tablet il nastro non scorre da solo (si sfoglia col dito): spostarlo a ogni fotogramma
+    // mentre il dito scorre la pagina è lavoro in più proprio nel momento sbagliato
+    if (!inView || window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     let raf = 0;
     let last = performance.now();
     const tick = (t: number) => {
@@ -139,13 +141,18 @@ function Strip() {
 
   return (
     <>
+      {/* bordi sfumati: due veli fermi sopra il nastro (una maschera sul contenitore che scorre, su iPhone, blocca il
+          tocco e va ricalcolata a ogni fotogramma) */}
+      <div className="relative">
+      <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 z-10 w-[6%] bg-gradient-to-r from-paper-2 to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-10 w-[6%] bg-gradient-to-l from-paper-2 to-transparent" />
       <div
         ref={box}
         onPointerDown={stop}
         onWheel={stop}
         onTouchStart={stop}
         onScroll={onScroll}
-        className="overflow-x-auto py-3 [mask-image:linear-gradient(90deg,transparent,black_6%,black_94%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         role="region"
         aria-label="Recensioni dei clienti"
       >
@@ -158,6 +165,7 @@ function Strip() {
             ))
           )}
         </div>
+      </div>
       </div>
       <div className="mt-4 flex justify-center gap-4">
         <button type="button" aria-label="Recensione precedente" onClick={() => step(-1)} className="grid h-11 w-11 place-items-center rounded-full border border-line bg-paper text-lg transition-colors hover:border-fg active:bg-paper-2">

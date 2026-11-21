@@ -1,149 +1,131 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useInView } from "motion/react";
-import { useEffect, useRef, useState } from "react";
-import { useWarm } from "@/lib/warm";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useWarm, warmSoon } from "@/lib/warm";
 import { brands, type Brand } from "@/data/brands";
-import { whatsappLink } from "@/data/site";
-import { WhatsAppIcon } from "./WhatsAppButton";
 import BrandLogo from "./BrandLogo";
 import { openZoom } from "@/lib/zoomEntrance";
-import BoxPhoto from "./BoxPhoto";
-import Spotlight, { BoxLight, LightPool } from "./Spotlight";
+import { CloseupPiece } from "./BoxPhoto";
 import NotifyDialog, { type Intent } from "./NotifyDialog";
-import Image from "next/image";
 
 /**
- * Vetrina con faretti, una nicchia per marca: su ogni ripiano c'è il modello più famoso della marca,
- * legato al cuscino di un cofanetto. Entrando nella sezione i faretti si accendono uno dopo l'altro;
- * passando sopra (o toccando) una nicchia la sua luce si accende e le altre si abbassano.
- * Il clic apre la scheda della marca con il link agli orologi di quella marca.
- * La foto (scontornata, sfondo trasparente) è brands[].vetrina; finché manca si vede un cofanetto con il logo.
+ * Vetrina: una fila di cofanetti, uno per marca, che scorre (da sola su computer, col dito su telefono) sotto un
+ * faretto fermo al centro. Il cofanetto che passa sotto il faretto è in piena luce, gli altri in penombra.
+ * Toccando un cofanetto l'orologio si ingrandisce (lib/zoomEntrance); toccandolo ancora, l'avviso di gennaio
+ * (o la pagina della marca, quando la vetrina sarà aperta).
+ *
+ * Perché scorra fluida anche su iPhone, la fila è "piatta": ogni cofanetto è una sola foto già composta
+ * (scripts/vetrina-fila.mjs: foto ravvicinata, ombra e lancetta ferma già dentro) più due lancette piccole.
+ * Dentro la fila niente filtri, maschere, sfocature o fusioni di luce, e mentre scorre nessun lavoro JavaScript:
+ * il telefono sposta soltanto immagini già disegnate. Faretti, fascio, pulviscolo, pozza di luce e penombra
+ * stanno in due strati fermi, dietro e davanti alla fila, che durante lo scorrimento non cambiano mai.
  */
 
-type Light = "off" | "idle" | "on";
+const FILA = (b: Brand) => `/vetrina/fila/${b.slug}.webp`;
+const LOGO_CHIARO = (b: Brand) => `/marche/chiaro/${b.slug}.png`;
+/** plafoniere sul soffitto della vetrina: una per cofanetto, accesa solo quella al centro */
+const LAMPS = [-3, -2, -1, 0, 1, 2, 3];
 
-/** Cofanetto disegnato: segnaposto finché non c'è la foto dell'orologio */
-function Cofanetto({ brand, lit }: { brand: Brand; lit: boolean }) {
+/** Cofanetto disegnato: segnaposto per una marca che non ha ancora la foto */
+function Cofanetto({ brand }: { brand: Brand }) {
   const leather = "linear-gradient(160deg,#145238 0%,#0b3424 45%,#06231a 100%)";
   return (
-    <span aria-hidden className="absolute inset-0 transition-[filter] duration-700" style={{ filter: lit ? "none" : "brightness(0.55)" }}>
-      {/* coperchio aperto, con la fodera in raso */}
-      <span className="absolute inset-x-[10%] top-[8%] h-[46%] rounded-t-[14px] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]" style={{ background: leather }}>
+    <span aria-hidden className="absolute inset-0">
+      <span className="absolute inset-x-[10%] top-[8%] h-[46%] rounded-t-[14px]" style={{ background: leather }}>
         <span className="absolute inset-x-[7%] bottom-0 top-[7%] rounded-t-[10px]" style={{ background: "linear-gradient(180deg,#f3ead8 0%,#dccfb2 70%,#c8b993 100%)" }}>
           <span className="absolute inset-x-0 top-[16%] text-center font-display text-[0.95rem] tracking-[0.25em] text-[#a8843c]">RL</span>
-          <span className="absolute left-1/2 top-[30%] h-px w-[26%] -translate-x-1/2 bg-[#a8843c]/60" />
         </span>
       </span>
-      {/* fondo interno */}
       <span className="absolute inset-x-[8%] top-[50%] h-[14%] rounded-[6px]" style={{ background: "linear-gradient(180deg,#b9a780,#e6dac0)" }} />
-      {/* cuscino in camoscio, con il logo della marca */}
-      <span
-        className="absolute inset-x-[20%] top-[40%] flex h-[26%] items-center justify-center rounded-[42%] shadow-[0_10px_18px_rgba(0,0,0,0.35),inset_0_-6px_12px_rgba(120,98,60,0.35),inset_0_4px_8px_rgba(255,255,255,0.5)]"
-        style={{ background: "radial-gradient(ellipse at 50% 35%,#f4ead6,#dcccab 75%)" }}
-      >
+      <span className="absolute inset-x-[20%] top-[40%] flex h-[26%] items-center justify-center rounded-[42%]" style={{ background: "radial-gradient(ellipse at 50% 35%,#f4ead6,#dcccab 75%)" }}>
         <BrandLogo brand={brand} className={`text-[#1b2a22]/80 ${brand.ratio > 3 ? "h-[22%]" : "h-[46%]"}`} />
       </span>
-      {/* fronte della scatola, in pelle, con filetto e chiusura in oro */}
-      <span className="absolute inset-x-[5%] bottom-[5%] top-[58%] rounded-b-[12px] rounded-t-[4px] shadow-[0_20px_30px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.15)]" style={{ background: leather }}>
-        <span className="absolute inset-x-[6%] top-[16%] h-px bg-[#c29a45]/70" />
-        <span className="absolute left-1/2 top-[8%] h-[18%] w-[9%] -translate-x-1/2 rounded-b-[3px] bg-gradient-to-b from-[#e2c27a] to-[#a8843c]" />
-      </span>
+      <span className="absolute inset-x-[5%] bottom-[5%] top-[58%] rounded-b-[12px] rounded-t-[4px]" style={{ background: leather }} />
     </span>
   );
 }
 
-function Slot({
-  brand,
-  light,
-  selected,
-  onHover,
-  onSelect,
-  reduced,
-  running,
-  lite = false,
-}: {
-  running: boolean;
-  /** lontano dal centro: solo la foto del cofanetto, senza faretto, luci né lancette (memoria su iPhone) */
-  lite?: boolean;
-  brand: Brand;
-  light: Light;
-  selected: boolean;
-  onHover: (h: boolean) => void;
-  onSelect: () => void;
-  reduced: boolean;
-}) {
-  const photo: string = brand.vetrina;
-  const lvl = light === "on" ? 1 : light === "idle" ? 0.22 : 0;
+/** Lancette ore e minuti, piccole: girano con le variabili --h e --m della fila, aggiornate una volta al minuto */
+function StripHands({ brand }: { brand: Brand }) {
+  const d = brand.dial;
+  if (!d?.sprites) return null;
+  const a = 840 / 1020; // il quadrante è rotondo: in altezza è r * larghezza/altezza del riquadro
   return (
-    <div data-slot className="relative flex w-[66vw] shrink-0 flex-col items-center px-3 sm:w-[40vw] lg:w-[25vw] lg:px-6 xl:w-[22rem]">
-      <button
-        type="button"
-        onMouseEnter={() => onHover(true)}
-        onMouseLeave={() => onHover(false)}
-        onFocus={() => onHover(true)}
-        onBlur={() => onHover(false)}
-        onClick={onSelect}
-        aria-pressed={selected}
-        aria-label={selected ? `${brand.name}: entra e guarda gli orologi in vendita` : `${brand.name}: accendi la luce`}
-        className="group relative block w-full cursor-pointer outline-none"
-      >
-        {/* faretto: plafoniera, fascio conico e pulviscolo */}
-        <Spotlight level={lvl} flicker={light === "on" && !reduced} lite={lite} />
-
-        {/* cofanetto con l'orologio */}
-        <span className="relative mt-6 block aspect-[840/1020] w-full">
-          {/* bagliore del colore del quadrante (solo vicino al centro: la sfocatura costa memoria) */}
-          {!lite && (
-            <span
-              aria-hidden
-              data-glow
-              className="absolute left-1/2 top-[45%] h-1/2 w-[85%] -translate-x-1/2 -translate-y-1/2 rounded-full transition-opacity duration-700"
-              style={{ background: `radial-gradient(closest-side, ${brand.accent}, transparent)`, filter: "blur(28px)", opacity: light === "on" ? 0.6 : light === "idle" ? 0.1 : 0 }}
-            />
-          )}
-          <span
-            data-boxshot
-            className="absolute inset-0 transition-[filter,transform] duration-700 ease-out"
-            style={{
-              filter: light === "on" ? "brightness(1.06) contrast(1.04)" : light === "idle" ? "brightness(0.55) saturate(0.75)" : "brightness(0.16) saturate(0.4)",
-              // secondo tocco: si "entra" nel cofanetto, ingrandendo verso il quadrante
-              transform: light === "on" ? "translateY(-6px) scale(1.04)" : "none",
-            }}
-          >
-            {photo && lite ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={photo} alt={`Cofanetto ${brand.name}`} draggable={false} decoding="async" className="h-full w-full select-none object-contain object-bottom" />
-            ) : photo ? (
-              <>
-                <BoxPhoto brand={brand} run={running && !reduced} />
-                <BoxLight src={photo} level={lvl} />
-              </>
-            ) : (
-              <span className="absolute inset-x-[15%] bottom-0 top-[24%]">
-                <Cofanetto brand={brand} lit={light === "on"} />
-              </span>
-            )}
-          </span>
-        </span>
-
-        {/* pozza di luce sul ripiano e ombra del cofanetto */}
-        {!lite && <LightPool level={lvl} />}
-      </button>
-
-      {/* ripiano in pietra (continuo da una nicchia all'altra) */}
-      <span aria-hidden className="relative z-10 mt-1 block h-3 w-[calc(100%+1.5rem)] bg-gradient-to-b from-[#3d4440] to-[#161a17] shadow-[0_18px_40px_rgba(0,0,0,0.6)] lg:w-[calc(100%+3rem)]" />
-
-      {/* targhetta sotto il ripiano: logo della marca */}
-      <div className="mt-9 flex flex-col items-center text-center">
-        <span className="flex h-9 items-center lg:h-14">
-          <BrandLogo brand={brand} className={`transition-colors duration-500 ${light === "on" ? "text-cream" : "text-cream/40"} ${brand.ratio > 3 ? "h-4 lg:h-6" : "h-8 lg:h-12"}`} />
-        </span>
-        <p className={`mt-3 h-4 text-[0.65rem] uppercase tracking-[0.22em] text-gold-3 transition-opacity duration-500 ${selected && !brand.vicino ? "opacity-100" : "opacity-0"}`}>Tocca di nuovo</p>
-      </div>
-    </div>
+    <span aria-hidden className="vet-hands" style={{ left: `${d.x - d.r}%`, width: `${2 * d.r}%`, top: `${d.y - d.r * a}%`, height: `${2 * d.r * a}%` }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={`/vetrina/fila/${brand.slug}-ore.webp`} alt="" draggable={false} decoding="async" />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={`/vetrina/fila/${brand.slug}-minuti.webp`} alt="" draggable={false} decoding="async" />
+    </span>
   );
 }
+
+/** Un cofanetto della fila: foto già composta, lancette, ripiano e targhetta. Non cambia mai mentre la fila scorre. */
+const Slot = memo(function Slot({
+  brand,
+  k,
+  copy = false,
+  armed,
+  locked,
+  onPick,
+  onHover,
+}: {
+  brand: Brand;
+  k: number;
+  /** copia che serve solo al giro infinito: nascosta ai lettori di schermo e fuori dal tasto Tab */
+  copy?: boolean;
+  /** toccato: si monta la foto ravvicinata vera, quella che lib/zoomEntrance ingrandisce */
+  armed: boolean;
+  locked: boolean;
+  onPick: (k: number) => void;
+  onHover: (k: number | null) => void;
+}) {
+  return (
+    <div data-slot className="vet-slot" aria-hidden={copy || undefined}>
+      <button
+        type="button"
+        tabIndex={copy ? -1 : undefined}
+        onClick={() => onPick(k)}
+        onMouseEnter={() => onHover(k)}
+        onMouseLeave={() => onHover(null)}
+        onFocus={() => onHover(k)}
+        onBlur={() => onHover(null)}
+        aria-label={locked ? `${brand.name}: guarda l'orologio da vicino` : `${brand.name}: guarda gli orologi in vendita`}
+        className="vet-box"
+      >
+        <span data-boxshot className="vet-shot">
+          {brand.vetrina ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={FILA(brand)} alt={`Cofanetto ${brand.name}`} width={840} height={1200} draggable={false} decoding="async" className="vet-photo" />
+              <StripHands brand={brand} />
+              {armed && <CloseupPiece brand={brand} run eager />}
+            </>
+          ) : (
+            <span className="absolute inset-x-[15%] bottom-0 top-[24%]">
+              <Cofanetto brand={brand} />
+            </span>
+          )}
+        </span>
+      </button>
+      {/* ripiano, continuo da un cofanetto all'altro, con l'ombra di contatto del cofanetto */}
+      <span aria-hidden className="vet-ledge" />
+      {/* targhetta sotto il ripiano */}
+      <span className="vet-plate">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={LOGO_CHIARO(brand)}
+          alt={brand.name}
+          draggable={false}
+          decoding="async"
+          className={brand.ratio > 3 ? "h-4 lg:h-6" : "h-8 lg:h-12"}
+          style={{ aspectRatio: `${brand.ratio}` }}
+        />
+      </span>
+    </div>
+  );
+});
 
 type IconKind = "valuta" | "restauro" | "vetrina" | "canali";
 /**
@@ -201,7 +183,10 @@ const SELL_STEPS: { img: string; icon: IconKind; title: string; text: string; ba
   { icon: "canali", img: "/vendi/canali.webp", title: "Su ogni mio canale", text: "Lo promuovo su Instagram, su Facebook e sul sito, finché non trova il suo nuovo polso." },
 ];
 
-const WARM_VETRINA = [...brands.flatMap((b) => [b.vetrina, ...(b.dial?.sprites ? Object.values(b.dial.sprites) : [])])].filter(Boolean) as string[];
+const WARM_VETRINA = [
+  "/vetrina/fila/fascio.webp",
+  ...brands.flatMap((b) => (b.vetrina ? [FILA(b), `/vetrina/fila/${b.slug}-ore.webp`, `/vetrina/fila/${b.slug}-minuti.webp`, LOGO_CHIARO(b)] : [LOGO_CHIARO(b)])),
+];
 
 /** copie della fila: si scorre su quella in mezzo e al bordo si salta di una copia, senza che si veda */
 const COPIES = 3;
@@ -228,14 +213,15 @@ export default function Showcase({
   const one: readonly Brand[] = items;
   const slots = Array.from({ length: one.length * COPIES }, (_, k) => one[k % one.length]);
   const ref = useRef<HTMLElement>(null);
+  // i faretti si accendono quando la vetrina arriva sullo schermo
   const inView = useInView(ref, { once: true, amount: 0.25 });
   const visible = useInView(ref, { amount: 0.05 }); // scorre e le lancette girano solo con la vetrina sullo schermo
-  // cofanetti e lancette: in cache quando la vetrina è a due schermate e mezzo, così all'arrivo sono già lì (lib/warm)
+  // cofanetti, lancette e loghi: in cache quando la vetrina è a due schermate e mezzo, così all'arrivo sono già lì
   useWarm(WARM_VETRINA, ref, { idle: false, margin: "250% 0px" });
-  const [center, setCenter] = useState(-1); // cofanetto al centro della fila: ha la luce piena
+  const [center, setCenter] = useState(-1); // cofanetto sotto il faretto
   const [hover, setHover] = useState<number | null>(null);
-  const [selected, setSelected] = useState<number | null>(null);
   const [reduced, setReduced] = useState(false);
+  // cofanetto toccato: si monta la sua foto ravvicinata e parte l'ingrandimento
   const [entering, setEntering] = useState<number | null>(null);
   const [notify, setNotify] = useState<{ open: boolean; brand?: string; image?: string; intent?: Intent }>({ open: false });
   const router = useRouter();
@@ -243,49 +229,10 @@ export default function Showcase({
   const openNotify = (o: { brand?: Brand; intent?: Intent } = {}) =>
     setNotify({ open: true, brand: o.brand?.name, image: o.brand?.vicino?.src ?? (o.intent === "vendere" ? "/vendi/restauro.webp" : undefined), intent: o.intent });
   const href = (k: number) => `/shop/marca/${slots[k]?.slug}`;
-  const zoom = (k: number) => {
-    const shot = ref.current?.querySelectorAll<HTMLElement>("[data-slot]")[k]?.querySelector<HTMLElement>("[data-boxshot]");
-    if (reduced || !shot) return false;
-    return openZoom(shot, {
-      name: slots[k]!.name,
-      href: href(k),
-      go: (h) => router.push(h),
-      onClose: () => {
-        setEntering(null);
-        setSelected(null);
-      },
-      onTap: locked ? () => openNotify({ brand: slots[k]! }) : undefined,
-    });
-  };
-  // primo tocco: luce e ingrandimento dell'orologio; toccandolo, l'avviso (fino a gennaio) o la marca
-  const pick = (k: number) => {
-    if (entering !== null) return;
-    const b = slots[k];
-    if (!locked) router.prefetch(href(k));
-    if (!b.vicino || reduced) {
-      if (selected === k) return locked ? openNotify({ brand: b }) : router.push(href(k));
-      return setSelected(k);
-    }
-    setSelected(k);
-    setEntering(k);
-    // prima si accende il faretto, poi parte l'ingrandimento
-    window.setTimeout(() => {
-      if (!zoom(k)) setEntering(null);
-    }, 420);
-  };
 
   useEffect(() => setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches), []);
-  // quanti cofanetti per lato hanno faretto, luci e lancette: su telefono se ne vede uno e mezzo, su computer quattro
-  const [radius, setRadius] = useState(1);
-  useEffect(() => {
-    const fit = () => setRadius(window.innerWidth >= 1024 ? 2 : 1);
-    fit();
-    window.addEventListener("resize", fit);
-    return () => window.removeEventListener("resize", fit);
-  }, []);
 
-  // la fila scorre da sola, all'infinito; si ferma sotto il mouse o al tocco e riparte da sola.
-  // Il cofanetto che passa al centro si accende, gli altri restano a luce soffusa.
+  // la fila scorre da sola, all'infinito (solo su computer); si ferma sotto il mouse o al tocco e riparte da sola
   const strip = useRef<HTMLDivElement>(null);
   const x = useRef(0);
   const written = useRef(0);
@@ -335,13 +282,65 @@ export default function Showcase({
     pauseUntil.current = performance.now() + 4000;
     el?.scrollBy({ left: dir * w, behavior: "smooth" });
   };
-  // su telefono (niente mouse) la fila avanza di un cofanetto alla volta invece di scorrere a ogni fotogramma
+  // scorrimento comandato da noi (marchio scelto): fino a questo istante non conta come scorrimento a mano
   const autoUntil = useRef(0);
   const busy = entering !== null || notify.open;
   const busyRef = useRef(busy);
   busyRef.current = busy;
 
-  // porta al centro il cofanetto della marca scelta (la copia più vicina a dove sei)
+  // primo tocco: l'orologio si ingrandisce; toccandolo, l'avviso (fino a gennaio) o la marca
+  const pick = (k: number) => {
+    if (entering !== null) return;
+    const b = slots[k];
+    if (!locked) router.prefetch(href(k));
+    // senza foto ravvicinata (o con "riduci movimento") niente ingrandimento: subito l'avviso o la marca
+    if (!b.vicino || !b.dial || reduced) return locked ? openNotify({ brand: b }) : router.push(href(k));
+    pauseUntil.current = performance.now() + 6000;
+    setEntering(k);
+  };
+  // i cofanetti sono memorizzati (memo): ricevono sempre le stesse funzioni, che chiamano quella aggiornata
+  const pickRef = useRef(pick);
+  pickRef.current = pick;
+  const onPick = useCallback((k: number) => pickRef.current(k), []);
+  const onHover = useCallback((k: number | null) => {
+    setHover(k);
+    hovering.current = k !== null;
+  }, []);
+
+  // foto ravvicinata montata nel cofanetto toccato: appena è pronta (di solito è già in cache) parte l'ingrandimento
+  useEffect(() => {
+    if (entering === null) return;
+    const k = entering;
+    const shot = strip.current?.querySelectorAll<HTMLElement>("[data-slot]")[k]?.querySelector<HTMLElement>("[data-boxshot]");
+    const img = shot?.querySelector<HTMLImageElement>("[data-closeup] img");
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      const ok =
+        !!shot &&
+        openZoom(shot, {
+          name: slots[k].name,
+          href: href(k),
+          go: (h) => router.push(h),
+          onClose: () => setEntering(null),
+          onTap: locked ? () => openNotify({ brand: slots[k] }) : undefined,
+        });
+      if (!ok) setEntering(null);
+    };
+    const t = window.setTimeout(start, 900);
+    (img?.decode ? img.decode() : Promise.resolve()).catch(() => {}).then(() => {
+      window.clearTimeout(t);
+      start();
+    });
+    return () => {
+      window.clearTimeout(t);
+      started = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entering]);
+
+  // porta sotto il faretto il cofanetto della marca scelta (la copia più vicina a dove sei)
   const goTo = (slug: string) => {
     const el = strip.current;
     if (!el) return;
@@ -349,7 +348,7 @@ export default function Showcase({
     let best = -1;
     let dist = Infinity;
     slots.forEach((b, k) => {
-      if (b?.slug !== slug) return;
+      if (b.slug !== slug) return;
       const d = Math.abs(k - (center < 0 ? one.length : center));
       if (d < dist) {
         dist = d;
@@ -384,21 +383,19 @@ export default function Showcase({
     };
     measure();
     window.addEventListener("resize", measure);
-    // scorrimento a mano (dito, rotellina, trackpad): pausa, e salto di una copia ai bordi
-    // a fila ferma: salto di una copia ai bordi e accensione del cofanetto al centro.
-    // Mai durante lo scorrimento: su iPhone scrivere scrollLeft durante l'inerzia la blocca a scatti, e accendere
-    // faretti e lancette a ogni cofanetto che passa fa lavorare il telefono proprio mentre deve essere fluido.
+    // A fila ferma: salto di una copia ai bordi (non si vede: le copie sono uguali) e cofanetto al centro.
+    // Mai durante lo scorrimento: su iPhone scrivere scrollLeft durante l'inerzia la blocca a scatti.
     let settle = 0;
     let manual = false;
     const settled = () => {
       manual = false;
-      el.classList.remove("is-moving");
       const v = el.scrollLeft;
       if (v < copy.current * 0.5) el.scrollLeft = v + copy.current;
       else if (v > copy.current * 1.5) el.scrollLeft = v - copy.current;
       x.current = written.current = el.scrollLeft;
       findCenter();
     };
+    // durante lo scorrimento a mano qui si fa il minimo: niente stato React, niente classi, niente misure
     const onScroll = () => {
       const v = el.scrollLeft;
       // scorrimento automatico del computer (posizione scritta da noi): il centro si aggiorna subito, costa poco
@@ -406,23 +403,30 @@ export default function Showcase({
         findCenter();
         return;
       }
-      // dito, trackpad, freccia o marchio: pausa, e tutto il resto a fila ferma
+      // dito, trackpad, freccia o marchio: pausa, e il resto a fila ferma
       if (performance.now() >= autoUntil.current) {
         manual = true;
         pauseUntil.current = performance.now() + 4000;
       }
-      // mentre si muove, le luci che si fondono con lo sfondo si abbassano: il telefono sposta solo le foto
-      if (!el.classList.contains("is-moving")) el.classList.add("is-moving");
       x.current = written.current = v;
       window.clearTimeout(settle);
       settle = window.setTimeout(settled, 160);
     };
+    // dove c'è, "scrollend" arriva appena la fila si ferma (anche dopo l'aggancio al cofanetto)
+    const onEnd = () => {
+      if (!manual) return;
+      window.clearTimeout(settle);
+      settled();
+    };
     el.addEventListener("scroll", onScroll, { passive: true });
+    el.addEventListener("scrollend", onEnd);
     return () => {
       window.clearTimeout(settle);
       window.removeEventListener("resize", measure);
       el.removeEventListener("scroll", onScroll);
+      el.removeEventListener("scrollend", onEnd);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // su telefono la fila non scorre da sola: si sceglie il marchio qui sopra o si scorre col dito
@@ -447,25 +451,58 @@ export default function Showcase({
     return () => cancelAnimationFrame(raf);
   }, [visible, reduced]);
 
+  // lancette della fila: ore e minuti, una volta al minuto (variabili CSS sulla fila, nessun componente si ridisegna)
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setSelected(null);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    const el = strip.current;
+    if (!el || !visible) return;
+    let t = 0;
+    const set = () => {
+      const now = new Date();
+      const m = now.getMinutes() + now.getSeconds() / 60;
+      const h = (now.getHours() % 12) + m / 60;
+      el.style.setProperty("--m", `${(m * 6).toFixed(1)}deg`);
+      el.style.setProperty("--h", `${(h * 30).toFixed(1)}deg`);
+      t = window.setTimeout(set, 60200 - (now.getSeconds() * 1000 + now.getMilliseconds()));
+    };
+    set();
+    return () => window.clearTimeout(t);
+  }, [visible]);
+
+  // i sei cofanetti già decodificati prima che la vetrina arrivi sullo schermo: scorrendo veloce nessun cofanetto
+  // compare vuoto per un attimo (le copie della fila usano la stessa immagine, decodificata una volta sola)
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(
+      (e) => {
+        if (!e.some((x) => x.isIntersecting)) return;
+        io.disconnect();
+        for (const b of one) {
+          if (!b.vetrina) continue;
+          const img = new Image();
+          img.src = FILA(b);
+          img.decode?.().catch(() => {});
+        }
+      },
+      { rootMargin: "120% 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const lightOf = (k: number): Light => {
-    if (!inView) return "off";
-    if (selected !== null) return k === selected ? "on" : "idle";
-    if (hover !== null) return k === hover ? "on" : "idle";
-    return k === center ? "on" : "idle";
-  };
+  // la foto ravvicinata del cofanetto sotto il faretto (o sotto il mouse) si scarica subito: al tocco è già pronta
+  const near = hover ?? center;
+  useEffect(() => {
+    const b = slots[near];
+    if (b?.vicino) warmSoon([b.vicino.src]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [near]);
 
-  // il riquadro della marca sotto la vetrina compare quando l'ingrandimento è chiuso, non mentre è aperto
-  const sel = selected !== null && entering === null ? slots[selected] : null;
   const title2 = title || null;
 
   return (
-    <section id="vetrina" ref={ref} className="guilloche sheen relative scroll-mt-20 overflow-hidden bg-[#0b100d] py-16 text-cream sm:py-24" aria-labelledby="vetrina-titolo">
+    <section id="vetrina" ref={ref} className="guilloche relative scroll-mt-20 overflow-hidden bg-[#0b100d] py-16 text-cream sm:py-24" aria-labelledby="vetrina-titolo">
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0,69,42,0.35),transparent_60%)]" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-8">
         <div className="grid gap-6 lg:grid-cols-[1fr_0.8fr] lg:items-end lg:gap-16">
@@ -513,37 +550,45 @@ export default function Showcase({
         </div>
       </div>
 
-      {/* la fila: a tutta larghezza, una sola riga anche su computer */}
-      <div className="relative">
-      <div
-        ref={strip}
-        onPointerEnter={(e) => e.pointerType === "mouse" && (hovering.current = true)}
-        onPointerLeave={(e) => {
-          if (e.pointerType !== "mouse") return;
-          hovering.current = false;
-          pauseUntil.current = performance.now() + 900;
-        }}
-        onPointerDown={onDown}
-        onPointerMove={onMove}
-        onPointerUp={onUp}
-        onPointerCancel={onUp}
-        // spazio sopra le plafoniere: l'alone dei faretti sfuma invece di essere tagliato dal bordo della fila
-        className="vet-strip relative mt-2 flex cursor-grab overflow-x-auto pb-4 pt-14 [scrollbar-width:none] active:cursor-grabbing sm:mt-4 [&::-webkit-scrollbar]:hidden"
-      >
-        {slots.map((b, k) =>
-          <Slot
-            key={k}
-            brand={b}
-            light={lightOf(k)}
-            selected={selected === k}
-            reduced={reduced}
-            running={visible && Math.abs(k - center) <= radius}
-            lite={center < 0 ? k > 2 * radius : Math.abs(k - center) > radius}
-            onHover={(h) => setHover((cur) => (h ? k : cur === k ? null : cur))}
-            onSelect={() => pick(k)}
-          />
-        )}
-      </div>
+      {/* la fila, a tutta larghezza; dietro e davanti, due strati di luce che non si muovono mai */}
+      <div className="vet-stage" data-lit={inView ? "" : undefined} data-pause-offscreen>
+        <div aria-hidden className="vet-back">
+          {LAMPS.map((i) => (
+            <span key={i} className={i === 0 ? "vet-lamp is-on" : "vet-lamp"} style={{ "--i": i } as React.CSSProperties} />
+          ))}
+          <span className="vet-halo vet-light" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/vetrina/fila/fascio.webp" alt="" draggable={false} className="vet-beam vet-light" />
+          <span className="vet-dust vet-light">
+            <i />
+            <i />
+            <i />
+            <i />
+            <i />
+            <i />
+          </span>
+        </div>
+        <div
+          ref={strip}
+          onPointerEnter={(e) => e.pointerType === "mouse" && (hovering.current = true)}
+          onPointerLeave={(e) => {
+            if (e.pointerType !== "mouse") return;
+            hovering.current = false;
+            pauseUntil.current = performance.now() + 900;
+          }}
+          onPointerDown={onDown}
+          onPointerMove={onMove}
+          onPointerUp={onUp}
+          onPointerCancel={onUp}
+          className="vet-strip"
+        >
+          {slots.map((b, k) => (
+            <Slot key={k} brand={b} k={k} copy={k < one.length || k >= one.length * 2} armed={entering === k} locked={locked} onPick={onPick} onHover={onHover} />
+          ))}
+        </div>
+        <div aria-hidden className="vet-front">
+          <span className="vet-pool vet-light" />
+        </div>
         {/* frecce: un cofanetto avanti o indietro */}
         {(["prev", "next"] as const).map((d) => (
           <button
@@ -551,13 +596,12 @@ export default function Showcase({
             type="button"
             onClick={() => step(d === "next" ? 1 : -1)}
             aria-label={d === "next" ? "Cofanetto successivo" : "Cofanetto precedente"}
-            className={`vet-arrow absolute top-[42%] z-20 ${d === "next" ? "right-3 sm:right-6" : "left-3 sm:left-6"}`}
+            className={`vet-arrow ${d === "next" ? "right-3 sm:right-6" : "left-3 sm:left-6"}`}
           >
             {d === "next" ? "→" : "←"}
           </button>
         ))}
       </div>
-
 
       {/* chi vende: una fascia compatta sotto il ripiano, con le quattro tappe in piccolo */}
       {locked && (

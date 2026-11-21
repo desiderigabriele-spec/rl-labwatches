@@ -17,16 +17,28 @@ export default function ReadingBezel({ variant = "floating" }: { variant?: "floa
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => {
+    // al massimo una volta per fotogramma, e la ghiera si ridisegna solo quando cambia la percentuale
+    let raf = 0;
+    let shown = -1;
+    const update = () => {
+      raf = 0;
       const max = document.documentElement.scrollHeight - window.innerHeight;
       const long = max > window.innerHeight * 1.5;
       setShow(long && window.scrollY > 300);
-      setP(max > 0 ? Math.min(1, window.scrollY / max) : 0);
+      const v = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+      if (Math.round(v * 100) !== shown) {
+        shown = Math.round(v * 100);
+        setP(v);
+      }
     };
-    onScroll();
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
+      cancelAnimationFrame(raf);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };

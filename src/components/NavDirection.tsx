@@ -33,7 +33,7 @@ export default function NavDirection() {
             // (Next.js lo farebbe un attimo dopo, e si vedrebbe la pagina saltare)
             if (isPush && !u.hash) {
               (window as unknown as { __lenis?: { scrollTo: (t: number, o?: object) => void } }).__lenis?.scrollTo(0, { immediate: true, force: true });
-              window.scrollTo(0, 0);
+              window.scrollTo({ top: 0, behavior: "instant" });
             }
           }
         }

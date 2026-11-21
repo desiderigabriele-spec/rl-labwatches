@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { site, whatsappLink } from "@/data/site";
 import { onBeat } from "@/lib/beatClock";
+import { sinceScroll } from "@/lib/scrollIdle";
 import { WhatsAppIcon } from "./WhatsAppButton";
 
 /** raggio dell'arco su cui si aprono i contatti, in px dal centro della lunetta */
@@ -102,8 +103,18 @@ export default function ContactBezel() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const timers: number[] = [];
     let n = 0;
+    // mai mentre si scorre: la capsula si allarga ridisegnandosi a ogni fotogramma, e lo scorrimento viene prima
+    let retry = 0;
+    let busyUntil = 0;
     const play = () => {
-      if (usedRef.current || document.hidden) return;
+      const now = performance.now();
+      if (usedRef.current || document.hidden || now < busyUntil) return;
+      window.clearTimeout(retry);
+      if (sinceScroll() < 1500) {
+        retry = window.setTimeout(play, 1600); // riprova appena smetti di scorrere
+        return;
+      }
+      busyUntil = now + 4400;
       setMsg(n++ % MESSAGES.length);
       setPill(1);
       timers.push(window.setTimeout(() => setPill(2), 3400));
@@ -113,6 +124,7 @@ export default function ContactBezel() {
     const every = window.setInterval(play, 16000);
     return () => {
       timers.forEach(clearTimeout);
+      window.clearTimeout(retry);
       window.clearInterval(every);
     };
   }, []);
@@ -143,7 +155,8 @@ export default function ContactBezel() {
       <div
         aria-hidden
         onClick={() => setOpen(false)}
-        className={`fixed inset-0 z-40 bg-[#04120c]/55 backdrop-blur-[6px] transition-opacity duration-500 ${open ? "opacity-100" : "pointer-events-none opacity-0"}`}
+        // chiuso: nascosto del tutto (visibility), così la sfocatura non resta attiva e invisibile sopra la pagina
+        className={`bezel-backdrop fixed inset-0 z-40 bg-[#04120c]/55 backdrop-blur-[6px] ${open ? "is-on" : "pointer-events-none"}`}
       />
       <div
         ref={dock}
@@ -217,11 +230,11 @@ export default function ContactBezel() {
           {/* lancette vere sopra il quadrante (immagini quadrate con il perno al centro, a mezzogiorno) */}
           <span className="bezel-hands absolute inset-[12.8%]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img ref={hourHand} src="/lunetta/ore.webp" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
+            <img ref={hourHand} src="/lunetta/ore-ombra.webp" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img ref={minuteHand} src="/lunetta/minuti.webp" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
+            <img ref={minuteHand} src="/lunetta/minuti-ombra.webp" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img ref={secondHand} src="/lunetta/secondi.webp" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
+            <img ref={secondHand} src="/lunetta/secondi-ombra.webp" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
             {/* rubino al centro del perno */}
             <span className="absolute left-1/2 top-1/2 h-[5%] w-[5%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_35%_35%,#fbe7ad,#a67b2c)]" />
           </span>

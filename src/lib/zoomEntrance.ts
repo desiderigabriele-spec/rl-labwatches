@@ -207,7 +207,7 @@ export function openZoom(
     window.setTimeout(() => {
       lenis()?.start();
       lenis()?.scrollTo(0, { immediate: true, force: true });
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: "instant" });
       back.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500, easing: "ease-out", fill: "forwards" }).onfinish = () => {
         z.cleanup();
         root.remove();
