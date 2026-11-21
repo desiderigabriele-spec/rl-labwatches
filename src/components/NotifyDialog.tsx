@@ -151,7 +151,7 @@ export default function NotifyDialog({
                   <h2 id={`${id}-t`} className="pr-10 font-display text-[2rem] font-light leading-[1.05]">
                     {intent === "vendere" ? (
                       <>
-                        Vendilo con me. <em className="text-gold-3">Prima lo restauro.</em>
+                        Vendilo con me. <em className="text-gold-3">Così com&apos;è, o restaurato.</em>
                       </>
                     ) : (
                       <>

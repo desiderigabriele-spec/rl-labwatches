@@ -97,6 +97,7 @@ function Slot({
           {!lite && (
             <span
               aria-hidden
+              data-glow
               className="absolute left-1/2 top-[45%] h-1/2 w-[85%] -translate-x-1/2 -translate-y-1/2 rounded-full transition-opacity duration-700"
               style={{ background: `radial-gradient(closest-side, ${brand.accent}, transparent)`, filter: "blur(28px)", opacity: light === "on" ? 0.6 : light === "idle" ? 0.1 : 0 }}
             />
@@ -175,12 +176,60 @@ function EmptySlot({ light, onSelect, lite = false }: { light: Light; onSelect: 
   );
 }
 
+type IconKind = "valuta" | "restauro" | "vetrina" | "canali";
+/**
+ * Icone a filo d'oro delle quattro tappe, disegnate per questo laboratorio:
+ * la lente sull'orologio (valutazione), pinzetta e ruota del movimento (restauro), il cofanetto aperto sotto il
+ * faretto (vetrina), il telefono che trasmette (promozione sui canali).
+ */
+function SellIcon({ kind }: { kind: IconKind }) {
+  const p = { fill: "none", stroke: "currentColor", strokeWidth: 1.25, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden className="h-[58%] w-[58%]">
+      {kind === "valuta" && (
+        <g {...p}>
+          <circle cx="9.5" cy="14" r="5.2" />
+          <path d="M8 8.9 8.6 6.2h1.8l.6 2.7M8 19.1l.6 2.7h1.8l.6-2.7" />
+          <path d="M9.5 14v-2.6M9.5 14l1.9 1.1" />
+          <circle cx="16.3" cy="7.7" r="3.4" />
+          <path d="M18.7 10.1 21.4 12.8" strokeWidth={1.8} />
+        </g>
+      )}
+      {kind === "restauro" && (
+        <g {...p}>
+          <circle cx="9" cy="15" r="2.4" />
+          <path d="M9 10.6v1.4M9 18v1.4M4.6 15H6M12 15h1.4M5.9 11.9l1 1M11.1 17.1l1 1M5.9 18.1l1-1M11.1 12.9l1-1" />
+          <path d="M20.6 3.4 13.5 10.5M21.4 4.4l-7 7.1" />
+          <path d="M13.5 10.5 12.4 12.5l2-1" />
+        </g>
+      )}
+      {kind === "vetrina" && (
+        <g {...p}>
+          <path d="M12 1.8v1.4M8.2 3.1l.8 1.1M15.8 3.1 15 4.2" />
+          <path d="M5.5 11.5V7.3a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v4.2" />
+          <rect x="4.2" y="11.5" width="15.6" height="8.4" rx="1.2" />
+          <circle cx="12" cy="14.9" r="2.1" />
+          <path d="M12 14.9v-1M12 14.9l.8.5M10.6 11.5v1.4M13.4 11.5v1.4" />
+        </g>
+      )}
+      {kind === "canali" && (
+        <g {...p}>
+          <rect x="5.5" y="2.8" width="9.6" height="18.4" rx="2" />
+          <path d="M9.3 18.6h2" />
+          <path d="M10.3 12.6s-2.4-1.4-2.4-3a1.25 1.25 0 0 1 2.4-.5 1.25 1.25 0 0 1 2.4.5c0 1.6-2.4 3-2.4 3Z" />
+          <path d="M17.6 8.6a3.6 3.6 0 0 1 0 5.6M19.7 6.6a6.6 6.6 0 0 1 0 9.6" />
+        </g>
+      )}
+    </svg>
+  );
+}
+
 /** le quattro tappe di chi vende, sotto il ripiano */
-const SELL_STEPS = [
-  { img: "/vendi/valutazione.webp", title: "Valutazione gratuita", text: "Mi mandi le foto o me lo porti: ti dico quanto vale oggi, e quanto può valere dopo." },
-  { img: "/vendi/restauro.webp", title: "Restauro prima della vendita", text: "Movimento, lucidatura, ricambi originali. Lo facciamo solo se conviene.", badge: "Solo da me" },
-  { img: "/vendi/vetrina.webp", title: "In vetrina", text: "Foto curate e scheda completa sul sito, con la vetrina online da gennaio 2027." },
-  { img: "/vendi/canali.webp", title: "Su ogni mio canale", text: "Lo promuovo su Instagram, su Facebook e sul sito, finché non trova il suo nuovo polso." },
+const SELL_STEPS: { img: string; icon: IconKind; title: string; text: string; badge?: string }[] = [
+  { icon: "valuta", img: "/vendi/valutazione.webp", title: "Valutazione gratuita", text: "Mi mandi le foto o me lo porti: ti dico quanto vale oggi, e quanto può valere dopo." },
+  { icon: "restauro", img: "/vendi/restauro.webp", title: "Restauro, se vuoi", text: "Puoi venderlo così com'è, oppure farlo restaurare prima: movimento, lucidatura, ricambi. Vale di più.", badge: "Solo da me" },
+  { icon: "vetrina", img: "/vendi/vetrina.webp", title: "In vetrina", text: "Foto curate e scheda completa sul sito, con la vetrina online da gennaio 2027." },
+  { icon: "canali", img: "/vendi/canali.webp", title: "Su ogni mio canale", text: "Lo promuovo su Instagram, su Facebook e sul sito, finché non trova il suo nuovo polso." },
 ];
 
 const WARM_VETRINA = brands.flatMap((b) => [b.vetrina, ...(b.dial?.sprites ? Object.values(b.dial.sprites) : [])]).filter(Boolean) as string[];
@@ -193,7 +242,7 @@ const SPEED = 0.032;
 export default function Showcase({
   eyebrow = "Compravendita · vetrina da gennaio 2027",
   title = "",
-  intro = "Ogni orologio in vetrina è aperto, controllato e revisionato da me. Gli orologi in vendita arrivano a gennaio 2027; e se vuoi vendere il tuo, prima lo restauro: vale di più.",
+  intro = "Ogni orologio in vetrina è aperto, controllato e revisionato da me. Gli orologi in vendita arrivano a gennaio 2027. Vuoi vendere il tuo? Lo metto in vendita così com'è, oppure, se vuoi, prima lo restauro: vale di più.",
   cta,
   locked = true,
 }: {
@@ -369,24 +418,41 @@ export default function Showcase({
     measure();
     window.addEventListener("resize", measure);
     // scorrimento a mano (dito, rotellina, trackpad): pausa, e salto di una copia ai bordi
+    // a fila ferma: salto di una copia ai bordi e accensione del cofanetto al centro.
+    // Mai durante lo scorrimento: su iPhone scrivere scrollLeft durante l'inerzia la blocca a scatti, e accendere
+    // faretti e lancette a ogni cofanetto che passa fa lavorare il telefono proprio mentre deve essere fluido.
+    let settle = 0;
+    let manual = false;
+    const settled = () => {
+      manual = false;
+      el.classList.remove("is-moving");
+      const v = el.scrollLeft;
+      if (v < copy.current * 0.5) el.scrollLeft = v + copy.current;
+      else if (v > copy.current * 1.5) el.scrollLeft = v - copy.current;
+      x.current = written.current = el.scrollLeft;
+      findCenter();
+    };
     const onScroll = () => {
-      // passo automatico in corso (telefono): non è un tocco, non mette in pausa
-      if (performance.now() < autoUntil.current) {
-        x.current = written.current = el.scrollLeft;
+      const v = el.scrollLeft;
+      // scorrimento automatico del computer (posizione scritta da noi): il centro si aggiorna subito, costa poco
+      if (!manual && performance.now() >= autoUntil.current && Math.abs(v - written.current) <= 2) {
         findCenter();
         return;
       }
-      const v = el.scrollLeft;
-      if (Math.abs(v - written.current) > 2) {
+      // dito, trackpad, freccia o marchio: pausa, e tutto il resto a fila ferma
+      if (performance.now() >= autoUntil.current) {
+        manual = true;
         pauseUntil.current = performance.now() + 4000;
-        if (v < copy.current * 0.5) el.scrollLeft = v + copy.current;
-        else if (v > copy.current * 1.5) el.scrollLeft = v - copy.current;
-        x.current = written.current = el.scrollLeft;
       }
-      findCenter();
+      // mentre si muove, le luci che si fondono con lo sfondo si abbassano: il telefono sposta solo le foto
+      if (!el.classList.contains("is-moving")) el.classList.add("is-moving");
+      x.current = written.current = v;
+      window.clearTimeout(settle);
+      settle = window.setTimeout(settled, 160);
     };
     el.addEventListener("scroll", onScroll, { passive: true });
     return () => {
+      window.clearTimeout(settle);
       window.removeEventListener("resize", measure);
       el.removeEventListener("scroll", onScroll);
     };
@@ -537,14 +603,14 @@ export default function Showcase({
             <div className="min-w-0">
               <p className="text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-gold-3">Vuoi vendere il tuo?</p>
               <p className="mt-1.5 font-display text-2xl font-light leading-tight sm:text-[1.9rem]">
-                Prima <em className="text-gold-3">lo restauro.</em>
+                Così com&apos;è, <em className="text-gold-3">o restaurato.</em>
               </p>
             </div>
             <ol className="sell-mini" aria-label="Come funziona">
               {SELL_STEPS.map((st) => (
                 <li key={st.title} className={st.badge ? "is-key" : ""}>
                   <span className="sell-mini-bead">
-                    <Image src={st.img} alt="" width={96} height={96} sizes="40px" className="h-full w-full object-cover" />
+                    <SellIcon kind={st.icon} />
                   </span>
                   <span>{st.title}</span>
                 </li>

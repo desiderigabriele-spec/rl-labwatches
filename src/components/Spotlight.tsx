@@ -25,6 +25,7 @@ export default function Spotlight({ level, flicker = false, spread = 30, lite = 
       {/* alone sulla parete intorno alla plafoniera */}
       <span
         aria-hidden
+        data-glow
         className="pointer-events-none absolute left-1/2 top-0 h-28 w-56 -translate-x-1/2 -translate-y-1/3 rounded-full transition-opacity duration-700"
         style={{ background: "radial-gradient(closest-side, rgba(255,236,200,0.35), transparent)", opacity: level }}
       />
@@ -41,6 +42,7 @@ export default function Spotlight({ level, flicker = false, spread = 30, lite = 
       {/* fascio: alone largo + nucleo stretto, con dissolvenza verso il basso */}
       <span
         aria-hidden
+        data-glow
         className={`pointer-events-none absolute left-1/2 top-2 h-[96%] w-[220%] -translate-x-1/2 ${flicker ? "lamp-on" : ""}`}
         style={{ opacity: level, transition: "opacity 700ms ease", mixBlendMode: "screen", maskImage: fade, WebkitMaskImage: fade }}
       >
@@ -71,6 +73,7 @@ export function LightPool({ level }: { level: number }) {
     <>
       <span
         aria-hidden
+        data-glow
         className="pointer-events-none absolute -bottom-3 left-1/2 z-20 h-7 w-[118%] -translate-x-1/2 rounded-[50%] transition-opacity duration-700"
         style={{ background: "radial-gradient(closest-side, rgba(255,242,215,0.55), rgba(255,236,200,0.18) 65%, transparent)", opacity: level, mixBlendMode: "screen" }}
       />
