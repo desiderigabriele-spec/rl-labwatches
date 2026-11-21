@@ -29,7 +29,6 @@ function arc(d: number) {
     sat: 1 - p * 0.5,
   };
 }
-const ease = (k: number) => (k < 0.5 ? 8 * k ** 4 : 1 - (-2 * k + 2) ** 4 / 2);
 
 /**
  * Prima e dopo dei lavori del laboratorio. In alto il nome del lavoro e i cerchietti che scorrono da soli;
@@ -104,12 +103,13 @@ export default function WorksArc() {
       touched.current = false;
       const from = pos.current;
       const dist = target - from;
-      const T = reduced.current ? 1 : 1000;
+      // parte subito e frena alla fine: dopo uno swipe l'arco "scatta" verso il lavoro, non si trascina
+      const T = reduced.current ? 1 : Math.min(900, 380 + 140 * Math.abs(dist));
       const t0 = performance.now();
       setCur(mod(target)); // carica subito le foto vicine alla prossima
       const step = (t: number) => {
         const k = Math.min(1, (t - t0) / T);
-        pos.current = from + dist * ease(k);
+        pos.current = from + dist * (1 - (1 - k) ** 3);
         paint();
         if (k < 1) anim.current = requestAnimationFrame(step);
         else {
@@ -150,10 +150,12 @@ export default function WorksArc() {
     const dx = e.clientX - d.x;
     if (Math.abs(dx) > 5) d.moved = true;
     const now = performance.now();
-    d.vx = (e.clientX - d.lx) / Math.max(1, now - d.t);
+    // velocità del dito, smussata sugli ultimi movimenti (px/ms)
+    d.vx = d.vx * 0.35 + ((e.clientX - d.lx) / Math.max(1, now - d.t)) * 0.65;
     d.lx = e.clientX;
     d.t = now;
-    pos.current = d.p - dx / (size() * 0.9);
+    // l'arco segue il dito più di una card intera: basta un trascinamento corto per sfogliare
+    pos.current = d.p - dx / (size() * 0.62);
     paint();
   };
   const onUp = () => {
@@ -167,8 +169,11 @@ export default function WorksArc() {
     // un lavoro alla volta: basta un piccolo trascinamento o un colpo veloce; trascinando a lungo se ne passano di più
     const start = Math.round(d.p);
     const delta = pos.current - d.p;
-    let steps = Math.round(delta);
-    if (steps === 0 && (Math.abs(delta) > 0.18 || Math.abs(d.vx) > 0.35)) steps = Math.sign(delta || -d.vx);
+    // inerzia: un colpo veloce fa scorrere più lavori (fino a 3), un tocco lento solo quello accanto
+    const fling = (-d.vx * 260) / (size() * 0.62);
+    let steps = Math.round(delta + fling);
+    if (steps === 0 && (Math.abs(delta) > 0.12 || Math.abs(d.vx) > 0.25)) steps = Math.sign(delta || -d.vx);
+    steps = Math.max(-3, Math.min(3, steps));
     go(start + steps);
   };
 
