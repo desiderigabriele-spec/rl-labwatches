@@ -171,6 +171,12 @@ body {
 .sell-dark .sell-step.is-key h4 { color: var(--color-gold-3); }
 .sell-dark .sell-badge { background: var(--color-gold-3); color: #0b100d; }
 
+/* vetrina su telefono: la fila si ferma sempre con un cofanetto al centro */
+@media (hover: none) {
+  .vet-strip { scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+  .vet-strip > [data-slot] { scroll-snap-align: center; }
+}
+
 /* frecce della vetrina */
 .vet-arrow {
   display: grid;

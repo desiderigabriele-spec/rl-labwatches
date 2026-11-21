@@ -112,7 +112,7 @@ function Slot({
           >
             {photo && lite ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={photo} alt={`Cofanetto ${brand.name}`} draggable={false} loading="lazy" className="h-full w-full select-none object-contain object-bottom" />
+              <img src={photo} alt={`Cofanetto ${brand.name}`} draggable={false} decoding="async" className="h-full w-full select-none object-contain object-bottom" />
             ) : photo ? (
               <>
                 <BoxPhoto brand={brand} run={running && !reduced} />
@@ -316,6 +316,8 @@ export default function Showcase({
     pauseUntil.current = performance.now() + 4000;
     el?.scrollBy({ left: dir * w, behavior: "smooth" });
   };
+  // su telefono (niente mouse) la fila avanza di un cofanetto alla volta invece di scorrere a ogni fotogramma
+  const autoUntil = useRef(0);
   const busy = entering !== null || notify.open;
   const busyRef = useRef(busy);
   busyRef.current = busy;
@@ -343,6 +345,12 @@ export default function Showcase({
     window.addEventListener("resize", measure);
     // scorrimento a mano (dito, rotellina, trackpad): pausa, e salto di una copia ai bordi
     const onScroll = () => {
+      // passo automatico in corso (telefono): non è un tocco, non mette in pausa
+      if (performance.now() < autoUntil.current) {
+        x.current = written.current = el.scrollLeft;
+        findCenter();
+        return;
+      }
       const v = el.scrollLeft;
       if (Math.abs(v - written.current) > 2) {
         pauseUntil.current = performance.now() + 4000;
@@ -359,8 +367,24 @@ export default function Showcase({
     };
   }, []);
 
+  // telefono: un cofanetto ogni 3 secondi, con scorrimento morbido che si ferma centrato (scroll-snap)
   useEffect(() => {
-    if (!visible || reduced) return;
+    if (!visible || reduced || !window.matchMedia("(hover: none)").matches) return;
+    const id = window.setInterval(() => {
+      const el = strip.current;
+      const w = el?.querySelector<HTMLElement>("[data-slot]")?.offsetWidth;
+      if (!el || !w || !copy.current || busyRef.current || performance.now() < pauseUntil.current) return;
+      // salto di una copia, a fila ferma, prima del passo
+      if (el.scrollLeft > copy.current * 1.5) el.scrollLeft -= copy.current;
+      else if (el.scrollLeft < copy.current * 0.5) el.scrollLeft += copy.current;
+      autoUntil.current = performance.now() + 1100;
+      el.scrollBy({ left: w, behavior: "smooth" });
+    }, 3000);
+    return () => window.clearInterval(id);
+  }, [visible, reduced]);
+
+  useEffect(() => {
+    if (!visible || reduced || window.matchMedia("(hover: none)").matches) return;
     let raf = 0;
     let last = performance.now();
     const tick = (t: number) => {
@@ -445,7 +469,7 @@ export default function Showcase({
         onPointerUp={onUp}
         onPointerCancel={onUp}
         // spazio sopra le plafoniere: l'alone dei faretti sfuma invece di essere tagliato dal bordo della fila
-        className="relative mt-0 flex cursor-grab overflow-x-auto pb-4 pt-14 [scrollbar-width:none] active:cursor-grabbing sm:mt-4 [&::-webkit-scrollbar]:hidden"
+        className="vet-strip relative mt-0 flex cursor-grab overflow-x-auto pb-4 pt-14 [scrollbar-width:none] active:cursor-grabbing sm:mt-4 [&::-webkit-scrollbar]:hidden"
       >
         {slots.map((b, k) =>
           b === null ? (

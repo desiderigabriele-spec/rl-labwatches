@@ -351,7 +351,8 @@ function Reel({ cur, onPick }: { cur: number; onPick: (k: number) => void }) {
         onWheel={pause}
         onTouchStart={pause}
         onScroll={onScroll}
-        className="overflow-x-auto [mask-image:linear-gradient(90deg,transparent,#000_9%,#000_91%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        // niente mask-image qui: su iPhone (WebKit) una maschera su un elemento che scorre gli fa perdere tocchi e scorrimento
+        className="overflow-x-auto [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden"
       >
         <ul ref={list} className="flex w-max gap-3 px-6 py-1.5" aria-label="Lavori">
           {[0, 1, 2].map((c) =>
@@ -379,6 +380,9 @@ function Reel({ cur, onPick }: { cur: number; onPick: (k: number) => void }) {
           )}
         </ul>
       </div>
+      {/* sfumatura ai bordi: veli del colore della pagina, che non intercettano i tocchi */}
+      <span aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-paper to-transparent" />
+      <span aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-paper to-transparent" />
     </div>
   );
 }
