@@ -145,44 +145,6 @@ function Slot({
   );
 }
 
-/** Nicchia vuota nella fila: "Il tuo orologio qui?". Toccandola si apre l'avviso con "vendere" già scelto. */
-const VUOTO = "/vetrina/vuoto.webp";
-function EmptySlot({ light, onSelect, lite = false }: { light: Light; onSelect: () => void; lite?: boolean }) {
-  const lvl = light === "on" ? 1 : light === "idle" ? 0.22 : 0;
-  const on = light === "on";
-  return (
-    <div data-slot className="relative flex w-[66vw] shrink-0 flex-col items-center px-3 sm:w-[40vw] lg:w-[25vw] lg:px-6 xl:w-[22rem]">
-      <button type="button" onClick={onSelect} aria-label="Il tuo orologio qui? Vendilo con me" className="group relative block w-full cursor-pointer outline-none">
-        <Spotlight level={lvl} flicker={false} lite={lite} />
-        {/* il cofanetto vuoto (public/vetrina/vuoto.webp, alla stessa scala degli altri); sulla fodera del coperchio
-            l'invito, come un biglietto */}
-        <span className="relative mt-6 block aspect-[840/1020] w-full">
-          <span
-            data-boxshot
-            className="absolute inset-0 transition-[filter] duration-700"
-            style={{ filter: on ? "brightness(1.06) contrast(1.04)" : light === "idle" ? "brightness(0.55) saturate(0.75)" : "brightness(0.16) saturate(0.4)" }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={VUOTO} alt="Cofanetto vuoto" draggable={false} decoding="async" className="h-full w-full select-none object-contain object-bottom" />
-            {!lite && <BoxLight src={VUOTO} level={lvl} />}
-            <span className="absolute left-[31%] right-[31%] top-[47%] grid place-items-center text-center" style={{ height: "21%" }}>
-              <span>
-                <span className="block font-display text-[clamp(0.95rem,4.4vw,1.35rem)] italic leading-[1.05] text-[#1f3a2c] lg:text-[clamp(0.95rem,1.45vw,1.35rem)]">Il tuo orologio qui?</span>
-                <span className="mt-[0.5em] block text-[clamp(0.42rem,1.7vw,0.56rem)] font-semibold uppercase tracking-[0.22em] text-[#8a6a2a] lg:text-[clamp(0.42rem,0.6vw,0.56rem)]">Vendilo con me</span>
-              </span>
-            </span>
-          </span>
-        </span>
-        {!lite && <LightPool level={lvl} />}
-      </button>
-      <span aria-hidden className="relative z-10 mt-1 block h-3 w-[calc(100%+1.5rem)] bg-gradient-to-b from-[#3d4440] to-[#161a17] shadow-[0_18px_40px_rgba(0,0,0,0.6)] lg:w-[calc(100%+3rem)]" />
-      <div className="mt-9 flex h-9 items-center lg:h-14">
-        <span className={`font-display text-xl italic transition-colors duration-500 lg:text-2xl ${on ? "text-gold-3" : "text-gold-3/45"}`}>Il tuo</span>
-      </div>
-    </div>
-  );
-}
-
 type IconKind = "valuta" | "restauro" | "vetrina" | "canali";
 /**
  * Icone a filo d'oro delle quattro tappe, disegnate per questo laboratorio:
@@ -239,7 +201,7 @@ const SELL_STEPS: { img: string; icon: IconKind; title: string; text: string; ba
   { icon: "canali", img: "/vendi/canali.webp", title: "Su ogni mio canale", text: "Lo promuovo su Instagram, su Facebook e sul sito, finché non trova il suo nuovo polso." },
 ];
 
-const WARM_VETRINA = [...brands.flatMap((b) => [b.vetrina, ...(b.dial?.sprites ? Object.values(b.dial.sprites) : [])]), VUOTO].filter(Boolean) as string[];
+const WARM_VETRINA = [...brands.flatMap((b) => [b.vetrina, ...(b.dial?.sprites ? Object.values(b.dial.sprites) : [])])].filter(Boolean) as string[];
 
 /** copie della fila: si scorre su quella in mezzo e al bordo si salta di una copia, senza che si veda */
 const COPIES = 3;
@@ -262,8 +224,8 @@ export default function Showcase({
   locked?: boolean;
 }) {
   const items = brands;
-  // una copia della fila: due marche, la nicchia vuota ("il tuo orologio qui?"), le altre marche
-  const one: (Brand | null)[] = [...items.slice(0, 2), null, ...items.slice(2)];
+  // una copia della fila: tutte le marche (l'invito a vendere è nella fascia "Vuoi vendere il tuo?" sotto)
+  const one: readonly Brand[] = items;
   const slots = Array.from({ length: one.length * COPIES }, (_, k) => one[k % one.length]);
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.25 });
@@ -299,8 +261,6 @@ export default function Showcase({
   const pick = (k: number) => {
     if (entering !== null) return;
     const b = slots[k];
-    // la nicchia vuota: vendere
-    if (!b) return openNotify({ intent: "vendere" });
     if (!locked) router.prefetch(href(k));
     if (!b.vicino || reduced) {
       if (selected === k) return locked ? openNotify({ brand: b }) : router.push(href(k));
@@ -571,9 +531,6 @@ export default function Showcase({
         className="vet-strip relative mt-2 flex cursor-grab overflow-x-auto pb-4 pt-14 [scrollbar-width:none] active:cursor-grabbing sm:mt-4 [&::-webkit-scrollbar]:hidden"
       >
         {slots.map((b, k) =>
-          b === null ? (
-            <EmptySlot key={k} light={lightOf(k)} onSelect={() => pick(k)} lite={Math.abs(k - center) > radius} />
-          ) : (
           <Slot
             key={k}
             brand={b}
@@ -585,7 +542,6 @@ export default function Showcase({
             onHover={(h) => setHover((cur) => (h ? k : cur === k ? null : cur))}
             onSelect={() => pick(k)}
           />
-          )
         )}
       </div>
         {/* frecce: un cofanetto avanti o indietro */}
