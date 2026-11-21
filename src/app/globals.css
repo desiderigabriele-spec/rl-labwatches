@@ -125,7 +125,7 @@ body {
   align-items: center;
   gap: 0.6rem;
   white-space: nowrap;
-  padding: 0.85rem 1.4rem;
+  padding: 0.75rem 1.05rem;
   border-radius: 9999px;
   border: 1px solid var(--color-gold-3);
   color: var(--color-cream);
@@ -138,6 +138,7 @@ body {
 .btn-gold:hover { background: rgb(215 179 104 / 0.12); }
 .btn-gold:hover span { transform: translateX(3px); }
 .btn-gold-quiet { border-color: rgb(245 241 232 / 0.3); }
+@media (min-width: 640px) { .btn-gold { padding: 0.85rem 1.4rem; } }
 .btn-gold-quiet:hover { border-color: var(--color-gold-3); }
 /* scelta acquistare / vendere nel modulo d'avviso */
 .notify-pick {
@@ -176,6 +177,48 @@ body {
   .vet-strip { scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
   .vet-strip > [data-slot] { scroll-snap-align: center; }
 }
+
+/* scelta del marchio sopra la vetrina */
+.brand-chip {
+  display: grid;
+  place-items: center;
+  height: 3.4rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgb(245 241 232 / 0.14);
+  background: rgb(245 241 232 / 0.03);
+  color: rgb(245 241 232 / 0.55);
+  transition: color 0.35s ease, border-color 0.35s ease, background-color 0.35s ease, box-shadow 0.35s ease;
+}
+.brand-chip:hover { color: var(--color-cream); border-color: rgb(215 179 104 / 0.5); }
+.brand-chip.is-on {
+  color: var(--color-cream);
+  border-color: var(--color-gold-3);
+  background: radial-gradient(ellipse at 50% 0%, rgb(255 236 180 / 0.16), transparent 75%);
+  box-shadow: 0 0 22px -6px rgb(215 179 104 / 0.5);
+}
+@media (min-width: 640px) { .brand-chip { height: 4rem; } }
+/* fascia compatta "Vuoi vendere il tuo?" */
+.sell-band {
+  display: grid;
+  gap: 1.1rem;
+  align-items: center;
+  border-top: 1px solid rgb(245 241 232 / 0.1);
+  padding-top: 1.6rem;
+}
+@media (min-width: 1024px) {
+  .sell-band { grid-template-columns: auto 1fr auto; gap: 2.2rem; }
+}
+.sell-mini {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem 1rem;
+}
+@media (min-width: 640px) { .sell-mini { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.sell-mini li { display: flex; align-items: center; gap: 0.6rem; font-family: var(--font-display), serif; font-size: 1.02rem; line-height: 1.1; color: rgb(245 241 232 / 0.85); }
+.sell-mini-bead { flex: none; width: 2.5rem; height: 2.5rem; border-radius: 9999px; overflow: hidden; border: 1.5px solid var(--color-gold-2); }
+.sell-mini li.is-key { color: var(--color-gold-3); }
+.sell-mini li.is-key .sell-mini-bead { border-color: var(--color-gold-3); box-shadow: 0 0 14px rgb(215 179 104 / 0.45); }
+.sell-band .btn-gold { justify-self: start; }
 
 /* frecce della vetrina */
 .vet-arrow {
