@@ -415,6 +415,8 @@ body {
 @media (min-width: 1024px) {
   .vet-slot { position: relative; }
   .vet-own { display: block; position: absolute; inset: 0; pointer-events: none; z-index: -1; }
+  /* plafoniere più in basso: l'alone sopra la lampada deve stare dentro la fila, che altrimenti lo taglia netto */
+  .vet-stage { --lamp: 5rem; }
   .vet-strip { isolation: isolate; }
   .vet-own-lamp {
     position: absolute;
