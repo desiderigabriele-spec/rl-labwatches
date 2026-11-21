@@ -4,25 +4,30 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { whatsappLink } from "@/data/site";
+import type { Brand } from "@/data/brands";
+import { CloseUpCover } from "./BoxPhoto";
 
 export type Intent = "acquistare" | "vendere";
 
 /**
  * Finestra "Avvisami" della vetrina (apre a gennaio 2027): a sinistra l'orologio da vicino, a destra il modulo.
- * Nome, cognome, email o telefono, e se interessa acquistare, vendere o entrambe le cose.
+ * Nome, cognome, email e telefono (basta uno dei due), e se interessa acquistare, vendere o entrambe le cose.
  * Invio con /api/avviso (email a Roberto); se l'invio diretto non è configurato, apre WhatsApp con il messaggio
  * già scritto. Dove finiscono i dati è spiegato nell'informativa privacy (sezione "Avviso di apertura della vetrina").
  */
 export default function NotifyDialog({
   open,
   brand,
+  watch,
   image,
   intent,
   onClose,
 }: {
   open: boolean;
   brand?: string;
-  /** foto ravvicinata dell'orologio (a sinistra); senza, il cofanetto illuminato */
+  /** l'orologio della marca: la sua foto ravvicinata con le lancette vere che segnano l'ora */
+  watch?: Brand;
+  /** foto (a sinistra) quando non c'è l'orologio; senza, il cofanetto illuminato */
   image?: string;
   /** scelta già spuntata all'apertura */
   intent?: Intent;
@@ -30,7 +35,8 @@ export default function NotifyDialog({
 }) {
   const [nome, setNome] = useState("");
   const [cognome, setCognome] = useState("");
-  const [contact, setContact] = useState("");
+  const [email, setEmail] = useState("");
+  const [tel, setTel] = useState("");
   const [buy, setBuy] = useState(true);
   const [sell, setSell] = useState(false);
   const [consent, setConsent] = useState(false);
@@ -58,16 +64,19 @@ export default function NotifyDialog({
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const value = contact.trim();
-    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value) || /^\+?[\d\s().-]{7,20}$/.test(value);
+    const mail = email.trim();
+    const phone = tel.trim();
     if (!nome.trim() || !cognome.trim()) return setError("Scrivi nome e cognome.");
-    if (!valid) return setError("Scrivi un'email o un numero di telefono validi.");
+    if (!mail && !phone) return setError("Scrivi l'email o il telefono: basta uno dei due.");
+    if (mail && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)) return setError("Controlla l'email: non sembra giusta.");
+    if (phone && !/^\+?[\d\s().-]{7,20}$/.test(phone)) return setError("Controlla il numero di telefono: non sembra giusto.");
     if (!buy && !sell) return setError("Scegli se ti interessa acquistare, vendere o entrambe le cose.");
     if (!consent) return setError("Serve il consenso per poterti avvisare.");
     setError("");
     setState("sending");
     const website = (e.currentTarget.elements.namedItem("website") as HTMLInputElement | null)?.value ?? "";
-    const payload = { nome: nome.trim(), cognome: cognome.trim(), contact: value, acquistare: buy, vendere: sell, brand, consent, website };
+    const payload = { nome: nome.trim(), cognome: cognome.trim(), email: mail, telefono: phone, acquistare: buy, vendere: sell, brand, consent, website };
+    const contatti = [mail && `email ${mail}`, phone && `telefono ${phone}`].filter(Boolean).join(", ");
     try {
       const res = await fetch("/api/avviso", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       if (res.ok) return setState("done");
@@ -76,7 +85,7 @@ export default function NotifyDialog({
         const what = [buy && "acquistare", sell && "vendere"].filter(Boolean).join(" e ");
         window.open(
           whatsappLink(
-            `Buongiorno Roberto, sono ${payload.nome} ${payload.cognome}. Vorrei essere avvisato quando apre la vetrina${brand ? ` (orologi ${brand})` : ""}: mi interessa ${what}. Il mio contatto: ${value}`
+            `Buongiorno Roberto, sono ${payload.nome} ${payload.cognome}. Vorrei essere avvisato quando apre la vetrina${brand ? ` (orologi ${brand})` : ""}: mi interessa ${what}. I miei contatti: ${contatti}`
           ),
           "_blank",
           "noopener"
@@ -93,7 +102,7 @@ export default function NotifyDialog({
   };
 
   const field =
-    "mt-1.5 w-full rounded-xl border border-cream/20 bg-cream/[0.05] px-3.5 py-3 text-[0.95rem] text-cream placeholder:text-cream/35 focus:border-gold-3 focus:outline-none";
+    "mt-1.5 w-full min-w-0 rounded-xl border border-cream/20 bg-cream/[0.05] px-3.5 py-2.5 text-base text-cream placeholder:text-cream/35 focus:border-gold-3 focus:outline-none sm:py-3 sm:text-[0.95rem]";
   const label = "block text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-gold-3";
 
   if (!mounted) return null;
@@ -120,9 +129,14 @@ export default function NotifyDialog({
             className="relative grid max-h-[92dvh] w-full max-w-[46rem] overflow-y-auto rounded-t-[22px] border border-gold-3/25 bg-[#0b100d] text-cream shadow-[0_40px_80px_rgba(0,0,0,0.6)] sm:grid-cols-[0.82fr_1.18fr] sm:rounded-[22px]"
           >
             {/* l'orologio da vicino */}
-            <div className="relative h-40 overflow-hidden bg-[#111] sm:h-auto sm:min-h-[30rem]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={image || "/vendi/vetrina.webp"} alt="" className="absolute inset-0 h-full w-full object-cover object-[50%_32%]" />
+            <div className="relative h-44 overflow-hidden bg-[#111] [container-type:size] sm:h-auto sm:min-h-[30rem]">
+              {watch?.vicino ? (
+                // l'orologio con le lancette vere, che segnano l'ora
+                <CloseUpCover brand={watch} run={open} />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={image || "/vendi/vetrina.webp"} alt="" className="absolute inset-0 h-full w-full object-cover object-[50%_32%]" />
+              )}
               <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0b100d] sm:bg-gradient-to-r" />
               <span className="absolute bottom-3 left-3 rounded-full bg-[#0b100d]/70 px-3 py-1.5 text-[0.56rem] font-semibold uppercase tracking-[0.24em] text-gold-3 backdrop-blur-sm">
                 In vetrina · gennaio 2027
@@ -148,7 +162,7 @@ export default function NotifyDialog({
                 </div>
               ) : (
                 <form onSubmit={submit} noValidate className="mt-3">
-                  <h2 id={`${id}-t`} className="pr-10 font-display text-[2rem] font-light leading-[1.05]">
+                  <h2 id={`${id}-t`} className="pr-10 font-display text-[1.8rem] font-light leading-[1.05] sm:text-[2rem]">
                     {intent === "vendere" ? (
                       <>
                         Vendilo con me. <em className="text-gold-3">Così com&apos;è, o restaurato.</em>
@@ -161,7 +175,7 @@ export default function NotifyDialog({
                   </h2>
                   <p className="mt-2.5 text-[0.85rem] leading-relaxed text-cream/65">La vetrina online apre a gennaio 2027. Lasciami i tuoi dati: ti avviso io appena è disponibile.</p>
 
-                  <div className="mt-5 grid grid-cols-2 gap-3">
+                  <div className="mt-4 grid grid-cols-2 gap-3 sm:mt-5">
                     <div>
                       <label htmlFor={`${id}-n`} className={label}>Nome</label>
                       <input ref={first} id={`${id}-n`} value={nome} onChange={(e) => setNome(e.target.value)} autoComplete="given-name" className={field} />
@@ -171,10 +185,18 @@ export default function NotifyDialog({
                       <input id={`${id}-s`} value={cognome} onChange={(e) => setCognome(e.target.value)} autoComplete="family-name" className={field} />
                     </div>
                   </div>
-                  <div className="mt-3">
-                    <label htmlFor={`${id}-c`} className={label}>Email o telefono</label>
-                    <input id={`${id}-c`} value={contact} onChange={(e) => setContact(e.target.value)} autoComplete="email" placeholder="nome@email.it oppure 333 1234567" className={field} />
+                  {/* email e telefono, affiancati: basta uno dei due */}
+                  <div className="mt-3 grid grid-cols-2 gap-3">
+                    <div className="min-w-0">
+                      <label htmlFor={`${id}-e`} className={label}>Email</label>
+                      <input id={`${id}-e`} type="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" placeholder="nome@email.it" className={field} />
+                    </div>
+                    <div className="min-w-0">
+                      <label htmlFor={`${id}-p`} className={label}>Telefono</label>
+                      <input id={`${id}-p`} type="tel" inputMode="tel" value={tel} onChange={(e) => setTel(e.target.value)} autoComplete="tel" placeholder="333 1234567" className={field} />
+                    </div>
                   </div>
+                  <p className="mt-1.5 text-[0.7rem] text-cream/45">Basta uno dei due.</p>
 
                   {/* acquistare, vendere o tutte e due */}
                   <fieldset className="mt-4">

@@ -98,3 +98,33 @@ export function CloseUp({ brand, run, ref }: { brand: Brand; run: boolean; ref?:
     </span>
   );
 }
+
+/**
+ * Foto ravvicinata con le lancette vive che riempie tutto il riquadro che la contiene (come object-fit: cover),
+ * con il quadrante il più possibile al centro. Il riquadro deve avere `container-type: size` e overflow nascosto:
+ * le misure vengono dalle sue dimensioni (cqw, cqh), così lancette e foto restano sempre allineate.
+ */
+export function CloseUpCover({ brand, run }: { brand: Brand; run: boolean }) {
+  const close = brand.vicino;
+  if (!close) return null;
+  // la foto è 1024×1536: larga almeno quanto il riquadro e alta almeno quanto il riquadro
+  const w = "max(100cqw, calc(100cqh * 1024 / 1536))";
+  const h = "max(150cqw, 100cqh)";
+  return (
+    <span
+      aria-hidden
+      className="absolute block"
+      style={{
+        width: w,
+        height: h,
+        // quadrante al centro, ma senza mai lasciare bordi vuoti
+        left: `clamp(calc(100cqw - ${w}), calc(50cqw - ${w} * ${close.x / 100}), 0px)`,
+        top: `clamp(calc(100cqh - ${h}), calc(50cqh - ${h} * ${close.y / 100}), 0px)`,
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={close.src} alt="" draggable={false} className="h-full w-full select-none" />
+      {brand.dial && <DialHands dial={close} aspect={1024 / 1536} brand={brand} run={run} eager />}
+    </span>
+  );
+}
