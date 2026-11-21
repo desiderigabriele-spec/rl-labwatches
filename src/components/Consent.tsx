@@ -7,10 +7,10 @@ import { useEffect, useState } from "react";
  * Finché non accetti non si carica niente: nessuno script, nessun cookie. La scelta resta nel browser
  * (localStorage "rl-consenso": "si" | "no") e si cambia da "Preferenze cookie" nel piè di pagina.
  * Gli script si caricano a pagina ferma (requestIdleCallback), così non tolgono fluidità allo scorrimento.
- * ID: NEXT_PUBLIC_GA_ID (predefinito quello del vecchio sito) e NEXT_PUBLIC_CLARITY_ID (vuoto = Clarity spento).
+ * ID: NEXT_PUBLIC_GA_ID (predefinito quello del vecchio sito) e NEXT_PUBLIC_CLARITY_ID (predefinito il progetto di Roberto).
  */
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-YGHF9C9R6K";
-const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID || "";
+const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID || "zh3obcyaoc";
 const KEY = "rl-consenso";
 const attivo = process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
 
