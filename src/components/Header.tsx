@@ -57,13 +57,25 @@ export default function Header() {
       setNoVeil(document.elementsFromPoint(Math.min(40, window.innerWidth / 4), y).some((el) => !h.contains(el) && !!el.closest("[data-no-veil]")));
       if (d) setEverDark(true);
     };
-    const queue = () => { if (!raf) raf = requestAnimationFrame(check); };
-    queue();
+    // elementsFromPoint costa: mentre scorri al massimo ogni 120 ms, più un controllo quando ti fermi
+    let lastCheck = 0;
+    let tail = 0;
+    const run = () => {
+      lastCheck = performance.now();
+      if (!raf) raf = requestAnimationFrame(check);
+    };
+    const queue = () => {
+      window.clearTimeout(tail);
+      if (performance.now() - lastCheck > 120) run();
+      tail = window.setTimeout(run, 140);
+    };
+    run();
     const late = [120, 600, 1200, 2500, 4200].map((t) => window.setTimeout(queue, t)); // dopo il cambio pagina e l'intro
     window.addEventListener("scroll", queue, { passive: true });
     window.addEventListener("resize", queue);
     return () => {
       cancelAnimationFrame(raf);
+      window.clearTimeout(tail);
       late.forEach(clearTimeout);
       window.removeEventListener("scroll", queue);
       window.removeEventListener("resize", queue);

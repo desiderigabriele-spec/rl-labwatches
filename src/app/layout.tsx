@@ -41,7 +41,7 @@ export const viewport: Viewport = { themeColor: "#003d27", viewportFit: "cover" 
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="it" className={`${cormorant.variable} ${montserrat.variable} ${plexMono.variable}`} suppressHydrationWarning>
+    <html lang="it" data-scroll-behavior="smooth" className={`${cormorant.variable} ${montserrat.variable} ${plexMono.variable}`} suppressHydrationWarning>
       <body className="grain min-h-dvh flex flex-col">
         {/* salta l'intro se già vista in questa sessione (prima del render, senza sfarfallio) */}
         <script dangerouslySetInnerHTML={{ __html: `try{if(sessionStorage.getItem("rl-intro"))document.documentElement.dataset.intro="seen"}catch(e){}` }} />

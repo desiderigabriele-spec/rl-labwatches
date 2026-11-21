@@ -2,6 +2,8 @@
 // I loghi (in public/marche) sono quelli del vecchio sito, resi monocromatici; ratio = larghezza/altezza.
 // vetrina = foto (sfondo trasparente) dell'orologio nel cofanetto originale, preparata con scripts/vetrina.mjs
 //   alla stessa scala per tutte le marche; finché manca, la vetrina disegna un cofanetto con il logo della marca.
+//   Dopo ogni foto nuova o cambiata: node --no-warnings scripts/vetrina-fila.mjs (prepara la fila già composta della
+//   vetrina in public/vetrina/fila, le lancette piccole e il logo chiaro).
 // dial = quadrante senza lancette nella foto (centro e raggio in % della foto, dati da scripts/vetrina.mjs):
 //   sopra si disegnano le lancette che segnano l'ora reale; null = la foto ha già le sue lancette.
 // vicino = foto ravvicinata dello stesso orologio (1024×1536, quadrante senza lancette; x, y, r come dial, in % della foto):

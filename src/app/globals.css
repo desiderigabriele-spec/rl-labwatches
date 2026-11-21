@@ -220,14 +220,216 @@ body {
 .sell-mini li.is-key .sell-mini-bead { border-color: var(--color-gold-3); background: radial-gradient(circle at 35% 25%, rgb(215 179 104 / 0.3), rgb(215 179 104 / 0.06) 70%); box-shadow: 0 0 14px rgb(215 179 104 / 0.45); }
 .sell-band .btn-gold { justify-self: start; }
 
-/* vetrina in movimento a mano: fasci, aloni e riflessi (fusioni di luce e sfocature) si abbassano e tornano a fila ferma */
-.vet-strip [data-glow],
-.vet-strip [data-boxlight] { transition: opacity 0.45s ease; }
-.vet-strip.is-moving [data-glow],
-.vet-strip.is-moving [data-boxlight] { opacity: 0 !important; transition-duration: 0.12s; }
+/* ---------- Vetrina: la fila scorre sotto una luce ferma ----------
+   Dentro la fila solo immagini già composte: niente filtri, maschere, sfocature o fusioni (che il telefono
+   dovrebbe ricalcolare a ogni fotogramma). Faretti, fascio, pulviscolo, pozza di luce e penombra sono in due strati
+   fermi (.vet-back dietro, .vet-front davanti) disegnati una volta sola: scorrendo, si sposta solo la fila.
+   Le misure della fila e degli strati vengono dalle stesse variabili, così la luce cade sempre sul cofanetto. */
+.vet-stage {
+  --slot: 66vw; /* larghezza di un cofanetto con il suo spazio */
+  --pad: 0.75rem;
+  --lamp: 3.25rem; /* lente dei faretti, dall'alto della fila */
+  --box-top: calc(var(--lamp) + 1.5rem);
+  --box-w: calc(var(--slot) - 2 * var(--pad));
+  --box-h: calc(var(--box-w) * 1020 / 840);
+  --shelf: calc(var(--box-top) + var(--box-h) + 0.25rem);
+  position: relative;
+  isolation: isolate;
+  margin-top: 0.5rem;
+}
+@media (min-width: 640px) {
+  .vet-stage { --slot: 40vw; margin-top: 1rem; }
+}
+@media (min-width: 1024px) {
+  .vet-stage { --slot: 25vw; --pad: 1.5rem; }
+}
+@media (min-width: 1280px) {
+  .vet-stage { --slot: 22rem; }
+}
+.vet-strip {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  padding-top: var(--box-top);
+  padding-bottom: 1rem;
+  cursor: grab;
+}
+.vet-strip:active { cursor: grabbing; }
+.vet-strip::-webkit-scrollbar { display: none; }
+.vet-slot {
+  flex: none;
+  width: var(--slot);
+  padding-inline: var(--pad);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.vet-box {
+  position: relative;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 0.75rem;
+  -webkit-tap-highlight-color: transparent;
+}
+.vet-box:focus-visible { outline: 2px solid var(--color-gold-3); outline-offset: 6px; }
+.vet-shot { position: relative; display: block; width: 100%; aspect-ratio: 840 / 1020; }
+/* la foto è più alta del riquadro: sotto il cofanetto c'è la sua ombra, che scende dietro il ripiano */
+.vet-photo { position: absolute; left: 0; top: 0; width: 100%; height: auto; max-width: none; user-select: none; -webkit-user-select: none; -webkit-user-drag: none; }
+.vet-hands { position: absolute; }
+.vet-hands > img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.vet-hands > img:first-child { transform: rotate(var(--h, 304deg)); }
+.vet-hands > img:last-child { transform: rotate(var(--m, 60deg)); }
+.vet-ledge {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: 0.25rem;
+  width: calc(100% + 2 * var(--pad));
+  height: 0.75rem;
+  background: linear-gradient(#3d4440, #161a17);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+}
+/* ombra di contatto: il cofanetto poggia davvero sul ripiano */
+.vet-ledge::before {
+  content: "";
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  top: -0.45rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), transparent);
+}
+.vet-plate { position: relative; z-index: 1; margin-top: 2.25rem; display: flex; height: 2.25rem; align-items: center; justify-content: center; }
+.vet-plate > img { width: auto; max-width: 80%; user-select: none; -webkit-user-drag: none; }
+@media (min-width: 1024px) { .vet-plate { height: 3.5rem; } }
+@media (hover: hover) and (pointer: fine) {
+  .vet-shot { transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+  .vet-box:hover .vet-shot { transform: translateY(-5px); }
+}
+
+/* strato dietro la fila: plafoniere, alone, fascio, pulviscolo */
+.vet-back,
+.vet-front { position: absolute; inset: 0; pointer-events: none; }
+.vet-back { z-index: 0; }
+.vet-lamp {
+  position: absolute;
+  top: calc(var(--lamp) - 0.875rem);
+  left: calc(50% + var(--i) * var(--slot) - 1.75rem);
+  width: 3.5rem;
+  height: 0.875rem;
+  border-radius: 0 0 999px 999px;
+  background: linear-gradient(#2a2f2c, #121513);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.vet-lamp::after {
+  content: "";
+  position: absolute;
+  left: 0.625rem;
+  right: 0.625rem;
+  bottom: 3px;
+  height: 0.375rem;
+  border-radius: 999px;
+  background: #4a463d;
+}
+.vet-stage[data-lit] .vet-lamp.is-on::after {
+  background: radial-gradient(ellipse at 50% 40%, #fffdf6, #ffe9bf 60%, #d9b46b);
+  box-shadow: 0 0 6px 2px rgba(255, 240, 205, 0.95), 0 0 22px 8px rgba(255, 226, 170, 0.45), 0 6px 30px 10px rgba(255, 226, 170, 0.25);
+}
+.vet-halo {
+  position: absolute;
+  left: calc(50% - 7rem);
+  top: calc(var(--lamp) - 4.5rem);
+  width: 14rem;
+  height: 7rem;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 236, 200, 0.3), transparent);
+}
+/* il fascio è un'immagine già sfumata (scripts/vetrina-fila.mjs): dalla lente al ripiano */
+.vet-beam {
+  position: absolute;
+  top: var(--lamp);
+  left: calc(50% - (var(--shelf) - var(--lamp)) * 880 / 600 / 2);
+  height: calc(var(--shelf) - var(--lamp));
+  width: calc((var(--shelf) - var(--lamp)) * 880 / 600);
+  max-width: none;
+}
+.vet-dust {
+  position: absolute;
+  left: calc(50% - var(--box-w) * 0.4);
+  width: calc(var(--box-w) * 0.8);
+  top: calc(var(--lamp) + 1rem);
+  height: calc(var(--box-h) * 0.85);
+}
+.vet-dust > i {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 246, 225, 0.85);
+  opacity: 0;
+  animation: vet-dust 11s linear infinite;
+}
+.vet-dust > i:nth-child(1) { left: 46%; top: 30%; animation-delay: -1s; }
+.vet-dust > i:nth-child(2) { left: 58%; top: 55%; animation-delay: -4s; animation-duration: 13s; }
+.vet-dust > i:nth-child(3) { left: 38%; top: 70%; animation-delay: -7s; width: 2px; height: 2px; }
+.vet-dust > i:nth-child(4) { left: 52%; top: 18%; animation-delay: -9s; animation-duration: 9s; width: 2px; height: 2px; }
+.vet-dust > i:nth-child(5) { left: 63%; top: 82%; animation-delay: -3s; animation-duration: 14s; }
+.vet-dust > i:nth-child(6) { left: 33%; top: 45%; animation-delay: -6s; animation-duration: 12s; width: 2px; height: 2px; }
+@keyframes vet-dust {
+  0% { opacity: 0; transform: translate(0, 0); }
+  20% { opacity: 0.7; }
+  80% { opacity: 0.5; }
+  100% { opacity: 0; transform: translate(14px, -70px); }
+}
+
+/* strato davanti alla fila: penombra ai lati, sfumata anche in alto e in basso (immagine SVG disegnata una volta sola,
+   niente maschere CSS), e pozza di luce sul ripiano */
+.vet-front {
+  z-index: 2;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><defs><linearGradient id='h'><stop offset='0' stop-color='%23060a08' stop-opacity='0.72'/><stop offset='0.1' stop-color='%23060a08' stop-opacity='0.45'/><stop offset='0.23' stop-color='%23060a08' stop-opacity='0'/><stop offset='0.77' stop-color='%23060a08' stop-opacity='0'/><stop offset='0.9' stop-color='%23060a08' stop-opacity='0.45'/><stop offset='1' stop-color='%23060a08' stop-opacity='0.72'/></linearGradient><linearGradient id='v' x2='0' y2='1'><stop offset='0' stop-color='white' stop-opacity='0'/><stop offset='.1' stop-color='white'/><stop offset='.93' stop-color='white'/><stop offset='1' stop-color='white' stop-opacity='0'/></linearGradient><mask id='m'><rect width='100' height='100' fill='url(%23v)'/></mask></defs><rect width='100' height='100' fill='url(%23h)' mask='url(%23m)'/></svg>") center / 100% 100% no-repeat;
+}
+@media (min-width: 640px) {
+  .vet-front { background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><defs><linearGradient id='h'><stop offset='0' stop-color='%23060a08' stop-opacity='0.7'/><stop offset='0.12' stop-color='%23060a08' stop-opacity='0.45'/><stop offset='0.29' stop-color='%23060a08' stop-opacity='0'/><stop offset='0.71' stop-color='%23060a08' stop-opacity='0'/><stop offset='0.88' stop-color='%23060a08' stop-opacity='0.45'/><stop offset='1' stop-color='%23060a08' stop-opacity='0.7'/></linearGradient><linearGradient id='v' x2='0' y2='1'><stop offset='0' stop-color='white' stop-opacity='0'/><stop offset='.1' stop-color='white'/><stop offset='.93' stop-color='white'/><stop offset='1' stop-color='white' stop-opacity='0'/></linearGradient><mask id='m'><rect width='100' height='100' fill='url(%23v)'/></mask></defs><rect width='100' height='100' fill='url(%23h)' mask='url(%23m)'/></svg>"); }
+}
+@media (min-width: 1024px) {
+  .vet-front { background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><defs><linearGradient id='h'><stop offset='0' stop-color='%23060a08' stop-opacity='0.72'/><stop offset='0.2' stop-color='%23060a08' stop-opacity='0.5'/><stop offset='0.37' stop-color='%23060a08' stop-opacity='0'/><stop offset='0.63' stop-color='%23060a08' stop-opacity='0'/><stop offset='0.8' stop-color='%23060a08' stop-opacity='0.5'/><stop offset='1' stop-color='%23060a08' stop-opacity='0.72'/></linearGradient><linearGradient id='v' x2='0' y2='1'><stop offset='0' stop-color='white' stop-opacity='0'/><stop offset='.1' stop-color='white'/><stop offset='.93' stop-color='white'/><stop offset='1' stop-color='white' stop-opacity='0'/></linearGradient><mask id='m'><rect width='100' height='100' fill='url(%23v)'/></mask></defs><rect width='100' height='100' fill='url(%23h)' mask='url(%23m)'/></svg>"); }
+}
+.vet-pool {
+  position: absolute;
+  left: calc(50% - var(--box-w) * 0.6);
+  width: calc(var(--box-w) * 1.2);
+  top: calc(var(--shelf) - 1rem);
+  height: 2rem;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 242, 215, 0.4), rgba(255, 236, 200, 0.13) 65%, transparent);
+}
+
+/* accensione all'arrivo della vetrina: un breve sfarfallio, poi luce piena */
+.vet-light { opacity: 0; }
+.vet-stage[data-lit] .vet-light { opacity: 1; animation: vet-on 0.8s steps(1, end); }
+@keyframes vet-on {
+  0% { opacity: 0; }
+  14% { opacity: 0.85; }
+  24% { opacity: 0.15; }
+  36% { opacity: 1; }
+  48% { opacity: 0.55; }
+  62%, 100% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vet-stage[data-lit] .vet-light { animation: none; }
+  .vet-dust > i { animation: none; opacity: 0.4; }
+}
 
 /* frecce della vetrina */
 .vet-arrow {
+  position: absolute;
+  z-index: 20;
+  top: calc(var(--box-top) + var(--box-h) * 0.45 - 1.375rem);
   display: grid;
   place-items: center;
   width: 2.75rem;
@@ -246,7 +448,11 @@ body {
   transform: scale(1.06);
 }
 @media (min-width: 1024px) {
-  .vet-arrow { width: 3.25rem; height: 3.25rem; }
+  .vet-arrow { width: 3.25rem; height: 3.25rem; top: calc(var(--box-top) + var(--box-h) * 0.45 - 1.625rem); }
+}
+/* su telefono le frecce stanno ai lati del logo, sotto il ripiano: sopra i cofanetti fermerebbero lo swipe */
+@media (max-width: 639px) {
+  .vet-arrow { top: calc(var(--shelf) + 2.75rem); }
 }
 
 /* "Vendilo con me": linea d'oro con le quattro tappe */
@@ -346,16 +552,17 @@ body {
 .btn-wa small { display: block; font-size: 0.7rem; opacity: 0.85; line-height: 1.3; }
 .btn-wa svg { width: 1.05rem; height: 1.05rem; }
 
-/* grana leggera su tutto il sito */
+/* grana leggera su tutto il sito: una tessera di rumore già pronta (nero con trasparenza, public/grana.png),
+   stesso effetto del vecchio rumore SVG in "moltiplica" al 3,5%, ma senza fusione: il telefono non deve
+   rimescolare tutto lo schermo a ogni fotogramma mentre scorre */
 .grain::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 60;
-  opacity: 0.035;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-image: url("/grana.png");
+  background-size: 160px 160px;
 }
 
 /* Guilloché "Clous de Paris": il motivo a piramidi dei quadranti, in puro CSS (si somma al colore di fondo) */
@@ -380,18 +587,26 @@ body {
   overflow: hidden;
   isolation: isolate;
 }
+/* una striscia larga metà della sezione (prima era un livello grande quattro volte la sezione): su telefono e
+   tablet resta ferma, con il mouse attraversa lentamente il guilloché */
 .sheen::before {
   content: "";
   position: absolute;
-  inset: -50%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(105deg, transparent 42%, rgba(255, 236, 190, 0.13) 50%, transparent 58%);
-  animation: sheen 9s ease-in-out infinite alternate;
+  background: linear-gradient(105deg, transparent 20%, rgba(255, 236, 190, 0.13) 50%, transparent 80%);
+  transform: translateX(55%);
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .sheen::before { animation: sheen 9s ease-in-out infinite alternate; }
 }
 @keyframes sheen {
-  from { transform: translateX(-35%); }
-  to { transform: translateX(35%); }
+  from { transform: translateX(-40%); }
+  to { transform: translateX(140%); }
 }
 
 /* Marche in scorrimento continuo */
@@ -475,7 +690,6 @@ body {
   border-radius: 9999px;
 }
 .intro-hand {
-  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.55));
 }
 .intro-ring {
   animation: intro-ring 1.4s steps(40, end) 0.35s both;
@@ -791,12 +1005,31 @@ html[data-intro="seen"] .intro-splash {
 .veil.veil-dark i:nth-child(4) {
   background: linear-gradient(to bottom, rgb(8 14 11 / 0.82) 0%, rgb(8 14 11 / 0.6) 45%, rgb(8 14 11 / 0) 100%);
 }
+/* su telefono e tablet niente sfocature: tre sfocature mascherate sopra una pagina che scorre vanno ricalcolate a ogni
+   fotogramma, ed è proprio quando scorri che il telefono deve fare il meno possibile. Resta il velo di colore, un po'
+   più pieno al posto della sfocatura */
+@media (hover: none), (pointer: coarse) {
+  .veil i:nth-child(1),
+  .veil i:nth-child(2),
+  .veil i:nth-child(3) {
+    display: none;
+  }
+  .veil i:nth-child(4) {
+    background: linear-gradient(to bottom, rgb(241 233 216 / 0.94) 0%, rgb(241 233 216 / 0.78) 45%, rgb(241 233 216 / 0) 100%);
+  }
+  .veil.veil-dark i:nth-child(4) {
+    background: linear-gradient(to bottom, rgb(8 14 11 / 0.92) 0%, rgb(8 14 11 / 0.72) 45%, rgb(8 14 11 / 0) 100%);
+  }
+}
 
 /* ---------------------------------------------------------------------------------------------
    Lunetta dei contatti (ContactBezel): ghiera che scatta, lancette che girano, contatti a ventaglio
    --------------------------------------------------------------------------------------------- */
+/* l'ombra è un box-shadow (la lunetta è rotonda): prima era un filtro drop-shadow su tutta la lunetta, che il
+   telefono ricalcolava a ogni scatto della lancetta dei secondi, 8 volte al secondo, su ogni pagina */
 .bezel-btn {
-  filter: drop-shadow(0 10px 14px rgb(0 20 12 / 0.45)) drop-shadow(0 2px 3px rgb(0 0 0 / 0.35));
+  border-radius: 9999px;
+  box-shadow: 0 10px 14px rgb(0 20 12 / 0.45), 0 2px 3px rgb(0 0 0 / 0.35);
   -webkit-tap-highlight-color: transparent;
   transition: scale 0.2s ease;
 }
@@ -885,7 +1118,6 @@ html[data-intro="seen"] .intro-splash {
 /* punto luminoso del triangolo e riflesso sul vetro mentre rotola */
 .bezel-lume {
   background: radial-gradient(circle, rgb(255 251 225 / 0.95) 0 30%, rgb(255 236 170 / 0.45) 55%, transparent 72%);
-  mix-blend-mode: screen;
   opacity: 0;
   transition: opacity 0.6s ease;
 }
@@ -896,8 +1128,7 @@ html[data-intro="seen"] .intro-splash {
   content: "";
   position: absolute;
   inset: -20%;
-  background: linear-gradient(115deg, transparent 40%, rgb(255 246 214 / 0.18) 47%, rgb(255 252 236 / 0.42) 50%, rgb(255 246 214 / 0.18) 53%, transparent 60%);
-  mix-blend-mode: screen;
+  background: linear-gradient(115deg, transparent 40%, rgb(255 246 214 / 0.14) 47%, rgb(255 252 236 / 0.34) 50%, rgb(255 246 214 / 0.14) 53%, transparent 60%);
   transform: translateX(-120%);
 }
 .is-pill .bezel-glint::before {
@@ -910,8 +1141,20 @@ html[data-intro="seen"] .intro-splash {
 .bezel-hint {
   display: none;
 }
+/* lancette con l'ombra già nell'immagine (public/lunetta/*-ombra.webp), ognuna su un suo livello: a ogni scatto
+   la scheda grafica le ruota senza ridisegnare la lunetta */
 .bezel-hands img {
-  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.55));
+  will-change: transform;
+}
+.bezel-backdrop {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0s linear 0.5s;
+}
+.bezel-backdrop.is-on {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s ease, visibility 0s;
 }
 
 .bezel-item {

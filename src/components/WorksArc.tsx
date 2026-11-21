@@ -1,5 +1,6 @@
 "use client";
 import { useInView } from "motion/react";
+import { sinceScroll, whenScrollIdle } from "@/lib/scrollIdle";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { works } from "@/data/works";
 
@@ -82,8 +83,17 @@ export default function WorksArc() {
     if (!inView || touched.current || reduced.current) return;
     const keys = [50, 84, 16, 50];
     const T = 3400;
-    const t0 = performance.now();
+    let t0 = 0;
+    let prev = 0;
     const step = (t: number) => {
+      // se intanto si riprende a scorrere, la linea si ferma dov'è (niente ridisegno della foto) e riparte dopo
+      if (sinceScroll() < 150) {
+        t0 += t - prev;
+        prev = t;
+        lineAnim.current = requestAnimationFrame(step);
+        return;
+      }
+      prev = t;
       const k = Math.min(1, (t - t0) / T);
       const seg = k * 3;
       const i = Math.min(2, Math.floor(seg));
@@ -92,8 +102,15 @@ export default function WorksArc() {
       setLine(keys[i] + (keys[i + 1] - keys[i]) * e);
       if (k < 1) lineAnim.current = requestAnimationFrame(step);
     };
-    lineAnim.current = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(lineAnim.current);
+    // parte quando la pagina si ferma: ridisegnare la foto a ogni fotogramma mentre il dito scorre farebbe scattare
+    const cancel = whenScrollIdle(() => {
+      t0 = prev = performance.now();
+      lineAnim.current = requestAnimationFrame(step);
+    }, 300);
+    return () => {
+      cancel();
+      cancelAnimationFrame(lineAnim.current);
+    };
   }, [cur, inView, setLine]);
 
   const go = useCallback(
@@ -293,7 +310,8 @@ function Reel({ cur, onPick }: { cur: number; onPick: (k: number) => void }) {
   }, []);
 
   useEffect(() => {
-    if (!inView || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // su telefono e tablet i tondini non scorrono da soli: si sfogliano col dito
+    if (!inView || window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     let raf = 0;
     let last = performance.now();
     const tick = (t: number) => {
