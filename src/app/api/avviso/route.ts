@@ -52,7 +52,7 @@ export async function POST(req: Request) {
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       from: process.env.CONTACT_FROM || "Sito RL Lab Watches <onboarding@resend.dev>",
-      to: [process.env.CONTACT_TO || site.email],
+      to: [process.env.CONTACT_TO || site.formsTo],
       ...(email ? { reply_to: email } : {}),
       subject: `Avviso vetrina (${interessi.join(" e ")})${brand ? ` – ${brand}` : ""} – ${nome} ${cognome}`,
       text: lines.join("\n"),

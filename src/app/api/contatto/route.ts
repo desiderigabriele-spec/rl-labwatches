@@ -62,7 +62,7 @@ export async function POST(req: Request) {
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       from: process.env.CONTACT_FROM || "Sito RL Lab Watches <onboarding@resend.dev>",
-      to: [process.env.CONTACT_TO || site.email],
+      to: [process.env.CONTACT_TO || site.formsTo],
       reply_to: email,
       subject,
       text: lines.join("\n"),
