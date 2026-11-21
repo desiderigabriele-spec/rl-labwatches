@@ -85,7 +85,7 @@ export default function Chat() {
     setWatch(draft.trim());
   };
 
-  const msgs: Msg[] = [{ from: "you", text: "Ciao, sono Roberto. Di cosa hai bisogno?" }];
+  const msgs: Msg[] = [{ from: "you", text: "Ciao, sono Roberto. Di cosa hai bisogno? Rispondi qui sotto, oppure usa i pulsanti in alto." }];
   if (topic) {
     msgs.push({ from: "me", text: topic.label }, { from: "you", text: topic.ask });
     if (watch !== null) {
@@ -144,6 +144,26 @@ export default function Chat() {
                 Ricomincia
               </button>
             )}
+          </div>
+
+          {/* subito, senza domande: chi sa già cosa vuole */}
+          <div className="grid grid-cols-4 gap-1.5 border-b border-cream/10 px-3 py-2.5">
+            <a href={whatsappLink(text)} target="_blank" rel="noopener noreferrer" className="chat-quick">
+              <WhatsAppIcon className="h-[18px] w-[18px]" />
+              WhatsApp
+            </a>
+            <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="chat-quick">
+              <span aria-hidden className="text-[1rem] leading-[18px]">☏</span>
+              Chiama
+            </a>
+            <a href={mail} className="chat-quick">
+              <span aria-hidden className="text-[1rem] leading-[18px]">✉</span>
+              Email
+            </a>
+            <Link href="/preventivo" onClick={() => setOpen(false)} className="chat-quick">
+              <span aria-hidden className="text-[1rem] leading-[18px]">✎</span>
+              Preventivo
+            </Link>
           </div>
 
           <div ref={body} className="flex-1 space-y-2.5 overflow-y-auto overscroll-contain px-4 py-4">

@@ -969,6 +969,20 @@ body {
   color: var(--color-cream);
   transition: background-color 0.2s ease;
 }
+.chat-quick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 0.7rem;
+  padding: 0.5rem 0.2rem;
+  font-size: 0.66rem;
+  font-weight: 500;
+  color: var(--color-cream);
+  background: rgb(245 241 232 / 0.05);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.chat-quick:hover { background: rgb(215 179 104 / 0.15); color: var(--color-gold-3); }
 .chat-panel { transform-origin: bottom right; animation: chat-in 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .chat-msg { animation: chat-in 0.25s ease both; }
 .chat-hint { animation: chat-in 0.4s ease both; }
