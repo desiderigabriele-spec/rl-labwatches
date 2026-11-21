@@ -27,7 +27,7 @@ export const legal = {
       ],
       [
         "p",
-        "Avviso di apertura della vetrina: se chiedi di essere avvisato quando apre la vetrina online (gennaio 2027) raccogliamo nome, cognome, indirizzo email o numero di telefono, se ti interessa acquistare, vendere o entrambe le cose ed eventualmente la marca che stavi guardando."
+        "Avviso di apertura della vetrina: se chiedi di essere avvisato quando apre la vetrina online (gennaio 2027) raccogliamo nome, cognome, indirizzo email e/o numero di telefono (basta uno dei due), se ti interessa acquistare, vendere o entrambe le cose ed eventualmente la marca che stavi guardando."
       ],
       [
         "p",
@@ -99,7 +99,7 @@ export const legal = {
       ],
       [
         "note",
-        "Ultimo aggiornamento: 20/11/2026"
+        "Ultimo aggiornamento: 21/11/2026"
       ]
     ]
   },

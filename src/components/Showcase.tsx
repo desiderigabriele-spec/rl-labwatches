@@ -223,11 +223,11 @@ export default function Showcase({
   const [reduced, setReduced] = useState(false);
   // cofanetto toccato: si monta la sua foto ravvicinata e parte l'ingrandimento
   const [entering, setEntering] = useState<number | null>(null);
-  const [notify, setNotify] = useState<{ open: boolean; brand?: string; image?: string; intent?: Intent }>({ open: false });
+  const [notify, setNotify] = useState<{ open: boolean; brand?: string; watch?: Brand; image?: string; intent?: Intent }>({ open: false });
   const router = useRouter();
 
   const openNotify = (o: { brand?: Brand; intent?: Intent } = {}) =>
-    setNotify({ open: true, brand: o.brand?.name, image: o.brand?.vicino?.src ?? (o.intent === "vendere" ? "/vendi/restauro.webp" : undefined), intent: o.intent });
+    setNotify({ open: true, brand: o.brand?.name, watch: o.brand, image: o.brand?.vicino?.src ?? (o.intent === "vendere" ? "/vendi/restauro.webp" : undefined), intent: o.intent });
   const href = (k: number) => `/shop/marca/${slots[k]?.slug}`;
 
   useEffect(() => setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches), []);
@@ -631,7 +631,7 @@ export default function Showcase({
       )}
 
       {cta && <div className="relative mt-12 text-center sm:mt-16">{cta}</div>}
-      <NotifyDialog open={notify.open} brand={notify.brand} image={notify.image} intent={notify.intent} onClose={() => setNotify((n) => ({ ...n, open: false }))} />
+      <NotifyDialog open={notify.open} brand={notify.brand} watch={notify.watch} image={notify.image} intent={notify.intent} onClose={() => setNotify((n) => ({ ...n, open: false }))} />
     </section>
   );
 }
