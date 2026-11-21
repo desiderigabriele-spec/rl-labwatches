@@ -1,5 +1,5 @@
 // Testi legali.
-// - privacy e cookie: riscritti per il nuovo sito (niente Analytics/Ads, hosting Vercel, modulo via email).
+// - privacy e cookie: riscritti per il nuovo sito (Analytics e Clarity solo con consenso, hosting Vercel, modulo via email).
 //   BOZZA da far verificare a un consulente prima della pubblicazione definitiva.
 // - termini, note legali, spedizioni: testi del vecchio sito, con il dominio corretto.
 export type LegalBlock = ["h" | "p" | "note", string];
@@ -35,7 +35,7 @@ export const legal = {
       ],
       [
         "p",
-        "Il Sito non utilizza strumenti di analisi statistica di terze parti, pubblicità o profilazione (come Google Analytics, Google Ads o Facebook Ads). Conta soltanto, in forma anonima e aggregata, quante pagine vengono viste ogni giorno e quante volte viene toccato il pulsante WhatsApp: non usa cookie, non salva indirizzi IP né altri dati che permettano di riconoscerti."
+        "Statistiche: solo se lo accetti dal banner dei cookie, il Sito usa Google Analytics 4 (Google Ireland Ltd.) e Microsoft Clarity (Microsoft Ireland Operations Ltd.) per capire in forma aggregata come viene usato: pagine viste, tempo di permanenza, tipo di dispositivo, provenienza approssimativa, clic e scorrimento nelle pagine. L'indirizzo IP è anonimizzato; Clarity maschera i testi inseriti nei moduli. Non facciamo pubblicità né profilazione. Senza consenso nessuno di questi strumenti viene caricato. Il Sito conta inoltre, in forma anonima e aggregata e senza cookie, quante pagine vengono viste e quante volte viene toccato il pulsante WhatsApp."
       ],
       [
         "h",
@@ -205,11 +205,20 @@ export const legal = {
       ],
       [
         "p",
-        "Il sito www.rl-labwatches.it non utilizza cookie di profilazione, cookie pubblicitari né cookie di analisi statistica di terze parti. Per questo motivo non viene mostrato alcun banner per la raccolta del consenso."
+        "Il sito www.rl-labwatches.it non utilizza cookie di profilazione né cookie pubblicitari. Usa cookie di statistica di terze parti solo con il tuo consenso, chiesto con il banner alla prima visita:"],
+      [
+        "p",
+        "Google Analytics 4 (Google Ireland Ltd.): cookie _ga e _ga_*, durata fino a 2 anni, per contare visite e pagine viste in forma aggregata, con indirizzo IP anonimizzato. Informativa: policies.google.com/privacy."],
+      [
+        "p",
+        "Microsoft Clarity (Microsoft Ireland Operations Ltd.): cookie _clck e _clsk, durata fino a 1 anno, per capire in forma aggregata come vengono usate le pagine (clic, scorrimento, mappe di calore, registrazioni anonime della navigazione con i testi dei moduli mascherati). Informativa: privacy.microsoft.com."],
+      [
+        "p",
+        "Puoi cambiare scelta in qualsiasi momento con \"Preferenze cookie\" in fondo a ogni pagina. Se rifiuti, il Sito funziona allo stesso modo."
       ],
       [
         "p",
-        "Il Sito usa esclusivamente una memoria tecnica del browser (sessionStorage) per ricordare, durante la sola sessione di navigazione, che l'animazione introduttiva è già stata mostrata. Questa informazione non contiene dati personali, non viene inviata ai nostri server e si cancella alla chiusura della scheda del browser. I caratteri tipografici sono serviti direttamente dal Sito, senza collegamenti a servizi esterni."
+        "Il Sito usa inoltre una memoria tecnica del browser: localStorage per ricordare la tua scelta sui cookie, e sessionStorage per ricordare, durante la sola sessione di navigazione, che l'animazione introduttiva è già stata mostrata. Questa informazione non contiene dati personali, non viene inviata ai nostri server e si cancella alla chiusura della scheda del browser. I caratteri tipografici sono serviti direttamente dal Sito, senza collegamenti a servizi esterni."
       ],
       [
         "h",
@@ -237,7 +246,7 @@ export const legal = {
       ],
       [
         "note",
-        "Ultimo aggiornamento: 07/11/2026"
+        "Ultimo aggiornamento: 21/11/2026"
       ]
     ]
   },
