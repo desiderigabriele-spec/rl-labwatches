@@ -441,9 +441,9 @@ export default function Showcase({
             <h2 id="vetrina-titolo" className="mt-4 font-display text-4xl font-light leading-[1.04] sm:text-6xl">
               {title2 ?? (
                 <>
-                  Compri un orologio revisionato.
+                  Compra e vendi
                   <br />
-                  <em className="text-gold-3">Vendi il tuo al prezzo giusto.</em>
+                  <em className="text-gold-3">con chi li apre ogni giorno.</em>
                 </>
               )}
             </h2>
