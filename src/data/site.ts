@@ -7,7 +7,10 @@ export const site = {
   description:
     "Roberto Landi, artigiano di orologi di lusso a Pistoia: restauro, revisione e riparazione di Rolex, Patek Philippe, Audemars Piguet, Omega e altri grandi marchi. Spedizione sicura in tutto il mondo.",
   url: "https://www.rl-labwatches.it",
-  email: "rlabwatches@gmail.com",
+  email: "info@rl-labwatches.it",
+  // dove arrivano le richieste dei moduli (Resend): finché Resend non è collegato al dominio può consegnare solo
+  // all'indirizzo con cui è stato registrato
+  formsTo: "rlabwatches@gmail.com",
   phone: "+39 328 772 5925",
   whatsapp: "393287725925",
   address: {
