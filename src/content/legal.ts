@@ -35,7 +35,7 @@ export const legal = {
       ],
       [
         "p",
-        "Statistiche: solo se lo accetti dal banner dei cookie, il Sito usa Google Analytics 4 (Google Ireland Ltd.) e Microsoft Clarity (Microsoft Ireland Operations Ltd.) per capire in forma aggregata come viene usato: pagine viste, tempo di permanenza, tipo di dispositivo, provenienza approssimativa, clic e scorrimento nelle pagine. L'indirizzo IP è anonimizzato; Clarity maschera i testi inseriti nei moduli. Non facciamo pubblicità né profilazione. Senza consenso nessuno di questi strumenti viene caricato. Il Sito conta inoltre, in forma anonima e aggregata e senza cookie, quante pagine vengono viste e quante volte viene toccato il pulsante WhatsApp."
+        "Statistiche: solo se lo accetti dal banner dei cookie, il Sito usa Google Analytics 4 (Google Ireland Ltd.) e Microsoft Clarity (Microsoft Ireland Operations Ltd.) per capire in forma aggregata come viene usato: pagine viste, tempo di permanenza, tipo di dispositivo, provenienza approssimativa, clic e scorrimento nelle pagine. L'indirizzo IP è anonimizzato; Clarity maschera i testi inseriti nei moduli. Non facciamo pubblicità né profilazione. Senza consenso nessuno di questi strumenti viene caricato. Il Sito conta inoltre, in forma anonima e aggregata e senza cookie, quante pagine vengono viste e quante volte viene toccato il pulsante WhatsApp, anche con Vercel Web Analytics (Vercel Inc.), che non usa cookie e non conserva indirizzi IP né dati che permettano di riconoscerti."
       ],
       [
         "h",
