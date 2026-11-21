@@ -10,6 +10,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 import NavDirection from "@/components/NavDirection";
 import OffscreenPause from "@/components/OffscreenPause";
 import JsonLd from "@/components/JsonLd";
+import { Analytics } from "@vercel/analytics/next";
 import Consent from "@/components/Consent";
 import ContatoreVisite from "@/components/ContatoreVisite";
 import { localBusinessLd, OG_IMAGE, websiteLd } from "@/lib/seo";
@@ -59,6 +60,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <NavDirection />
         <OffscreenPause />
         <Consent />
+        {/* statistiche di Vercel: senza cookie né dati personali, quindi fuori dal banner del consenso */}
+        <Analytics />
       </body>
     </html>
   );
