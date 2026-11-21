@@ -215,10 +215,16 @@ body {
 }
 @media (min-width: 640px) { .sell-mini { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .sell-mini li { display: flex; align-items: center; gap: 0.6rem; font-family: var(--font-display), serif; font-size: 1.02rem; line-height: 1.1; color: rgb(245 241 232 / 0.85); }
-.sell-mini-bead { flex: none; width: 2.5rem; height: 2.5rem; border-radius: 9999px; overflow: hidden; border: 1.5px solid var(--color-gold-2); }
+.sell-mini-bead { flex: none; display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 9999px; border: 1px solid rgb(215 179 104 / 0.6); color: var(--color-gold-3); background: radial-gradient(circle at 35% 25%, rgb(215 179 104 / 0.14), transparent 70%); }
 .sell-mini li.is-key { color: var(--color-gold-3); }
-.sell-mini li.is-key .sell-mini-bead { border-color: var(--color-gold-3); box-shadow: 0 0 14px rgb(215 179 104 / 0.45); }
+.sell-mini li.is-key .sell-mini-bead { border-color: var(--color-gold-3); background: radial-gradient(circle at 35% 25%, rgb(215 179 104 / 0.3), rgb(215 179 104 / 0.06) 70%); box-shadow: 0 0 14px rgb(215 179 104 / 0.45); }
 .sell-band .btn-gold { justify-self: start; }
+
+/* vetrina in movimento a mano: fasci, aloni e riflessi (fusioni di luce e sfocature) si abbassano e tornano a fila ferma */
+.vet-strip [data-glow],
+.vet-strip [data-boxlight] { transition: opacity 0.45s ease; }
+.vet-strip.is-moving [data-glow],
+.vet-strip.is-moving [data-boxlight] { opacity: 0 !important; transition-duration: 0.12s; }
 
 /* frecce della vetrina */
 .vet-arrow {
@@ -231,8 +237,7 @@ body {
   background: rgb(11 16 13 / 0.6);
   color: var(--color-gold-3);
   font-size: 1.05rem;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: rgb(11 16 13 / 0.78);
   transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
 .vet-arrow:hover {
