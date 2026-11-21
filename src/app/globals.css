@@ -409,6 +409,67 @@ body {
   background: radial-gradient(closest-side, rgba(255, 242, 215, 0.4), rgba(255, 236, 200, 0.13) 65%, transparent);
 }
 
+/* Su computer: un faretto per ogni cofanetto, dentro la fila (scorre con il suo cofanetto), come una vera vetrina.
+   Restano immagini e sfumature ferme: niente filtri o fusioni. La luce unica al centro resta solo su telefono e tablet. */
+.vet-own { display: none; }
+@media (min-width: 1024px) {
+  .vet-slot { position: relative; }
+  .vet-own { display: block; position: absolute; inset: 0; pointer-events: none; z-index: -1; }
+  .vet-strip { isolation: isolate; }
+  .vet-own-lamp {
+    position: absolute;
+    left: calc(50% - 1.75rem);
+    top: calc(var(--lamp) - var(--box-top) - 0.875rem);
+    width: 3.5rem;
+    height: 0.875rem;
+    border-radius: 0 0 999px 999px;
+    background: linear-gradient(#2a2f2c, #121513);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  .vet-own-lamp::after {
+    content: "";
+    position: absolute;
+    left: 0.625rem;
+    right: 0.625rem;
+    bottom: 3px;
+    height: 0.375rem;
+    border-radius: 999px;
+    background: radial-gradient(ellipse at 50% 40%, #fffdf6, #ffe9bf 60%, #d9b46b);
+    box-shadow: 0 0 6px 2px rgba(255, 240, 205, 0.9), 0 0 20px 7px rgba(255, 226, 170, 0.4);
+  }
+  .vet-own-halo {
+    position: absolute;
+    left: calc(50% - 7rem);
+    top: calc(var(--lamp) - var(--box-top) - 4.5rem);
+    width: 14rem;
+    height: 7rem;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(255, 236, 200, 0.28), transparent);
+  }
+  .vet-own-beam {
+    position: absolute;
+    top: calc(var(--lamp) - var(--box-top));
+    height: calc(var(--shelf) - var(--lamp));
+    width: calc((var(--shelf) - var(--lamp)) * 880 / 600);
+    left: calc(50% - (var(--shelf) - var(--lamp)) * 880 / 600 / 2);
+    max-width: none;
+    opacity: 0.85;
+  }
+  /* pozza di luce sul ripiano sotto ogni cofanetto */
+  .vet-ledge::after {
+    content: "";
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    top: -0.9rem;
+    height: 1.9rem;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(255, 242, 215, 0.34), rgba(255, 236, 200, 0.1) 65%, transparent);
+  }
+  /* la luce fissa al centro non serve più */
+  .vet-back, .vet-pool { display: none; }
+}
+
 /* accensione all'arrivo della vetrina: un breve sfarfallio, poi luce piena */
 .vet-light { opacity: 0; }
 .vet-stage[data-lit] .vet-light { opacity: 1; animation: vet-on 0.8s steps(1, end); }

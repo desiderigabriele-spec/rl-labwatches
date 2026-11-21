@@ -83,6 +83,13 @@ const Slot = memo(function Slot({
 }) {
   return (
     <div data-slot className="vet-slot" aria-hidden={copy || undefined}>
+      {/* su computer ogni cofanetto ha il suo faretto, che scorre con lui (immagine già sfumata, nessun effetto) */}
+      <span aria-hidden className="vet-own">
+        <span className="vet-own-halo" />
+        <span className="vet-own-lamp" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/vetrina/fila/fascio.webp" alt="" draggable={false} decoding="async" className="vet-own-beam" />
+      </span>
       <button
         type="button"
         tabIndex={copy ? -1 : undefined}
