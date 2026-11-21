@@ -10,6 +10,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 import NavDirection from "@/components/NavDirection";
 import OffscreenPause from "@/components/OffscreenPause";
 import JsonLd from "@/components/JsonLd";
+import Consent from "@/components/Consent";
 import ContatoreVisite from "@/components/ContatoreVisite";
 import { localBusinessLd, OG_IMAGE, websiteLd } from "@/lib/seo";
 import { site } from "@/data/site";
@@ -57,6 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SmoothScroll />
         <NavDirection />
         <OffscreenPause />
+        <Consent />
       </body>
     </html>
   );

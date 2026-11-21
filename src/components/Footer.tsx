@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { legalNav, site, siteMap, whatsappLink } from "@/data/site";
+import { ConsentButton } from "./Consent";
 
 export default function Footer() {
   return (
@@ -47,6 +48,7 @@ export default function Footer() {
             {legalNav.map((n) => (
               <li key={n.href}><Link href={n.href} className="inline-block py-1 hover:text-gold-3">{n.label}</Link></li>
             ))}
+            <li><ConsentButton className="inline-block py-1 text-left hover:text-gold-3" /></li>
             <li className="pt-3"><a href={site.social.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-gold-3">Instagram {site.instagramHandle}</a></li>
             <li><a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-gold-3">Facebook</a></li>
           </ul>
