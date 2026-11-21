@@ -146,6 +146,7 @@ function Slot({
 }
 
 /** Nicchia vuota nella fila: "Il tuo orologio qui?". Toccandola si apre l'avviso con "vendere" già scelto. */
+const VUOTO = "/vetrina/vuoto.webp";
 function EmptySlot({ light, onSelect, lite = false }: { light: Light; onSelect: () => void; lite?: boolean }) {
   const lvl = light === "on" ? 1 : light === "idle" ? 0.22 : 0;
   const on = light === "on";
@@ -153,16 +154,22 @@ function EmptySlot({ light, onSelect, lite = false }: { light: Light; onSelect: 
     <div data-slot className="relative flex w-[66vw] shrink-0 flex-col items-center px-3 sm:w-[40vw] lg:w-[25vw] lg:px-6 xl:w-[22rem]">
       <button type="button" onClick={onSelect} aria-label="Il tuo orologio qui? Vendilo con me" className="group relative block w-full cursor-pointer outline-none">
         <Spotlight level={lvl} flicker={false} lite={lite} />
+        {/* il cofanetto vuoto (public/vetrina/vuoto.webp, alla stessa scala degli altri); sulla fodera del coperchio
+            l'invito, come un biglietto */}
         <span className="relative mt-6 block aspect-[840/1020] w-full">
           <span
-            className={`absolute inset-x-[14%] bottom-[2%] top-[26%] grid place-items-center rounded-2xl border-[1.5px] border-dashed text-center transition-[border-color,background-color] duration-700 ${
-              on ? "border-gold-3/80 bg-[radial-gradient(ellipse_at_50%_0%,rgba(255,236,180,0.18),transparent_70%)]" : "border-gold-3/35"
-            }`}
+            data-boxshot
+            className="absolute inset-0 transition-[filter] duration-700"
+            style={{ filter: on ? "brightness(1.06) contrast(1.04)" : light === "idle" ? "brightness(0.55) saturate(0.75)" : "brightness(0.16) saturate(0.4)" }}
           >
-            <span className="px-4">
-              <span className={`mx-auto grid h-11 w-11 place-items-center rounded-full border text-2xl transition-colors duration-700 ${on ? "border-gold-3 text-gold-3" : "border-gold-3/40 text-gold-3/50"}`}>+</span>
-              <span className={`mt-4 block font-display text-[1.6rem] italic leading-[1.05] transition-colors duration-700 ${on ? "text-[#f6e5b0]" : "text-cream/45"}`}>Il tuo orologio qui?</span>
-              <span className="mt-3 block text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-gold-3">Vendilo con me</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={VUOTO} alt="Cofanetto vuoto" draggable={false} decoding="async" className="h-full w-full select-none object-contain object-bottom" />
+            {!lite && <BoxLight src={VUOTO} level={lvl} />}
+            <span className="absolute left-[31%] right-[31%] top-[47%] grid place-items-center text-center" style={{ height: "21%" }}>
+              <span>
+                <span className="block font-display text-[clamp(0.95rem,4.4vw,1.35rem)] italic leading-[1.05] text-[#1f3a2c] lg:text-[clamp(0.95rem,1.45vw,1.35rem)]">Il tuo orologio qui?</span>
+                <span className="mt-[0.5em] block text-[clamp(0.42rem,1.7vw,0.56rem)] font-semibold uppercase tracking-[0.22em] text-[#8a6a2a] lg:text-[clamp(0.42rem,0.6vw,0.56rem)]">Vendilo con me</span>
+              </span>
             </span>
           </span>
         </span>
@@ -232,7 +239,7 @@ const SELL_STEPS: { img: string; icon: IconKind; title: string; text: string; ba
   { icon: "canali", img: "/vendi/canali.webp", title: "Su ogni mio canale", text: "Lo promuovo su Instagram, su Facebook e sul sito, finché non trova il suo nuovo polso." },
 ];
 
-const WARM_VETRINA = brands.flatMap((b) => [b.vetrina, ...(b.dial?.sprites ? Object.values(b.dial.sprites) : [])]).filter(Boolean) as string[];
+const WARM_VETRINA = [...brands.flatMap((b) => [b.vetrina, ...(b.dial?.sprites ? Object.values(b.dial.sprites) : [])]), VUOTO].filter(Boolean) as string[];
 
 /** copie della fila: si scorre su quella in mezzo e al bordo si salta di una copia, senza che si veda */
 const COPIES = 3;
