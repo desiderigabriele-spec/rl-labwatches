@@ -6,12 +6,20 @@
  * alone sulla parete. Va messo come primo figlio di un contenitore relativo; il cono scende fino al ripiano.
  * level: 0 spento, 0.25 luce soffusa, 1 acceso.
  */
-export default function Spotlight({ level, flicker = false, spread = 30 }: { level: number; flicker?: boolean; spread?: number }) {
+export default function Spotlight({ level, flicker = false, spread = 30, lite = false }: { level: number; flicker?: boolean; spread?: number; lite?: boolean }) {
   const on = level > 0.5;
   // forma del cono: gradiente conico centrato verso il basso (180°), largo `spread` gradi per lato
   const cone = (inner: number, outer: number, a: number) =>
     `conic-gradient(from ${180 - outer}deg at 50% 0%, transparent 0deg, rgba(255,238,205,${a * 0.5}) ${outer - inner}deg, rgba(255,244,222,${a}) ${outer}deg, rgba(255,238,205,${a * 0.5}) ${outer + inner}deg, transparent ${outer * 2}deg)`;
   const fade = "linear-gradient(to bottom, #000 0%, #000 60%, rgba(0,0,0,0.6) 85%, transparent 100%)";
+  // lontano dal centro della vetrina: solo la plafoniera, senza alone né fascio (sfocature e fusioni di luce
+  // costano memoria video; su iPhone, moltiplicate per tutta la fila, facevano chiudere la pagina)
+  if (lite)
+    return (
+      <span aria-hidden className="relative z-10 mx-auto block h-3.5 w-14 rounded-b-[999px] bg-gradient-to-b from-[#2a2f2c] to-[#121513]">
+        <span className="absolute inset-x-2.5 bottom-[3px] h-1.5 rounded-[999px]" style={{ background: level > 0 ? "#6f6656" : "#2a2e2b" }} />
+      </span>
+    );
   return (
     <>
       {/* alone sulla parete intorno alla plafoniera */}

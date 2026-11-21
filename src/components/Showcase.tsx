@@ -61,8 +61,11 @@ function Slot({
   onSelect,
   reduced,
   running,
+  lite = false,
 }: {
   running: boolean;
+  /** lontano dal centro: solo la foto del cofanetto, senza faretto, luci né lancette (memoria su iPhone) */
+  lite?: boolean;
   brand: Brand;
   light: Light;
   selected: boolean;
@@ -86,16 +89,18 @@ function Slot({
         className="group relative block w-full cursor-pointer outline-none"
       >
         {/* faretto: plafoniera, fascio conico e pulviscolo */}
-        <Spotlight level={lvl} flicker={light === "on" && !reduced} />
+        <Spotlight level={lvl} flicker={light === "on" && !reduced} lite={lite} />
 
         {/* cofanetto con l'orologio */}
         <span className="relative mt-6 block aspect-[840/1020] w-full">
-          {/* bagliore del colore del quadrante */}
-          <span
-            aria-hidden
-            className="absolute left-1/2 top-[45%] h-1/2 w-[85%] -translate-x-1/2 -translate-y-1/2 rounded-full transition-opacity duration-700"
-            style={{ background: `radial-gradient(closest-side, ${brand.accent}, transparent)`, filter: "blur(28px)", opacity: light === "on" ? 0.6 : light === "idle" ? 0.1 : 0 }}
-          />
+          {/* bagliore del colore del quadrante (solo vicino al centro: la sfocatura costa memoria) */}
+          {!lite && (
+            <span
+              aria-hidden
+              className="absolute left-1/2 top-[45%] h-1/2 w-[85%] -translate-x-1/2 -translate-y-1/2 rounded-full transition-opacity duration-700"
+              style={{ background: `radial-gradient(closest-side, ${brand.accent}, transparent)`, filter: "blur(28px)", opacity: light === "on" ? 0.6 : light === "idle" ? 0.1 : 0 }}
+            />
+          )}
           <span
             data-boxshot
             className="absolute inset-0 transition-[filter,transform] duration-700 ease-out"
@@ -105,7 +110,10 @@ function Slot({
               transform: light === "on" ? "translateY(-6px) scale(1.04)" : "none",
             }}
           >
-            {photo ? (
+            {photo && lite ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={photo} alt={`Cofanetto ${brand.name}`} draggable={false} loading="lazy" className="h-full w-full select-none object-contain object-bottom" />
+            ) : photo ? (
               <>
                 <BoxPhoto brand={brand} run={running && !reduced} />
                 <BoxLight src={photo} level={lvl} />
@@ -119,7 +127,7 @@ function Slot({
         </span>
 
         {/* pozza di luce sul ripiano e ombra del cofanetto */}
-        <LightPool level={lvl} />
+        {!lite && <LightPool level={lvl} />}
       </button>
 
       {/* ripiano in pietra (continuo da una nicchia all'altra) */}
@@ -137,13 +145,13 @@ function Slot({
 }
 
 /** Nicchia vuota nella fila: "Il tuo orologio qui?". Toccandola si apre l'avviso con "vendere" già scelto. */
-function EmptySlot({ light, onSelect }: { light: Light; onSelect: () => void }) {
+function EmptySlot({ light, onSelect, lite = false }: { light: Light; onSelect: () => void; lite?: boolean }) {
   const lvl = light === "on" ? 1 : light === "idle" ? 0.22 : 0;
   const on = light === "on";
   return (
     <div data-slot className="relative flex w-[66vw] shrink-0 flex-col items-center px-3 sm:w-[40vw] lg:w-[25vw] lg:px-6 xl:w-[22rem]">
       <button type="button" onClick={onSelect} aria-label="Il tuo orologio qui? Vendilo con me" className="group relative block w-full cursor-pointer outline-none">
-        <Spotlight level={lvl} flicker={false} />
+        <Spotlight level={lvl} flicker={false} lite={lite} />
         <span className="relative mt-6 block aspect-[840/1020] w-full">
           <span
             className={`absolute inset-x-[14%] bottom-[2%] top-[26%] grid place-items-center rounded-2xl border-[1.5px] border-dashed text-center transition-[border-color,background-color] duration-700 ${
@@ -157,7 +165,7 @@ function EmptySlot({ light, onSelect }: { light: Light; onSelect: () => void }) 
             </span>
           </span>
         </span>
-        <LightPool level={lvl} />
+        {!lite && <LightPool level={lvl} />}
       </button>
       <span aria-hidden className="relative z-10 mt-1 block h-3 w-[calc(100%+1.5rem)] bg-gradient-to-b from-[#3d4440] to-[#161a17] shadow-[0_18px_40px_rgba(0,0,0,0.6)] lg:w-[calc(100%+3rem)]" />
       <div className="mt-9 flex h-9 items-center lg:h-14">
@@ -248,6 +256,14 @@ export default function Showcase({
   };
 
   useEffect(() => setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches), []);
+  // quanti cofanetti per lato hanno faretto, luci e lancette: su telefono se ne vede uno e mezzo, su computer quattro
+  const [radius, setRadius] = useState(1);
+  useEffect(() => {
+    const fit = () => setRadius(window.innerWidth >= 1024 ? 2 : 1);
+    fit();
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, []);
 
   // la fila scorre da sola, all'infinito; si ferma sotto il mouse o al tocco e riparte da sola.
   // Il cofanetto che passa al centro si accende, gli altri restano a luce soffusa.
@@ -433,7 +449,7 @@ export default function Showcase({
       >
         {slots.map((b, k) =>
           b === null ? (
-            <EmptySlot key={k} light={lightOf(k)} onSelect={() => pick(k)} />
+            <EmptySlot key={k} light={lightOf(k)} onSelect={() => pick(k)} lite={Math.abs(k - center) > radius} />
           ) : (
           <Slot
             key={k}
@@ -441,7 +457,8 @@ export default function Showcase({
             light={lightOf(k)}
             selected={selected === k}
             reduced={reduced}
-            running={visible && Math.abs(k - center) <= 2}
+            running={visible && Math.abs(k - center) <= radius}
+            lite={center < 0 ? k > 2 * radius : Math.abs(k - center) > radius}
             onHover={(h) => setHover((cur) => (h ? k : cur === k ? null : cur))}
             onSelect={() => pick(k)}
           />
