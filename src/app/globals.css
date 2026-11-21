@@ -466,6 +466,16 @@ body {
     border-radius: 50%;
     background: radial-gradient(closest-side, rgba(255, 242, 215, 0.34), rgba(255, 236, 200, 0.1) 65%, transparent);
   }
+  /* faretti soffusi; passando con il mouse il cofanetto si accende pieno (solo opacità: la scheda grafica, niente ridisegno) */
+  .vet-own > *,
+  .vet-ledge::after { opacity: 0.45; transition: opacity 0.5s ease; }
+  .vet-own-beam { opacity: 0.38; }
+  .vet-slot:hover .vet-own > *,
+  .vet-slot:hover .vet-ledge::after,
+  .vet-slot:focus-within .vet-own > *,
+  .vet-slot:focus-within .vet-ledge::after { opacity: 1; }
+  .vet-slot:hover .vet-own-beam,
+  .vet-slot:focus-within .vet-own-beam { opacity: 0.95; }
   /* la luce fissa al centro non serve più */
   .vet-back, .vet-pool { display: none; }
 }
