@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion, useInView } from "motion/react";
+import { useInView } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { useWarm } from "@/lib/warm";
 import { brands, type Brand } from "@/data/brands";
@@ -193,7 +193,7 @@ const SPEED = 0.032;
 export default function Showcase({
   eyebrow = "Compravendita · vetrina da gennaio 2027",
   title = "",
-  intro = "Ogni orologio in vetrina passa dal mio banco. Tocca un cofanetto per avvicinarlo: gli orologi in vendita arrivano a gennaio 2027. E se vuoi vendere il tuo, prima lo restauro: vale di più.",
+  intro = "Ogni orologio in vetrina è aperto, controllato e revisionato da me. Gli orologi in vendita arrivano a gennaio 2027; e se vuoi vendere il tuo, prima lo restauro: vale di più.",
   cta,
   locked = true,
 }: {
@@ -232,7 +232,10 @@ export default function Showcase({
       name: slots[k]!.name,
       href: href(k),
       go: (h) => router.push(h),
-      onClose: () => setEntering(null),
+      onClose: () => {
+        setEntering(null);
+        setSelected(null);
+      },
       onTap: locked ? () => openNotify({ brand: slots[k]! }) : undefined,
     });
   };
@@ -322,6 +325,28 @@ export default function Showcase({
   const busyRef = useRef(busy);
   busyRef.current = busy;
 
+  // porta al centro il cofanetto della marca scelta (la copia più vicina a dove sei)
+  const goTo = (slug: string) => {
+    const el = strip.current;
+    if (!el) return;
+    const all = el.querySelectorAll<HTMLElement>("[data-slot]");
+    let best = -1;
+    let dist = Infinity;
+    slots.forEach((b, k) => {
+      if (b?.slug !== slug) return;
+      const d = Math.abs(k - (center < 0 ? one.length : center));
+      if (d < dist) {
+        dist = d;
+        best = k;
+      }
+    });
+    const slot = all[best];
+    if (!slot) return;
+    pauseUntil.current = performance.now() + 6000;
+    autoUntil.current = performance.now() + 900;
+    el.scrollTo({ left: slot.offsetLeft - (el.clientWidth - slot.offsetWidth) / 2, behavior: "smooth" });
+  };
+
   const findCenter = () => {
     const el = strip.current;
     const first = el?.querySelector<HTMLElement>("[data-slot]");
@@ -367,22 +392,7 @@ export default function Showcase({
     };
   }, []);
 
-  // telefono: un cofanetto ogni 3 secondi, con scorrimento morbido che si ferma centrato (scroll-snap)
-  useEffect(() => {
-    if (!visible || reduced || !window.matchMedia("(hover: none)").matches) return;
-    const id = window.setInterval(() => {
-      const el = strip.current;
-      const w = el?.querySelector<HTMLElement>("[data-slot]")?.offsetWidth;
-      if (!el || !w || !copy.current || busyRef.current || performance.now() < pauseUntil.current) return;
-      // salto di una copia, a fila ferma, prima del passo
-      if (el.scrollLeft > copy.current * 1.5) el.scrollLeft -= copy.current;
-      else if (el.scrollLeft < copy.current * 0.5) el.scrollLeft += copy.current;
-      autoUntil.current = performance.now() + 1100;
-      el.scrollBy({ left: w, behavior: "smooth" });
-    }, 3000);
-    return () => window.clearInterval(id);
-  }, [visible, reduced]);
-
+  // su telefono la fila non scorre da sola: si sceglie il marchio qui sopra o si scorre col dito
   useEffect(() => {
     if (!visible || reduced || window.matchMedia("(hover: none)").matches) return;
     let raf = 0;
@@ -431,9 +441,9 @@ export default function Showcase({
             <h2 id="vetrina-titolo" className="mt-4 font-display text-4xl font-light leading-[1.04] sm:text-6xl">
               {title2 ?? (
                 <>
-                  Compri o vendi.
+                  Compri un orologio revisionato.
                   <br />
-                  <em className="text-gold-3">Sempre passato dal mio banco.</em>
+                  <em className="text-gold-3">Vendi il tuo al prezzo giusto.</em>
                 </>
               )}
             </h2>
@@ -441,7 +451,7 @@ export default function Showcase({
           <div>
             <p className="text-[0.95rem] leading-relaxed text-cream/60 sm:text-base">{intro}</p>
             {locked && (
-              <div className="mt-6 flex flex-wrap items-center gap-3">
+              <div className="mt-6 flex items-center gap-2.5 sm:gap-3">
                 <button type="button" onClick={() => openNotify()} className="btn-gold">
                   Avvisami quando apre <span aria-hidden>→</span>
                 </button>
@@ -451,6 +461,22 @@ export default function Showcase({
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* scelta del marchio: tocchi il marchio e la fila va a quell'orologio; scorrendo, si accende il marchio al centro */}
+      <div className="relative mx-auto mt-10 max-w-7xl px-4 sm:mt-14 sm:px-8">
+        <p className="text-center text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-gold-3">Scegli il marchio per vedere l&apos;orologio</p>
+        <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3 lg:grid-cols-6" role="group" aria-label="Marchi in vetrina">
+          {items.map((b) => {
+            const on = slots[hover ?? center]?.slug === b.slug;
+            return (
+              <button key={b.slug} type="button" onClick={() => goTo(b.slug)} aria-pressed={on} className={`brand-chip ${on ? "is-on" : ""}`}>
+                <BrandLogo brand={b} className={b.ratio > 3 ? "h-3 sm:h-4" : "h-6 sm:h-7"} />
+                <span className="sr-only">{b.name}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -469,7 +495,7 @@ export default function Showcase({
         onPointerUp={onUp}
         onPointerCancel={onUp}
         // spazio sopra le plafoniere: l'alone dei faretti sfuma invece di essere tagliato dal bordo della fila
-        className="vet-strip relative mt-0 flex cursor-grab overflow-x-auto pb-4 pt-14 [scrollbar-width:none] active:cursor-grabbing sm:mt-4 [&::-webkit-scrollbar]:hidden"
+        className="vet-strip relative mt-2 flex cursor-grab overflow-x-auto pb-4 pt-14 [scrollbar-width:none] active:cursor-grabbing sm:mt-4 [&::-webkit-scrollbar]:hidden"
       >
         {slots.map((b, k) =>
           b === null ? (
@@ -503,86 +529,30 @@ export default function Showcase({
         ))}
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-8">
-        <AnimatePresence mode="wait">
-          {sel && (
-            <motion.div
-              key={sel.slug}
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 12 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="relative mt-10 grid gap-8 border-t border-cream/10 pt-10 md:grid-cols-[1.2fr_1fr]"
-            >
-              <div>
-                <BrandLogo brand={sel} className={`text-gold-3 ${sel.ratio > 3 ? "h-6" : "h-12"}`} />
-                <h3 className="mt-5 font-display text-4xl font-light sm:text-5xl">
-                  Orologi <em className="text-gold-3">{sel.name}</em>
-                </h3>
-                <p className="mt-5 max-w-xl leading-relaxed text-cream/65">
-                  Ogni {sel.name} in vendita sarà controllato e revisionato nel mio laboratorio prima di arrivare in vetrina, con 12 mesi di garanzia.
-                </p>
-              </div>
-              <div className="flex flex-col justify-end">
-                <p className="leading-relaxed text-cream/60">
-                  {locked
-                    ? "Gli orologi disponibili arrivano a gennaio 2027. Cerchi un modello preciso? Scrivimi: se non ce l\u2019ho, lo cerco per te."
-                    : "Entra per vedere i pezzi disponibili, con le foto di ogni orologio. Cerchi un modello preciso? Scrivimi: se non ce l\u2019ho, lo cerco per te."}
-                </p>
-                <div className="mt-7 flex flex-wrap items-center gap-3">
-                  {locked ? (
-                    <button type="button" onClick={() => openNotify({ brand: sel })} className="btn-gold">
-                      Avvisami · orologi {sel.name} <span aria-hidden>→</span>
-                    </button>
-                  ) : (
-                    <button type="button" onClick={() => selected !== null && router.push(href(selected))} className="btn !border-gold-3 !bg-gold-3 !text-green-2 hover:!bg-cream">
-                      Entra: orologi {sel.name}
-                    </button>
-                  )}
-                  <a href={whatsappLink(`Buongiorno, cerco un orologio ${sel.name}.`)} target="_blank" rel="noopener noreferrer" className="btn !border-cream/40 !text-cream hover:!bg-cream hover:!text-green-2">
-                    <WhatsAppIcon className="h-4 w-4" /> Scrivimi
-                  </a>
-                  <button type="button" onClick={() => setSelected(null)} className="px-3 text-xs uppercase tracking-[0.2em] text-cream/50 hover:text-cream">
-                    Chiudi
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
 
-      {/* chi vende: le quattro tappe, sullo stesso fondo, sotto il ripiano */}
+      {/* chi vende: una fascia compatta sotto il ripiano, con le quattro tappe in piccolo */}
       {locked && (
-        <div id="vendi" className="relative mx-auto mt-14 max-w-7xl scroll-mt-24 px-4 sm:mt-20 sm:px-8">
-          <div className="flex flex-wrap items-end justify-between gap-5 border-t border-cream/10 pt-10">
-            <h3 className="font-display text-3xl font-light leading-[1.05] sm:text-5xl">
-              Vuoi vendere il tuo? <em className="text-gold-3">Prima lo restauro.</em>
-            </h3>
-            <p className="max-w-sm text-sm leading-relaxed text-cream/60">Un rivenditore lo compra com&apos;è. Io prima lo valuto e, se conviene, lo restauro: si vende meglio e a un prezzo più alto.</p>
-          </div>
-          <div className="sell-track sell-dark -mx-4 mt-8 overflow-x-auto px-4 pb-2 pt-3 sm:mx-0 sm:mt-12 sm:overflow-visible sm:px-0">
-            <ol className="sell-rail relative grid min-w-[56rem] grid-cols-4 gap-6 sm:min-w-0">
-              {SELL_STEPS.map((st, i) => (
-                <li key={st.title} className={`sell-step ${st.badge ? "is-key" : ""}`}>
-                  <span className="sell-bead">
-                    <Image src={st.img} alt="" width={240} height={240} sizes="112px" className="h-full w-full object-cover" />
+        <div id="vendi" className="relative mx-auto mt-10 max-w-7xl scroll-mt-24 px-4 sm:mt-14 sm:px-8">
+          <div className="sell-band">
+            <div className="min-w-0">
+              <p className="text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-gold-3">Vuoi vendere il tuo?</p>
+              <p className="mt-1.5 font-display text-2xl font-light leading-tight sm:text-[1.9rem]">
+                Prima <em className="text-gold-3">lo restauro.</em>
+              </p>
+            </div>
+            <ol className="sell-mini" aria-label="Come funziona">
+              {SELL_STEPS.map((st) => (
+                <li key={st.title} className={st.badge ? "is-key" : ""}>
+                  <span className="sell-mini-bead">
+                    <Image src={st.img} alt="" width={96} height={96} sizes="40px" className="h-full w-full object-cover" />
                   </span>
-                  <span className="mt-5 block font-mono text-[0.7rem] tracking-[0.12em] text-gold-3">{String(i + 1).padStart(2, "0")}</span>
-                  {st.badge && <span className="sell-badge">{st.badge}</span>}
-                  <h4 className="mt-2 font-display text-[1.55rem] leading-[1.08]">{st.title}</h4>
-                  <p className="mt-2 text-sm leading-relaxed text-cream/60">{st.text}</p>
+                  <span>{st.title}</span>
                 </li>
               ))}
             </ol>
-          </div>
-          <div className="mt-9 flex flex-wrap items-center gap-5">
-            <button type="button" onClick={() => openNotify({ intent: "vendere" })} className="btn-gold">
-              Affidami il tuo orologio <span aria-hidden>→</span>
+            <button type="button" onClick={() => openNotify({ intent: "vendere" })} className="btn-gold shrink-0">
+              Affidamelo <span aria-hidden>→</span>
             </button>
-            <a href={whatsappLink("Buongiorno Roberto, vorrei affidarle un orologio da vendere.")} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-cream/70 hover:text-gold-3">
-              <WhatsAppIcon className="h-4 w-4" /> o scrivimi su WhatsApp
-            </a>
           </div>
         </div>
       )}
