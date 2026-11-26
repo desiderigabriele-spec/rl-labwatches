@@ -7,11 +7,14 @@ import Filigrana from "./Filigrana";
 
 export default function PageHero({
   eyebrow,
+  h1,
   title,
   intro,
   crumbs,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
+  /** titolo per Google (keyword + città): prende il posto del sopratitolo, con lo stesso aspetto; lo slogan grande resta */
+  h1?: string;
   title: React.ReactNode;
   intro?: React.ReactNode;
   /** percorso della pagina per il breadcrumb (es. [{ name: "Servizi", path: "/servizi" }]) */
@@ -32,10 +35,16 @@ export default function PageHero({
               ))}
             </nav>
           )}
-          <p className="eyebrow">{eyebrow}</p>
-          <h1 className="mt-5 font-display text-5xl font-light leading-[1.05] sm:text-7xl">
-            {typeof title === "string" ? <SplitText text={title} delay={0.1} /> : title}
-          </h1>
+          {h1 ? <h1 className="eyebrow">{h1}</h1> : <p className="eyebrow">{eyebrow}</p>}
+          {h1 ? (
+            <p className="mt-5 font-display text-5xl font-light leading-[1.05] sm:text-7xl">
+              {typeof title === "string" ? <SplitText text={title} delay={0.1} /> : title}
+            </p>
+          ) : (
+            <h1 className="mt-5 font-display text-5xl font-light leading-[1.05] sm:text-7xl">
+              {typeof title === "string" ? <SplitText text={title} delay={0.1} /> : title}
+            </h1>
+          )}
           {intro && <div className="mt-6 max-w-2xl text-lg leading-relaxed text-mute">{intro}</div>}
         </Reveal>
       </div>

@@ -4,7 +4,7 @@ import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({
   title: "Note legali",
-  description: "Note legali del sito di Roberto Landi Lab Watches, laboratorio di orologeria a Pistoia.",
+  description: "Note legali del sito di Roberto Landi Lab Watches, laboratorio di orologeria a Pistoia: titolare, dati fiscali, marchi citati, diritti su testi e immagini.",
   path: "/note-legali",
 });
 

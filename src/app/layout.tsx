@@ -27,7 +27,7 @@ const montserrat = Montserrat({ subsets: ["latin"], weight: ["300", "400", "500"
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: "Roberto Landi: Artigiano Orologi di Lusso a Pistoia | RL Lab Watches", template: "%s | Roberto Landi" },
+  title: { default: "Orologiaio a Pistoia: restauro orologi | Roberto Landi", template: "%s | Roberto Landi" },
   description: site.description,
   applicationName: site.name,
   authors: [{ name: site.owner }],

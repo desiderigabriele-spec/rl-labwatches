@@ -6,9 +6,9 @@ import { whatsappLink } from "@/data/site";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({
-  title: "Marche: Rolex, Patek Philippe, Audemars Piguet",
+  title: "Riparazione Rolex, Patek e Omega a Pistoia",
   description:
-    "Riparazione e restauro di orologi Rolex, Patek Philippe, Audemars Piguet, Cartier, Tudor e Omega a Pistoia. Servizio su misura per ogni grande marchio.",
+    "Riparazione e restauro di Rolex, Patek Philippe, Audemars Piguet, Cartier, Tudor e Omega a Pistoia, da orologiaio indipendente. Preventivo gratuito su foto.",
   path: "/marche",
 });
 
@@ -16,7 +16,7 @@ export default function MarchePage() {
   return (
     <>
       <DarkHero
-        eyebrow="Le marche del mio banco"
+        h1="Riparazione di Rolex, Patek Philippe e grandi marche a Pistoia"
         title={
           <>
             Ogni maison ha i suoi segreti. <em className="text-gold-3">Li conosco a memoria.</em>

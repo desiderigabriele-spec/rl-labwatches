@@ -1,4 +1,10 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Pagina non trovata",
+  description: "La pagina che cercavi non c'è più o ha cambiato indirizzo. Riparti dalla home, dal restauro, dalla compravendita o dai contatti.",
+};
 
 const LINKS = [
   ["/", "Home"],

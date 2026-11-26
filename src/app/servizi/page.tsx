@@ -7,9 +7,9 @@ import { services } from "@/data/services";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({
-  title: "Restauro e riparazione orologi di lusso",
+  title: "Riparazione e restauro orologi a Pistoia",
   description:
-    "Revisione, restauro estetico, sostituzione vetro, verifica d'autenticità, impermeabilità, ricambi, saldatura e rimagliatura del bracciale a Pistoia.",
+    "Revisione del movimento, restauro di cassa e bracciale, vetro, impermeabilità e ricambi originali per orologi di lusso nel mio laboratorio di Pistoia.",
   path: "/servizi",
 });
 
@@ -26,7 +26,7 @@ export default function ServiziPage() {
   return (
     <>
       <DarkHero
-        eyebrow="Il laboratorio · Pistoia"
+        h1="Riparazione e restauro di orologi di lusso a Pistoia"
         title={
           <>
             Ogni orologio lo apro io. <em className="text-gold-3">E lo richiudo meglio di prima.</em>

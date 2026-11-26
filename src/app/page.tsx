@@ -20,12 +20,12 @@ import { pageMeta } from "@/lib/seo";
 
 export const metadata = {
   ...pageMeta({
-    title: "Roberto Landi: Artigiano Orologi di Lusso a Pistoia | RL Lab Watches",
+    title: "Orologiaio a Pistoia: restauro orologi | Roberto Landi",
     description:
-      "Roberto Landi, artigiano di orologi di lusso a Pistoia: restauro e riparazione di Rolex, Patek Philippe, Audemars Piguet e Omega. Preventivo gratuito.",
+      "Roberto Landi, orologiaio a Pistoia: revisione, restauro e riparazione di Rolex, Patek Philippe, Omega e altri marchi. Garanzia 12 mesi, preventivo gratis.",
     path: "/",
   }),
-  title: { absolute: "Roberto Landi: Artigiano Orologi di Lusso a Pistoia | RL Lab Watches" },
+  title: { absolute: "Orologiaio a Pistoia: restauro orologi | Roberto Landi" },
 };
 
 export default function Home() {
@@ -39,12 +39,13 @@ export default function Home() {
         <div className="relative mx-auto grid max-w-7xl px-4 pt-20 sm:px-8 sm:pt-28 lg:min-h-[calc(100dvh-5rem)] lg:grid-cols-[1.3fr_0.7fr] lg:items-end lg:gap-4">
           <div className="relative z-10 lg:self-center lg:pb-16">
             <Reveal>
-              <p className="eyebrow">{site.owner} · Orologiaio a Pistoia</p>
+              {/* il titolo per Google è il sopratitolo; lo slogan grande sotto resta com'è */}
+              <h1 className="eyebrow">{site.owner}, orologiaio a Pistoia</h1>
             </Reveal>
-            <h1 className="mt-5 font-display text-[2.3rem] font-light leading-[1.04] sm:text-6xl lg:text-[3.6rem] xl:text-[4.1rem]">
+            <p className="mt-5 font-display text-[2.3rem] font-light leading-[1.04] sm:text-6xl lg:text-[3.6rem] xl:text-[4.1rem]">
               <SplitText text="Restauro l'orologio che hai." className="block" delay={0.1} />{" "}
               <SplitText text="*Vendo quello che cerchi.*" className="block" delay={0.25} />
-            </h1>
+            </p>
             {/* su telefono il testo sta a sinistra, accanto al ritratto */}
             <div className="relative mt-4 flex min-h-[50svh] items-end sm:mt-8 lg:block lg:min-h-0">
               <Reveal delay={0.45} className="relative z-10 max-w-[64%] pb-6 pr-3 sm:max-w-none lg:pb-0">

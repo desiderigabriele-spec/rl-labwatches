@@ -34,8 +34,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { reale } = await getCatalogo();
   return b
     ? pageMeta({
-        title: `Orologi ${b.name} selezionati e revisionati`,
-        description: `Orologi ${b.name} in vendita a Pistoia: ogni pezzo è selezionato da Roberto Landi, revisionato in laboratorio e garantito 12 mesi.`,
+        title: `${b.name} usati e revisionati a Pistoia`,
+        description: `${b.name} usati selezionati a Pistoia: ogni pezzo è aperto, revisionato e garantito 12 mesi. Cerchi un modello preciso? Te lo trovo e lo controllo io.`,
         path: `/shop/marca/${b.slug}`,
         noindex: !reale,
       })
@@ -68,7 +68,7 @@ export default async function BrandPage({ params }: Props) {
               <Link href="/shop" className="hover:text-gold-3">Orologi</Link> <span aria-hidden>/</span> {b.name}
             </nav>
             <h1 className="mt-3 font-display text-[2rem] font-light leading-[1.05] sm:mt-4 sm:text-5xl lg:text-6xl">
-              Orologi <em className="text-gold-3">{b.name}</em> in vendita
+              <em className="text-gold-3">{b.name}</em> usati e revisionati a Pistoia
             </h1>
             <p className="mx-auto mt-4 max-w-md text-[0.95rem] leading-relaxed text-cream/70 sm:mx-0 sm:mt-5 sm:max-w-2xl sm:text-base lg:text-lg">
               Qui trovi i {b.name} che ho selezionato e revisionato nel mio laboratorio di Pistoia, pronti da indossare. Per ogni orologio ci sono foto

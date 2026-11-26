@@ -4,7 +4,7 @@ import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({
   title: "Informativa sui Cookie",
-  description: "Il sito di Roberto Landi Lab Watches non usa cookie di profilazione, pubblicità o statistiche: ecco quali dati tecnici usa e come gestirli.",
+  description: "Cookie del sito di Roberto Landi Lab Watches: niente pubblicità né profilazione; statistiche (Google Analytics e Clarity) solo con il tuo consenso.",
   path: "/cookie",
 });
 
