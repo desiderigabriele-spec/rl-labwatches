@@ -242,7 +242,7 @@ body {
   gap: 0.7rem 1rem;
 }
 @media (min-width: 640px) { .sell-mini { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.sell-mini li { display: flex; align-items: center; gap: 0.6rem; font-family: var(--font-display), serif; font-size: 1.02rem; line-height: 1.1; color: rgb(245 241 232 / 0.8); }
+.sell-mini li { display: flex; align-items: center; gap: 0.6rem; font-family: var(--font-display), serif; font-size: 1.125rem; line-height: 1.1; color: rgb(245 241 232 / 0.8); }
 .sell-mini-bead { flex: none; display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 9999px; border: 1px solid rgb(215 179 104 / 0.6); color: var(--color-gold-3); background: radial-gradient(circle at 35% 25%, rgb(215 179 104 / 0.14), transparent 70%); }
 .sell-mini li.is-key { color: var(--color-gold-3); }
 .sell-mini li.is-key .sell-mini-bead { border-color: var(--color-gold-3); background: radial-gradient(circle at 35% 25%, rgb(215 179 104 / 0.3), rgb(215 179 104 / 0.06) 70%); box-shadow: 0 0 14px rgb(215 179 104 / 0.45); }
@@ -539,7 +539,7 @@ body {
   border: 1px solid rgb(215 179 104 / 0.55);
   background: rgb(11 16 13 / 0.6);
   color: var(--color-gold-3);
-  font-size: 1.05rem;
+  font-size: 1rem;
   background: rgb(11 16 13 / 0.78);
   transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }

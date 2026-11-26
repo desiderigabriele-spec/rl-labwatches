@@ -56,7 +56,7 @@ export default function ProductCard({ product: p }: { product: Product }) {
         <h3 className="mt-1 font-display text-3xl leading-tight">{p.name}</h3>
         {specifiche && <p className="mt-1.5 text-sm text-fg/70">{specifiche}</p>}
         <p className="mt-4 flex flex-wrap items-baseline gap-x-3 border-t border-line pt-3">
-          <span className={`${p.price === null ? "font-display text-xl" : "tag-mono text-2xl"} ${p.sold ? "text-mute" : "text-green"}`}>{formatPrice(p.price)}</span>
+          <span className={`${p.price === null ? "font-display text-2xl" : "tag-mono text-2xl"} ${p.sold ? "text-mute" : "text-green"}`}>{formatPrice(p.price)}</span>
           {!p.sold && p.listPrice != null && <s className="tag-mono text-xs text-mute">{formatPrice(p.listPrice)}</s>}
         </p>
         {!p.sold && f.riga && <p className="mt-2 text-xs text-green">✓ {f.riga}</p>}

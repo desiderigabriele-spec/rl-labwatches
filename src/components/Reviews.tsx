@@ -198,7 +198,7 @@ export default function Reviews() {
           >
             <GoogleG className="h-9 w-9" />
             <span>
-              <Stars className="block text-xl leading-none" />
+              <Stars className="block text-lg leading-none" />
               <span className="mt-1.5 block text-sm text-mute">
                 Leggi tutte le recensioni <span className="text-green transition group-hover:translate-x-0.5">→</span>
               </span>

@@ -43,7 +43,7 @@ export default function QuickContact() {
             >
               <span className="text-green transition-colors group-hover:text-gold-3">{a.icon}</span>
               <span className="min-w-0 flex-1">
-                <span className="block font-display text-xl leading-tight">{a.label}</span>
+                <span className="block font-display text-2xl leading-tight">{a.label}</span>
                 <span className="tag-mono block truncate text-xs text-mute group-hover:text-cream/80">{a.detail}</span>
               </span>
               <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
