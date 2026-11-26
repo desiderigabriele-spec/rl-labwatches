@@ -1,8 +1,9 @@
-import PageHero from "@/components/PageHero";
+import Link from "next/link";
+import JsonLd from "@/components/JsonLd";
 import Reveal from "@/components/Reveal";
-import ContactForm from "@/components/ContactForm";
-import { pageMeta } from "@/lib/seo";
+import QuoteWizard from "@/components/pages/QuoteWizard";
 import { site } from "@/data/site";
+import { breadcrumbLd, pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({
   title: "Richiedi un preventivo gratuito",
@@ -11,41 +12,31 @@ export const metadata = pageMeta({
   path: "/preventivo",
 });
 
-const steps = [
-  ["Raccontami l'orologio", "Marca, modello e cosa vorresti fare. Qualche foto su WhatsApp aiuta molto."],
-  ["Ricevi la valutazione", "Ti indico intervento, tempi e costi con chiarezza, prima di iniziare. Senza impegno."],
-  ["Affidamelo", "Su appuntamento nel mio laboratorio di Pistoia, oppure con spedizione tracciata da tutto il mondo."],
-];
-
 export default function PreventivoPage() {
   return (
     <>
-      <PageHero
-        eyebrow="Preventivo gratuito"
-        title="Richiedi un *preventivo*"
-        intro="Raccontami il tuo orologio: ti rispondo con una valutazione dell'intervento, dei tempi e dei costi. Gratis e senza impegno."
-        crumbs={[{ name: "Preventivo", path: "/preventivo" }]}
-      />
-      <section className="mx-auto grid max-w-7xl gap-20 px-4 py-20 sm:px-8 lg:grid-cols-[0.8fr_1.2fr]">
+      <JsonLd data={breadcrumbLd([{ name: "Preventivo", path: "/preventivo" }])} />
+      <section className="mx-auto max-w-4xl px-4 pb-20 pt-32 sm:px-8 sm:pt-40">
         <Reveal>
-          <ol className="space-y-10">
-            {steps.map(([t, d], i) => (
-              <li key={t} className="flex gap-6">
-                <span className="font-display text-4xl font-light text-gold-2">{i + 1}</span>
-                <div>
-                  <h2 className="font-display text-2xl">{t}</h2>
-                  <p className="mt-2 text-mute">{d}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-12 text-sm text-mute">
-            Preferisci parlarne a voce? Chiama il <a className="text-green hover:text-gold" href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a>.
-          </p>
+          <nav aria-label="Percorso" className="mb-6 text-[0.68rem] uppercase tracking-[0.2em] text-mute">
+            <Link href="/" className="hover:text-gold">Home</Link> <span aria-hidden>/</span> Preventivo
+          </nav>
+          <p className="eyebrow">Preventivo gratuito · un minuto</p>
+          <h1 className="mt-5 font-display text-[2.4rem] font-light leading-[1.04] sm:text-6xl">
+            Raccontami il tuo orologio, <em className="text-gold">ti dico io.</em>
+          </h1>
+          <p className="mt-5 max-w-xl text-lg leading-relaxed text-mute">Tre passi brevi. Ti rispondo con intervento, tempi e costi, prima di iniziare. Gratis e senza impegno.</p>
         </Reveal>
-        <Reveal delay={0.1}>
-          <ContactForm quote />
+        <Reveal delay={0.08} className="mt-10">
+          <QuoteWizard />
         </Reveal>
+        <p className="mt-8 text-center text-sm text-mute">
+          Preferisci parlarne a voce? Chiama il{" "}
+          <a className="text-green hover:text-gold" href={`tel:${site.phone.replace(/\s/g, "")}`}>
+            {site.phone}
+          </a>
+          .
+        </p>
       </section>
     </>
   );
