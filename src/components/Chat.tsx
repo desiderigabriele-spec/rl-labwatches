@@ -106,7 +106,7 @@ export default function Chat() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="chat-hint fixed bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-4 z-40 max-w-[15rem] rounded-2xl rounded-br-md border border-gold-3/30 bg-[#0b100d] px-4 py-3 text-left text-[0.85rem] leading-snug text-cream shadow-[0_14px_30px_rgba(0,0,0,0.35)] sm:right-6"
+          className="chat-hint fixed bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-4 z-40 max-w-[15rem] rounded-2xl rounded-br-md border border-gold-3/30 bg-[#0b100d] px-4 py-3 text-left text-sm leading-snug text-cream shadow-[0_14px_30px_rgba(0,0,0,0.35)] sm:right-6"
         >
           Un orologio da sistemare, vendere o trovare? <span className="text-gold-3">Scrivimi qui.</span>
         </button>
@@ -121,7 +121,7 @@ export default function Chat() {
         className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-50 flex h-14 items-center gap-2.5 rounded-full border border-gold-3/60 bg-[#0b3424] pl-4 pr-5 text-cream shadow-[0_12px_28px_rgba(0,30,18,0.4)] transition-colors hover:bg-[#0d4a33] sm:right-6"
       >
         {open ? <span className="grid h-6 w-6 place-items-center text-lg leading-none">✕</span> : <ChatIcon />}
-        <span className="text-[0.8rem] font-medium tracking-[0.04em]">{open ? "Chiudi" : "Scrivimi"}</span>
+        <span className="text-sm font-medium tracking-[0.04em]">{open ? "Chiudi" : "Scrivimi"}</span>
       </button>
 
       {open && (
@@ -137,10 +137,10 @@ export default function Chat() {
             <img src="/roberto-chat.webp" alt="" width={40} height={40} className="h-10 w-10 rounded-full bg-[#1a2a22] object-cover" onError={(e) => (e.currentTarget.style.visibility = "hidden")} />
             <div className="min-w-0 flex-1">
               <p className="font-display text-lg leading-tight">Roberto Landi</p>
-              <p className="text-[0.7rem] text-cream/55">Orologiaio a Pistoia · rispondo io, di persona</p>
+              <p className="text-xs text-cream/55">Orologiaio a Pistoia · rispondo io, di persona</p>
             </div>
             {topic && (
-              <button type="button" onClick={restart} className="text-[0.7rem] text-cream/55 underline underline-offset-2 hover:text-gold-3">
+              <button type="button" onClick={restart} className="text-xs text-cream/55 underline underline-offset-2 hover:text-gold-3">
                 Ricomincia
               </button>
             )}
@@ -153,15 +153,15 @@ export default function Chat() {
               WhatsApp
             </a>
             <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="chat-quick">
-              <span aria-hidden className="text-[1rem] leading-[18px]">☏</span>
+              <span aria-hidden className="text-base leading-[18px]">☏</span>
               Chiama
             </a>
             <a href={mail} className="chat-quick">
-              <span aria-hidden className="text-[1rem] leading-[18px]">✉</span>
+              <span aria-hidden className="text-base leading-[18px]">✉</span>
               Email
             </a>
             <Link href="/preventivo" onClick={() => setOpen(false)} className="chat-quick">
-              <span aria-hidden className="text-[1rem] leading-[18px]">✎</span>
+              <span aria-hidden className="text-base leading-[18px]">✎</span>
               Preventivo
             </Link>
           </div>
@@ -170,7 +170,7 @@ export default function Chat() {
             {msgs.map((m, i) => (
               <p
                 key={i}
-                className={`chat-msg max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[0.9rem] leading-snug ${
+                className={`chat-msg max-w-[85%] rounded-2xl px-3.5 py-2.5 text-base leading-snug ${
                   m.from === "you" ? "rounded-bl-md bg-cream/[0.07]" : "ml-auto rounded-br-md bg-[#0b3424] text-cream"
                 }`}
               >
@@ -199,7 +199,7 @@ export default function Chat() {
                 <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="chat-go border border-cream/20 hover:bg-cream/5">
                   <span aria-hidden>☏</span> Chiamami · {site.phone}
                 </a>
-                <Link href="/preventivo" onClick={() => setOpen(false)} className="pt-1 text-center text-[0.75rem] text-cream/60 underline underline-offset-2 hover:text-gold-3">
+                <Link href="/preventivo" onClick={() => setOpen(false)} className="pt-1 text-center text-xs text-cream/60 underline underline-offset-2 hover:text-gold-3">
                   Preferisci un preventivo con le foto? Compila il modulo
                 </Link>
               </div>
@@ -221,7 +221,7 @@ export default function Chat() {
                   if (e.key === "Enter" && !e.shiftKey) send(e);
                 }}
                 placeholder="Es. Rolex Submariner, si ferma dopo un giorno"
-                className="max-h-28 min-h-[2.75rem] flex-1 resize-none rounded-xl border border-cream/20 bg-cream/[0.05] px-3 py-2.5 text-base text-cream placeholder:text-cream/35 focus:border-gold-3 focus:outline-none sm:text-[0.9rem]"
+                className="max-h-28 min-h-[2.75rem] flex-1 resize-none rounded-xl border border-cream/20 bg-cream/[0.05] px-3 py-2.5 text-base text-cream placeholder:text-cream/35 focus:border-gold-3 focus:outline-none sm:text-base"
               />
               <button type="submit" className="h-11 shrink-0 rounded-xl bg-gold-3 px-4 text-sm font-semibold text-[#0b100d]">
                 {draft.trim() ? "Invia" : "Salta"}

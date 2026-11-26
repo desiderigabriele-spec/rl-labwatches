@@ -53,7 +53,7 @@ function Card({ r }: { r: Review }) {
         <GoogleG className="h-5 w-5 shrink-0" />
       </div>
       <Stars className="mt-4 text-lg" />
-      <blockquote className="mt-3 flex-1 text-[0.95rem] leading-relaxed text-mute">
+      <blockquote className="mt-3 flex-1 text-base leading-relaxed text-mute">
         <Text r={r} />
       </blockquote>
       <figcaption className="mt-5 flex items-center gap-1.5 border-t border-line pt-4 text-xs text-mute">
@@ -186,7 +186,7 @@ export default function Reviews() {
         <Reveal className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="eyebrow">Recensioni Google</p>
-            <h2 id="recensioni" className="mt-4 font-display text-4xl font-light sm:text-6xl">
+            <h2 id="recensioni" className="mt-4 font-display text-4xl font-light sm:text-5xl">
               Le parole dei miei <em className="text-gold">clienti</em>
             </h2>
           </div>

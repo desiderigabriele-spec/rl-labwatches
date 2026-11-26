@@ -73,7 +73,7 @@ export default function ServiziPage() {
                       </div>
                       <h3 className="mt-5 font-display text-3xl font-light">{s.title}</h3>
                       <p className="mt-1 font-display text-lg italic text-gold">{s.tagline}</p>
-                      <p className="mt-3 text-[0.95rem] leading-relaxed text-mute">{s.text}</p>
+                      <p className="mt-3 text-base leading-relaxed text-mute">{s.text}</p>
                       <Link href={`/preventivo?servizio=${encodeURIComponent(s.title)}`} className="mt-4 inline-block text-sm uppercase tracking-[0.18em] text-green hover:text-gold">
                         Chiedi il preventivo →
                       </Link>
@@ -97,7 +97,7 @@ export default function ServiziPage() {
           </Reveal>
           <Reveal delay={0.08}>
             <p className="eyebrow">Da tutta Italia e dall&apos;estero</p>
-            <h2 className="mt-3 font-display text-4xl font-light">{consegna.title}</h2>
+            <h2 className="mt-3 font-display text-4xl font-light sm:text-5xl">{consegna.title}</h2>
             <p className="mt-2 font-display text-lg italic text-gold">{consegna.tagline}</p>
             <p className="mt-4 leading-relaxed text-mute">{consegna.text}</p>
           </Reveal>

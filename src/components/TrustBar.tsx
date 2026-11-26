@@ -17,7 +17,7 @@ export default function TrustBar() {
             <span aria-hidden className="grid h-9 w-9 place-items-center rounded-full border border-gold-2 font-mono text-xs text-gold">
               {it.icon}
             </span>
-            <span className="text-[0.8rem] leading-snug text-mute sm:text-sm">
+            <span className="text-sm leading-snug text-mute sm:text-sm">
               <b className="block font-semibold text-fg">{it.title}</b>
               {it.text}
             </span>

@@ -23,11 +23,11 @@ export default function ContattiPage() {
       <JsonLd data={breadcrumbLd([{ name: "Contatti", path: "/contatti" }])} />
       <section className="mx-auto max-w-7xl px-4 pb-12 pt-32 sm:px-8 sm:pt-40">
         <Reveal>
-          <nav aria-label="Percorso" className="mb-6 text-[0.68rem] uppercase tracking-[0.2em] text-mute">
+          <nav aria-label="Percorso" className="mb-6 text-xs uppercase tracking-[0.2em] text-mute">
             <Link href="/" className="hover:text-gold">Home</Link> <span aria-hidden>/</span> Contatti
           </nav>
           <h1 className="eyebrow">Contatti del laboratorio di orologeria a Pistoia</h1>
-          <p className="mt-5 font-display text-[2.4rem] font-light leading-[1.04] sm:text-6xl">
+          <p className="mt-5 font-display text-display font-light leading-[1.04] sm:text-6xl">
             Scrivimi, chiamami <em className="text-gold">o passa in laboratorio.</em>
           </p>
           <p className="mt-5">

@@ -34,7 +34,7 @@ function Cofanetto({ brand }: { brand: Brand }) {
     <span aria-hidden className="absolute inset-0">
       <span className="absolute inset-x-[10%] top-[8%] h-[46%] rounded-t-[14px]" style={{ background: leather }}>
         <span className="absolute inset-x-[7%] bottom-0 top-[7%] rounded-t-[10px]" style={{ background: "linear-gradient(180deg,#f3ead8 0%,#dccfb2 70%,#c8b993 100%)" }}>
-          <span className="absolute inset-x-0 top-[16%] text-center font-display text-[0.95rem] tracking-[0.25em] text-[#a8843c]">RL</span>
+          <span className="absolute inset-x-0 top-[16%] text-center font-display text-base tracking-[0.25em] text-[#a8843c]">RL</span>
         </span>
       </span>
       <span className="absolute inset-x-[8%] top-[50%] h-[14%] rounded-[6px]" style={{ background: "linear-gradient(180deg,#b9a780,#e6dac0)" }} />
@@ -516,7 +516,7 @@ export default function Showcase({
         <div className="grid gap-6 lg:grid-cols-[1fr_0.8fr] lg:items-end lg:gap-16">
           <div>
             <p className="eyebrow !text-gold-3">{eyebrow}</p>
-            <h2 id="vetrina-titolo" className="mt-4 font-display text-4xl font-light leading-[1.04] sm:text-6xl">
+            <h2 id="vetrina-titolo" className="mt-4 font-display text-4xl font-light leading-[1.04] sm:text-5xl">
               {title2 ?? (
                 <>
                   Compra e vendi
@@ -527,7 +527,7 @@ export default function Showcase({
             </h2>
           </div>
           <div>
-            <p className="text-[0.95rem] leading-relaxed text-cream/60 sm:text-base">{intro}</p>
+            <p className="text-base leading-relaxed text-cream/60 sm:text-base">{intro}</p>
             {locked && (
               <div className="mt-6 flex items-center gap-2.5 sm:gap-3">
                 <button type="button" onClick={() => openNotify()} className="btn-gold">
@@ -544,7 +544,7 @@ export default function Showcase({
 
       {/* scelta del marchio: tocchi il marchio e la fila va a quell'orologio; scorrendo, si accende il marchio al centro */}
       <div className="relative mx-auto mt-10 max-w-7xl px-4 sm:mt-14 sm:px-8">
-        <p className="text-center text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-gold-3">Scegli il marchio per vedere l&apos;orologio</p>
+        <p className="text-center text-xs font-semibold uppercase tracking-[0.24em] text-gold-3">Scegli il marchio per vedere l&apos;orologio</p>
         <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3 lg:grid-cols-6" role="group" aria-label="Marchi in vetrina">
           {items.map((b) => {
             const on = slots[hover ?? center]?.slug === b.slug;
@@ -616,8 +616,8 @@ export default function Showcase({
         <div id="vendi" className="relative mx-auto mt-10 max-w-7xl scroll-mt-24 px-4 sm:mt-14 sm:px-8">
           <div className="sell-band">
             <div className="min-w-0">
-              <p className="text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-gold-3">Vuoi vendere il tuo?</p>
-              <p className="mt-1.5 font-display text-2xl font-light leading-tight sm:text-[1.9rem]">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold-3">Vuoi vendere il tuo?</p>
+              <p className="mt-1.5 font-display text-2xl font-light leading-tight sm:text-3xl">
                 Così com&apos;è, <em className="text-gold-3">o restaurato.</em>
               </p>
             </div>

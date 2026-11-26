@@ -42,14 +42,14 @@ export default function Home() {
               {/* il titolo per Google è il sopratitolo; lo slogan grande sotto resta com'è */}
               <h1 className="eyebrow">{site.owner}, orologiaio a Pistoia</h1>
             </Reveal>
-            <p className="mt-5 font-display text-[2.3rem] font-light leading-[1.04] sm:text-6xl lg:text-[3.6rem] xl:text-[4.1rem]">
+            <p className="mt-5 font-display text-display font-light leading-[1.04] sm:text-6xl xl:text-7xl">
               <SplitText text="Restauro l'orologio che hai." className="block" delay={0.1} />{" "}
               <SplitText text="*Vendo quello che cerchi.*" className="block" delay={0.25} />
             </p>
             {/* su telefono il testo sta a sinistra, accanto al ritratto */}
             <div className="relative mt-4 flex min-h-[50svh] items-end sm:mt-8 lg:block lg:min-h-0">
               <Reveal delay={0.45} className="relative z-10 max-w-[64%] pb-6 pr-3 sm:max-w-none lg:pb-0">
-                <p className="max-w-md text-[0.95rem] leading-relaxed text-mute sm:text-lg">
+                <p className="max-w-md text-base leading-relaxed text-mute sm:text-lg">
                   Rolex, Patek Philippe, Audemars Piguet e Omega. Ogni orologio lo apro io, e ti rispondo di persona.
                 </p>
                 <div className="mt-6 flex flex-col items-start gap-4 sm:mt-8 sm:flex-row sm:items-center sm:gap-6">
@@ -167,7 +167,7 @@ export default function Home() {
           <Reveal>
             <p className="eyebrow">Contattami</p>
           </Reveal>
-          <SplitText as="h2" id="contattami" text="Il tuo orologio merita *le mani giuste.*" className="mb-10 mt-4 block font-display text-4xl font-light sm:mb-14 sm:text-6xl" />
+          <SplitText as="h2" id="contattami" text="Il tuo orologio merita *le mani giuste.*" className="mb-10 mt-4 block font-display text-4xl font-light sm:mb-14 sm:text-5xl" />
           <Reveal delay={0.1}>
             <QuickContact />
           </Reveal>

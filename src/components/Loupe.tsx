@@ -61,7 +61,7 @@ export default function Loupe({ src, children, zoom = 2.4, className = "" }: { s
         />
         );
       })()}
-      <span className="tag-mono pointer-events-none absolute bottom-3 left-3 bg-paper/85 px-2 py-1 text-[0.7rem] uppercase tracking-[0.12em] text-fg/80 backdrop-blur">
+      <span className="tag-mono pointer-events-none absolute bottom-3 left-3 bg-paper/85 px-2 py-1 text-xs uppercase tracking-[0.12em] text-fg/80 backdrop-blur">
         <span className="hidden sm:inline">Passa sopra per ingrandire</span>
         <span className="sm:hidden">Tieni premuto per ingrandire</span>
       </span>

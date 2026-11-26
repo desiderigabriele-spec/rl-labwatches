@@ -79,9 +79,9 @@ export default async function ProductPage({ params }: Props) {
           {/* prezzo chiaro e rassicurante: barrato, cifra grande, risparmio in euro, motivi di fiducia, un solo pulsante */}
           <div className="mt-8 border-y border-line py-6">
             {!p.sold && p.listPrice != null && <s className="tag-mono block text-base text-mute">{formatPrice(p.listPrice)}</s>}
-            <p className={`${p.price === null ? "font-display text-4xl" : "tag-mono text-4xl sm:text-[2.6rem]"} leading-tight ${p.sold ? "text-mute" : "text-green"}`}>{formatPrice(p.price)}</p>
+            <p className={`${p.price === null ? "font-display text-4xl" : "tag-mono text-4xl sm:text-display"} leading-tight ${p.sold ? "text-mute" : "text-green"}`}>{formatPrice(p.price)}</p>
             {!p.sold && p.listPrice != null && p.price != null && (
-              <p className="mt-3"><span className="bg-green px-2.5 py-1 text-[0.7rem] uppercase tracking-[0.14em] text-cream">Risparmi {formatPrice(p.listPrice - p.price)}</span></p>
+              <p className="mt-3"><span className="bg-green px-2.5 py-1 text-xs uppercase tracking-[0.14em] text-cream">Risparmi {formatPrice(p.listPrice - p.price)}</span></p>
             )}
             {!p.sold && (
               <ul className="mt-5 grid gap-1.5 text-sm text-green">

@@ -102,8 +102,8 @@ export default function NotifyDialog({
   };
 
   const field =
-    "mt-1.5 w-full min-w-0 rounded-xl border border-cream/20 bg-cream/[0.05] px-3.5 py-2.5 text-base text-cream placeholder:text-cream/35 focus:border-gold-3 focus:outline-none sm:py-3 sm:text-[0.95rem]";
-  const label = "block text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-gold-3";
+    "mt-1.5 w-full min-w-0 rounded-xl border border-cream/20 bg-cream/[0.05] px-3.5 py-2.5 text-base text-cream placeholder:text-cream/35 focus:border-gold-3 focus:outline-none sm:py-3 sm:text-base";
+  const label = "block text-xs font-semibold uppercase tracking-[0.22em] text-gold-3";
 
   if (!mounted) return null;
   return createPortal(
@@ -138,7 +138,7 @@ export default function NotifyDialog({
                 <img src={image || "/vendi/vetrina.webp"} alt="" className="absolute inset-0 h-full w-full object-cover object-[50%_32%]" />
               )}
               <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0b100d] sm:bg-gradient-to-r" />
-              <span className="absolute bottom-3 left-3 rounded-full bg-[#0b100d]/70 px-3 py-1.5 text-[0.56rem] font-semibold uppercase tracking-[0.24em] text-gold-3 backdrop-blur-sm">
+              <span className="absolute bottom-3 left-3 rounded-full bg-[#0b100d]/70 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.24em] text-gold-3 backdrop-blur-sm">
                 In vetrina · gennaio 2027
               </span>
             </div>
@@ -162,7 +162,7 @@ export default function NotifyDialog({
                 </div>
               ) : (
                 <form onSubmit={submit} noValidate className="mt-3">
-                  <h2 id={`${id}-t`} className="pr-10 font-display text-[1.8rem] font-light leading-[1.05] sm:text-[2rem]">
+                  <h2 id={`${id}-t`} className="pr-10 font-display text-3xl font-light leading-[1.05] sm:text-4xl">
                     {intent === "vendere" ? (
                       <>
                         Vendilo con me. <em className="text-gold-3">Così com&apos;è, o restaurato.</em>
@@ -173,7 +173,7 @@ export default function NotifyDialog({
                       </>
                     )}
                   </h2>
-                  <p className="mt-2.5 text-[0.85rem] leading-relaxed text-cream/65">La vetrina online apre a gennaio 2027. Lasciami i tuoi dati: ti avviso io appena è disponibile.</p>
+                  <p className="mt-2.5 text-sm leading-relaxed text-cream/65">La vetrina online apre a gennaio 2027. Lasciami i tuoi dati: ti avviso io appena è disponibile.</p>
 
                   <div className="mt-4 grid grid-cols-2 gap-3 sm:mt-5">
                     <div>
@@ -196,7 +196,7 @@ export default function NotifyDialog({
                       <input id={`${id}-p`} type="tel" inputMode="tel" value={tel} onChange={(e) => setTel(e.target.value)} autoComplete="tel" placeholder="333 1234567" className={field} />
                     </div>
                   </div>
-                  <p className="mt-1.5 text-[0.7rem] text-cream/45">Basta uno dei due.</p>
+                  <p className="mt-1.5 text-xs text-cream/45">Basta uno dei due.</p>
 
                   {/* acquistare, vendere o tutte e due */}
                   <fieldset className="mt-4">
@@ -220,7 +220,7 @@ export default function NotifyDialog({
                   {/* antispam: invisibile alle persone */}
                   <input name="website" tabIndex={-1} autoComplete="off" aria-hidden className="absolute left-[-9999px] h-0 w-0 opacity-0" />
 
-                  <label className="mt-4 flex items-start gap-3 text-[0.72rem] leading-relaxed text-cream/60">
+                  <label className="mt-4 flex items-start gap-3 text-xs leading-relaxed text-cream/60">
                     <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-[#d7b368]" />
                     <span>
                       Ho letto l&apos;

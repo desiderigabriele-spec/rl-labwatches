@@ -29,7 +29,7 @@ export default function NotFound() {
         <circle cx="60" cy="60" r="3" fill="var(--color-gold)" />
       </svg>
       <p className="eyebrow mt-8">Errore 404</p>
-      <h1 className="mt-4 font-display text-5xl font-light sm:text-7xl">
+      <h1 className="mt-4 font-display text-display font-light sm:text-6xl">
         Questa pagina <em className="text-gold">si è fermata.</em>
       </h1>
       <p className="mt-5 max-w-md text-mute">Forse l&apos;indirizzo è cambiato col nuovo sito. Riparti da qui:</p>

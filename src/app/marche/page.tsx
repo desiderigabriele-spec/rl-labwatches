@@ -37,12 +37,12 @@ export default function MarchePage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={`/marche/chiaro/${b.slug}.webp`} alt={b.name} loading="lazy" className={`mx-auto mt-5 w-auto opacity-90 ${b.ratio > 3 ? "h-5" : "h-10"}`} style={{ aspectRatio: `${b.ratio}` }} />
                 <h2 className="sr-only">Riparazione e restauro {b.name}</h2>
-                <p className="mt-5 flex-1 text-[0.92rem] leading-relaxed text-cream/70">{b.text}</p>
+                <p className="mt-5 flex-1 text-base leading-relaxed text-cream/70">{b.text}</p>
                 <div className="mt-6 flex flex-wrap gap-2">
-                  <a href={whatsappLink(`Buongiorno Roberto, ho un ${b.name} da far vedere.`)} target="_blank" rel="noopener noreferrer" className="btn-gold !px-4 !py-2 text-[0.8rem]">
+                  <a href={whatsappLink(`Buongiorno Roberto, ho un ${b.name} da far vedere.`)} target="_blank" rel="noopener noreferrer" className="btn-gold !px-4 !py-2 text-sm">
                     Ho un {b.name}
                   </a>
-                  <Link href={`/shop/marca/${b.slug}`} className="btn-gold btn-gold-quiet !px-4 !py-2 text-[0.8rem]">
+                  <Link href={`/shop/marca/${b.slug}`} className="btn-gold btn-gold-quiet !px-4 !py-2 text-sm">
                     In vendita
                   </Link>
                 </div>

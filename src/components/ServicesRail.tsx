@@ -27,7 +27,7 @@ function Card({ s, i }: { s: (typeof services)[number]; i: number }) {
 const Heading = () => (
   <>
     <p className="eyebrow">I miei servizi</p>
-    <SplitText as="h2" text="Tutto ciò di cui il tuo *orologio* ha bisogno" className="mt-4 block font-display text-4xl font-light leading-tight sm:text-6xl" />
+    <SplitText as="h2" text="Tutto ciò di cui il tuo *orologio* ha bisogno" className="mt-4 block font-display text-4xl font-light leading-tight sm:text-5xl" />
     <p className="mt-5 max-w-md text-mute">Dalla revisione del movimento alla lucidatura della cassa, ogni intervento è eseguito a mano, con passione e precisione.</p>
     <Link href="/servizi" className="btn mt-8">Tutti i servizi</Link>
   </>

@@ -72,7 +72,7 @@ export default function ReadingBezel({ variant = "floating" }: { variant?: "floa
         ))}
         <circle cx="24" cy="24" r={R} fill="none" className="stroke-gold-2" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - p)} />
       </svg>
-      <span className={`tag-mono relative text-fg ${variant === "header" ? "text-[0.62rem]" : "text-[0.7rem]"}`}>{p > 0.97 ? "↑" : `${Math.round(p * 100)}`}</span>
+      <span className={`tag-mono relative text-fg ${variant === "header" ? "text-xs" : "text-xs"}`}>{p > 0.97 ? "↑" : `${Math.round(p * 100)}`}</span>
     </button>
   );
 }

@@ -123,7 +123,7 @@ export default function Header() {
             <Link
               key={item.href}
               href={item.href}
-              className={`relative text-[0.72rem] uppercase tracking-[0.2em] transition-colors duration-500 ${
+              className={`relative text-xs uppercase tracking-[0.2em] transition-colors duration-500 ${
                 isActive(item.href, item.also) ? (dark ? "text-gold-3" : "text-gold") : dark ? "text-cream/80 hover:text-cream" : "text-fg/75 hover:text-fg"
               }`}
             >
@@ -131,7 +131,7 @@ export default function Header() {
               {isActive(item.href, item.also) && <motion.span layoutId="nav-underline" className={`absolute -bottom-2 left-0 right-0 h-px ${dark ? "bg-gold-3" : "bg-gold"}`} />}
             </Link>
           ))}
-          <Link href="/preventivo" className="btn btn-solid !px-4 !py-2.5 !text-[0.7rem]">Preventivo</Link>
+          <Link href="/preventivo" className="btn btn-solid !px-4 !py-2.5 !text-xs">Preventivo</Link>
         </nav>
 
         <button

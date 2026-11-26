@@ -118,7 +118,7 @@ export default function Consent() {
       aria-label="Cookie di statistica"
       className="rl-consent fixed inset-x-3 bottom-[calc(96px+env(safe-area-inset-bottom))] z-[45] mx-auto max-w-lg rounded-2xl border border-gold-3/30 bg-[#0b100d]/95 p-4 text-cream shadow-[0_20px_50px_rgba(0,0,0,0.45)] sm:bottom-6 sm:left-6 sm:right-auto sm:p-5"
     >
-      <p className="text-[0.82rem] leading-relaxed text-cream/80">
+      <p className="text-sm leading-relaxed text-cream/80">
         Uso cookie di statistica (Google Analytics e Microsoft Clarity) per capire come viene usato il sito e
         migliorarlo. Si attivano solo se accetti.{" "}
         <Link href="/cookie" className="underline underline-offset-2 hover:text-gold-3">

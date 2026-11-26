@@ -60,7 +60,7 @@ export default function Footer() {
           <p className="mt-1">
             P.IVA {site.vat} · C.F. {site.fiscal.taxCode} · CCIAA e n. REA {site.fiscal.rea}
           </p>
-          <p className="mt-2 max-w-3xl text-cream/45">
+          <p className="mt-2 max-w-[75ch] leading-relaxed text-cream/45">
             Laboratorio indipendente, non affiliato ai marchi citati. I nomi e i loghi delle marche appartengono ai rispettivi proprietari e sono usati solo per indicare gli orologi su cui intervengo. Le immagini dei cofanetti, degli orologi in vetrina e del restauro passo dopo passo sono ricostruzioni a scopo illustrativo; le foto prima e dopo sono di lavori veri.
           </p>
         </div>
