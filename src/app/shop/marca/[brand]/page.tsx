@@ -74,7 +74,7 @@ export default async function BrandPage({ params }: Props) {
               Qui trovi i {b.name} che ho selezionato e revisionato nel mio laboratorio di Pistoia, pronti da indossare. Per ogni orologio ci sono foto
               vere, referenza, anno, condizioni e corredo. Ti interessa un pezzo o ne cerchi uno preciso? Scrivimi e ti rispondo io.
             </p>
-            <ul className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs uppercase tracking-[0.18em] text-gold-3 sm:justify-start sm:gap-x-6 sm:text-xs">
+            <ul className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs uppercase tracking-[0.2em] text-gold-3 sm:justify-start sm:gap-x-6 sm:text-xs">
               <li>Revisionati in laboratorio</li>
               <li>Garanzia 12 mesi</li>
               <li>Spedizione assicurata o ritiro a Pistoia</li>

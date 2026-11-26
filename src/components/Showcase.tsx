@@ -34,7 +34,7 @@ function Cofanetto({ brand }: { brand: Brand }) {
     <span aria-hidden className="absolute inset-0">
       <span className="absolute inset-x-[10%] top-[8%] h-[46%] rounded-t-[14px]" style={{ background: leather }}>
         <span className="absolute inset-x-[7%] bottom-0 top-[7%] rounded-t-[10px]" style={{ background: "linear-gradient(180deg,#f3ead8 0%,#dccfb2 70%,#c8b993 100%)" }}>
-          <span className="absolute inset-x-0 top-[16%] text-center font-display text-base tracking-[0.25em] text-[#a8843c]">RL</span>
+          <span className="absolute inset-x-0 top-[16%] text-center font-display text-base tracking-[0.2em] text-[#a8843c]">RL</span>
         </span>
       </span>
       <span className="absolute inset-x-[8%] top-[50%] h-[14%] rounded-[6px]" style={{ background: "linear-gradient(180deg,#b9a780,#e6dac0)" }} />
@@ -544,7 +544,7 @@ export default function Showcase({
 
       {/* scelta del marchio: tocchi il marchio e la fila va a quell'orologio; scorrendo, si accende il marchio al centro */}
       <div className="relative mx-auto mt-10 max-w-7xl px-4 sm:mt-14 sm:px-8">
-        <p className="text-center text-xs font-semibold uppercase tracking-[0.24em] text-gold-3">Scegli il marchio per vedere l&apos;orologio</p>
+        <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-gold-3">Scegli il marchio per vedere l&apos;orologio</p>
         <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3 lg:grid-cols-6" role="group" aria-label="Marchi in vetrina">
           {items.map((b) => {
             const on = slots[hover ?? center]?.slug === b.slug;
@@ -616,8 +616,8 @@ export default function Showcase({
         <div id="vendi" className="relative mx-auto mt-10 max-w-7xl scroll-mt-24 px-4 sm:mt-14 sm:px-8">
           <div className="sell-band">
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold-3">Vuoi vendere il tuo?</p>
-              <p className="mt-1.5 font-display text-2xl font-light leading-tight sm:text-3xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-3">Vuoi vendere il tuo?</p>
+              <p className="mt-1.5 font-display text-2xl font-normal leading-tight sm:text-3xl sm:font-light">
                 Così com&apos;è, <em className="text-gold-3">o restaurato.</em>
               </p>
             </div>

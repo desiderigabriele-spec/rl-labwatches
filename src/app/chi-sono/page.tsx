@@ -69,7 +69,7 @@ export default function ChiSonoPage() {
         <ol className="space-y-8 border-l border-gold/50 pl-6">
           {STORY.map(([k, t, d], i) => (
             <Reveal as="li" key={t} delay={i * 0.06}>
-                <p className="text-xs uppercase tracking-[0.22em] text-gold">{k}</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-gold">{k}</p>
                 <h2 className="mt-1 font-display text-3xl font-light">{t}</h2>
                 <p className="mt-2 leading-relaxed text-mute">{d}</p>
             </Reveal>

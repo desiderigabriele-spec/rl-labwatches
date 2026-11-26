@@ -59,7 +59,7 @@ export default function ServiziPage() {
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-8 sm:py-20">
             <Reveal>
               <p className="eyebrow">{String(fi + 1).padStart(2, "0")} · {f.k}</p>
-              <p className="mt-3 max-w-xl font-display text-2xl font-light text-mute">{f.d}</p>
+              <p className="mt-3 max-w-xl font-display text-2xl text-mute">{f.d}</p>
             </Reveal>
             <div className={`mt-10 grid gap-8 ${f.slugs.length === 2 ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
               {f.slugs.map((slug, i) => {
@@ -74,7 +74,7 @@ export default function ServiziPage() {
                       <h3 className="mt-5 font-display text-3xl font-light">{s.title}</h3>
                       <p className="mt-1 font-display text-lg italic text-gold">{s.tagline}</p>
                       <p className="mt-3 text-base leading-relaxed text-mute">{s.text}</p>
-                      <Link href={`/preventivo?servizio=${encodeURIComponent(s.title)}`} className="mt-2 inline-flex min-h-11 items-center text-sm uppercase tracking-[0.18em] text-green hover:text-gold">
+                      <Link href={`/preventivo?servizio=${encodeURIComponent(s.title)}`} className="mt-2 inline-flex min-h-11 items-center text-sm uppercase tracking-[0.2em] text-green hover:text-gold">
                         Chiedi il preventivo →
                       </Link>
                     </article>

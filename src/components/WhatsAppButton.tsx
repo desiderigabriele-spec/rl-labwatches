@@ -19,7 +19,7 @@ export default function WhatsAppButton() {
       className="group fixed bottom-6 right-6 z-40 hidden items-center gap-3 rounded-full bg-green py-3 pl-4 pr-5 text-cream shadow-lg shadow-green/30 transition-all hover:bg-gold-2 hover:text-green-2 lg:flex"
     >
       <WhatsAppIcon className="h-5 w-5" />
-      <span className="text-xs font-medium uppercase tracking-[0.16em]">Ti serve aiuto?</span>
+      <span className="text-xs font-medium uppercase tracking-[0.2em]">Ti serve aiuto?</span>
     </a>
   );
 }

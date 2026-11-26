@@ -103,7 +103,7 @@ export default function NotifyDialog({
 
   const field =
     "mt-1.5 w-full min-w-0 rounded-xl border border-cream/20 bg-cream/[0.05] px-3.5 py-2.5 text-base text-cream placeholder:text-cream/50 focus:border-gold-3 focus:outline-none sm:py-3 sm:text-base";
-  const label = "block text-xs font-semibold uppercase tracking-[0.22em] text-gold-3";
+  const label = "block text-xs font-semibold uppercase tracking-[0.2em] text-gold-3";
 
   if (!mounted) return null;
   return createPortal(
@@ -138,7 +138,7 @@ export default function NotifyDialog({
                 <img src={image || "/vendi/vetrina.webp"} alt="" className="absolute inset-0 h-full w-full object-cover object-[50%_32%]" />
               )}
               <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-night sm:bg-gradient-to-r" />
-              <span className="absolute bottom-3 left-3 rounded-full bg-night/70 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.24em] text-gold-3 backdrop-blur-sm">
+              <span className="absolute bottom-3 left-3 rounded-full bg-night/70 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-gold-3 backdrop-blur-sm">
                 In vetrina · gennaio 2027
               </span>
             </div>

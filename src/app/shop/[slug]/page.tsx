@@ -62,7 +62,7 @@ export default async function ProductPage({ params }: Props) {
     <section className="mx-auto max-w-7xl px-4 pt-32 pb-24 sm:px-8">
       {reale && <JsonLd data={productLd} />}
       <JsonLd data={breadcrumbLd([{ name: "Orologi", path: "/shop" }, { name: `${p.brand} ${p.name}`, path: `/shop/${p.slug}` }])} />
-      <Link href="/shop" className="text-xs uppercase tracking-[0.24em] text-mute hover:text-gold">← Tutti gli orologi</Link>
+      <Link href="/shop" className="text-xs uppercase tracking-[0.2em] text-mute hover:text-gold">← Tutti gli orologi</Link>
       <div className="mt-10 grid gap-14 lg:grid-cols-2">
         <Reveal>
           <ProductGallery name={`${p.brand} ${p.name}`} frames={frames} photos={photos} />

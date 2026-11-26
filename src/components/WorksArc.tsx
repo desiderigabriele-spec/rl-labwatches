@@ -202,7 +202,7 @@ export default function WorksArc() {
     <div className="mx-auto w-full min-w-0 max-w-[min(100%,34rem)]">
       {/* il lavoro davanti: che orologio e che lavoro */}
       <p key={w.slug} className="animate-[fade-up_0.5s_ease] text-center" aria-live="polite">
-        <span className="block text-xs font-medium uppercase tracking-[0.22em] text-gold">{w.watch}</span>
+        <span className="block text-xs font-medium uppercase tracking-[0.2em] text-gold">{w.watch}</span>
         <span className="mt-1 block font-display text-2xl leading-tight sm:text-3xl">{w.job}</span>
       </p>
       <div
@@ -248,10 +248,10 @@ export default function WorksArc() {
                       <span data-line aria-hidden className="absolute bottom-0 top-0 w-px bg-paper shadow-[0_0_0_1px_rgba(0,0,0,0.25)]" style={{ left: "50%" }}>
                         <span className="absolute left-1/2 top-1/2 grid h-9 w-9 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize place-items-center rounded-full bg-fg text-paper shadow-lg">↔</span>
                       </span>
-                      <span aria-hidden className="pointer-events-none absolute bottom-2.5 left-2.5 rounded-full bg-paper/85 px-2.5 py-0.5 font-mono text-xs uppercase tracking-[0.18em] text-[#8a7350] backdrop-blur">
+                      <span aria-hidden className="pointer-events-none absolute bottom-2.5 left-2.5 rounded-full bg-paper/85 px-2.5 py-0.5 font-mono text-xs uppercase tracking-[0.2em] text-[#8a7350] backdrop-blur">
                         Prima
                       </span>
-                      <span aria-hidden className="pointer-events-none absolute bottom-2.5 right-2.5 rounded-full bg-paper/85 px-2.5 py-0.5 font-mono text-xs uppercase tracking-[0.18em] text-green backdrop-blur">
+                      <span aria-hidden className="pointer-events-none absolute bottom-2.5 right-2.5 rounded-full bg-paper/85 px-2.5 py-0.5 font-mono text-xs uppercase tracking-[0.2em] text-green backdrop-blur">
                         Dopo
                       </span>
                     </>
