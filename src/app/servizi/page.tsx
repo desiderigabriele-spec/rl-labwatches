@@ -74,7 +74,7 @@ export default function ServiziPage() {
                       <h3 className="mt-5 font-display text-3xl font-light">{s.title}</h3>
                       <p className="mt-1 font-display text-lg italic text-gold">{s.tagline}</p>
                       <p className="mt-3 text-base leading-relaxed text-mute">{s.text}</p>
-                      <Link href={`/preventivo?servizio=${encodeURIComponent(s.title)}`} className="mt-4 inline-block text-sm uppercase tracking-[0.18em] text-green hover:text-gold">
+                      <Link href={`/preventivo?servizio=${encodeURIComponent(s.title)}`} className="mt-2 inline-flex min-h-11 items-center text-sm uppercase tracking-[0.18em] text-green hover:text-gold">
                         Chiedi il preventivo →
                       </Link>
                     </article>

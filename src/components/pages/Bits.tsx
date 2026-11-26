@@ -41,7 +41,7 @@ export function DarkHero({
       <div className={`relative mx-auto grid max-w-7xl gap-10 px-4 sm:px-8 ${image ? "lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16" : ""}`}>
         <Reveal>
           <nav aria-label="Percorso" className="mb-6 text-xs uppercase tracking-[0.2em] text-cream/65">
-            <Link href="/" className="hover:text-gold-3">Home</Link>
+            <Link href="/" className="inline-block py-1.5 hover:text-gold-3">Home</Link>
             {crumbs.map((c) => (
               <span key={c.path}> <span aria-hidden>/</span> {c.name}</span>
             ))}

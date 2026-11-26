@@ -29,7 +29,7 @@ export default function ChiSonoPage() {
         <div className="mx-auto grid max-w-7xl items-end gap-10 px-4 sm:px-8 lg:grid-cols-[1.15fr_0.85fr]">
           <Reveal className="pb-6 lg:pb-20">
             <nav aria-label="Percorso" className="mb-6 text-xs uppercase tracking-[0.2em] text-mute">
-              <Link href="/" className="hover:text-gold">Home</Link> <span aria-hidden>/</span> Chi sono
+              <Link href="/" className="inline-block py-1.5 hover:text-gold">Home</Link> <span aria-hidden>/</span> Chi sono
             </nav>
             <h1 className="eyebrow">Roberto Landi, orologiaio artigiano a Pistoia</h1>
             <p className="mt-5 font-display text-display font-light italic leading-[1.08] sm:text-6xl">

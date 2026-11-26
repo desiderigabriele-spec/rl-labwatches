@@ -29,7 +29,7 @@ export default function PageHero({
         <Reveal>
           {crumbs && (
             <nav aria-label="Percorso" className="mb-6 text-xs uppercase tracking-[0.2em] text-mute">
-              <Link href="/" className="hover:text-gold">Home</Link>
+              <Link href="/" className="inline-block py-1.5 hover:text-gold">Home</Link>
               {crumbs.map((c) => (
                 <span key={c.path}> <span aria-hidden>/</span> {c.name}</span>
               ))}

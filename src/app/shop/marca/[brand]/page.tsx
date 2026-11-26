@@ -64,8 +64,8 @@ export default async function BrandPage({ params }: Props) {
         <div className="relative">
           <BrandEntrance slug={b.slug}>
             <nav aria-label="Percorso" className="text-xs uppercase tracking-[0.2em] text-cream/65">
-              <Link href="/" className="hover:text-gold-3">Home</Link> <span aria-hidden>/</span>{" "}
-              <Link href="/shop" className="hover:text-gold-3">Orologi</Link> <span aria-hidden>/</span> {b.name}
+              <Link href="/" className="inline-block py-1.5 hover:text-gold-3">Home</Link> <span aria-hidden>/</span>{" "}
+              <Link href="/shop" className="inline-block py-1.5 hover:text-gold-3">Orologi</Link> <span aria-hidden>/</span> {b.name}
             </nav>
             <h1 className="mt-3 font-display text-display font-light leading-[1.05] sm:mt-4 sm:text-6xl">
               <em className="text-gold-3">{b.name}</em> usati e revisionati a Pistoia

@@ -19,7 +19,7 @@ export default function PreventivoPage() {
       <section className="mx-auto max-w-4xl px-4 pb-20 pt-32 sm:px-8 sm:pt-40">
         <Reveal>
           <nav aria-label="Percorso" className="mb-6 text-xs uppercase tracking-[0.2em] text-mute">
-            <Link href="/" className="hover:text-gold">Home</Link> <span aria-hidden>/</span> Preventivo
+            <Link href="/" className="inline-block py-1.5 hover:text-gold">Home</Link> <span aria-hidden>/</span> Preventivo
           </nav>
           <h1 className="eyebrow">Preventivo gratuito per riparare il tuo orologio</h1>
           <p className="mt-5 font-display text-display font-light leading-[1.04] sm:text-6xl">

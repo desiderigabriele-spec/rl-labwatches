@@ -20,11 +20,11 @@ export default function Footer() {
             <br />
             {site.address.zip} {site.address.city} ({site.address.province})
             <br />
-            <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="hover:text-gold-3">{site.phone}</a>
+            <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="inline-flex min-h-11 items-center lg:min-h-8 hover:text-gold-3">{site.phone}</a>
             <br />
-            <a href={`mailto:${site.email}`} className="hover:text-gold-3">{site.email}</a>
+            <a href={`mailto:${site.email}`} className="inline-flex min-h-11 items-center lg:min-h-8 hover:text-gold-3">{site.email}</a>
             <br />
-            <a href={whatsappLink()} target="_blank" rel="noopener noreferrer" className="hover:text-gold-3">WhatsApp</a>
+            <a href={whatsappLink()} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center lg:min-h-8 hover:text-gold-3">WhatsApp</a>
           </address>
           <p className="eyebrow mb-3 mt-8 !text-gold-3">Orari</p>
           <ul className="text-sm leading-7 text-cream/80">
@@ -35,22 +35,22 @@ export default function Footer() {
         </div>
         <div>
           <p className="eyebrow mb-4 !text-gold-3">Naviga</p>
-          <ul className="space-y-1 text-sm text-cream/80">
+          <ul className="text-sm text-cream/80 lg:space-y-1">
             {siteMap.map((n) => (
-              <li key={n.href}><Link href={n.href} className="inline-block py-1 hover:text-gold-3">{n.label}</Link></li>
+              <li key={n.href}><Link href={n.href} className="inline-flex min-h-11 items-center lg:min-h-8 hover:text-gold-3">{n.label}</Link></li>
             ))}
-            <li><Link href="/preventivo" className="hover:text-gold-3">Richiedi un preventivo</Link></li>
+            <li><Link href="/preventivo" className="inline-flex min-h-11 items-center lg:min-h-8 hover:text-gold-3">Richiedi un preventivo</Link></li>
           </ul>
         </div>
         <div>
           <p className="eyebrow mb-4 !text-gold-3">Informazioni</p>
-          <ul className="space-y-1 text-sm text-cream/80">
+          <ul className="text-sm text-cream/80 lg:space-y-1">
             {legalNav.map((n) => (
-              <li key={n.href}><Link href={n.href} className="inline-block py-1 hover:text-gold-3">{n.label}</Link></li>
+              <li key={n.href}><Link href={n.href} className="inline-flex min-h-11 items-center lg:min-h-8 hover:text-gold-3">{n.label}</Link></li>
             ))}
-            <li><ConsentButton className="inline-block py-1 text-left hover:text-gold-3" /></li>
-            <li className="pt-3"><a href={site.social.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-gold-3">Instagram {site.instagramHandle}</a></li>
-            <li><a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-gold-3">Facebook</a></li>
+            <li><ConsentButton className="inline-flex min-h-11 items-center lg:min-h-8 text-left hover:text-gold-3" /></li>
+            <li className="pt-2"><a href={site.social.instagram} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center lg:min-h-8 hover:text-gold-3">Instagram {site.instagramHandle}</a></li>
+            <li><a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center lg:min-h-8 hover:text-gold-3">Facebook</a></li>
           </ul>
         </div>
       </div>
