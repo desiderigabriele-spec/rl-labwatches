@@ -1,6 +1,6 @@
 # Audit SEO: rl-labwatches.it
 
-Data: 26/11/2026 · Stato: **Fase 1 (audit) e Fase 2 (piano) completate, con la parte AI Mode / AI Overviews (7 e G), in attesa di approvazione**
+Data: 26/11/2026 · Stato: **Fasi 1–4 completate**: audit, piano approvato, interventi pubblicati, verifica. Restano i contenuti che servono da Roberto (vedi "Cosa resta").
 
 ## Contesto
 
@@ -13,6 +13,50 @@ Data: 26/11/2026 · Stato: **Fase 1 (audit) e Fase 2 (piano) completate, con la 
 | Keyword proposte | Primarie: "orologiaio Pistoia", "riparazione orologi Pistoia", "restauro orologi di lusso". Di marca: "riparazione Rolex Pistoia", "revisione Rolex", "assistenza Patek Philippe / Omega". Compravendita (da gennaio): "orologi di lusso usati Pistoia", "compravendita Rolex Pistoia". |
 
 > Le keyword sono una proposta ragionata, non misurata: da qui non posso leggere i volumi di ricerca. Dopo 4–6 settimane di Search Console si vedono le query vere e si correggono.
+
+## Risultato (Fasi 3 e 4)
+
+### Cosa è stato fatto
+Un commit per area, ognuno annullabile da solo.
+
+| Area | Commit | Cosa |
+|---|---|---|
+| Velocità | `Velocità: contenuto visibile…` | `Reveal` e `SplitText` non nascondono più niente nell'HTML: l'animazione d'ingresso la fa il CSS, solo per ciò che a pagina caricata è fuori schermo. Ritratto della home precaricato una volta invece di due. Preload d'immagini della home da 36 a 2. Foto dei lavori con `srcset` 480/900. Loghi delle marche in WebP. Font mono senza preload. Liste `ol` con `li` veri. |
+| Velocità | `Velocità: banner dei cookie…` | Il banner è nell'HTML dal primo disegno; uno script in `<head>` lo nasconde prima del disegno a chi ha già scelto. Prima compariva dopo 3,5 s e diventava l'LCP: su /contatti 7,5 s, ora 2,0 s. |
+| Meta | `Meta e H1…` | Title, description e H1 della tabella B su tutte le pagine; H1 con l'opzione 1 (grafica identica). Description dei cookie corretta. Title e description propri per la 404. |
+| Schema | `Schema…` | LocalBusiness con `geo` (43.940625, 10.926392), `hasMap` e la scheda Google in `sameAs`. 9 `Service` su /servizi collegati al LocalBusiness. `Person` per Roberto su /chi-sono. |
+| Tecnico | `Tecnico…` | `apple-touch-icon` 180×180, `manifest.webmanifest` con icone 192/512, `lastmod` veri nella sitemap, cache di 7 giorni per le immagini in /public. Search Console: TXT di verifica nel DNS (Wix). |
+| Accessibilità | `Accessibilità…` | Oro dei testi piccoli `#86661f` → `#7a5c1b` (contrasto 4,7–5,2); testi sui verdi WhatsApp più chiari. |
+| Contenuti | `Contenuti…` | Alt descrittivi sulle foto vere prima/dopo (modello + lavoro). Il restauro del Daytona 6239 è dichiarato "ricostruzione illustrativa" (sopratitolo, alt e piè di pagina). Se Roberto conferma che è un lavoro vero, si torna alla dicitura di prima. |
+
+### Verifica (Fase 4)
+- **HTML grezzo (`curl`), tutte le 17 URL:** title, description, canonical assoluto, un solo H1 con keyword e JSON-LD presenti. 404 con `noindex` e titolo proprio. Shop e marche dello shop ancora `noindex` (voluto).
+- **JSON-LD:** sintassi valida su tutte le pagine; campi richiesti presenti (LocalBusiness: name, address, telephone, url, geo, orari, image, hasMap, sameAs; Service: name, description, provider; Person: name, jobTitle, worksFor). Nessuna recensione o rating inventato.
+- **Link interni:** tutti 200, nessuna URL duplicata (trailing slash → 308 sulla versione senza).
+- **Banner dei cookie provato:** compare subito alla prima visita; dopo la scelta non si vede più nemmeno per un attimo; si riapre da "Preferenze cookie".
+
+**Lighthouse mobile, prima → dopo** (stessa build locale, simulazione standard di Lighthouse):
+
+| Pagina | Performance | SEO | Accessibilità | Best Practices | LCP simulato | LCP reale nella prova | TBT |
+|---|---|---|---|---|---|---|---|
+| / | 54 → **82** | 100 → 100 | 96 → 96 | 93 → 93 | 4,7 → 4,7 s | 1,45 → **0,49 s** | 2.180 → **100 ms** |
+| /servizi | 82 → 84 | 100 → 100 | 88 → **100** | 96 → 96 | 4,8 → 4,5 s | 1,39 → **0,26 s** | 70 → 70 ms |
+| /chi-sono | 83 → 86 | 100 → 100 | 88 → **100** | 96 → 96 | 4,6 → 4,2 s | 1,31 → **0,27 s** | 50 → 30 ms |
+| /contatti | 87 → 89 | 100 → 100 | 96 → **100** | 96 → 96 | 4,1 → 3,7 s | 1,22 → **0,13 s** | 60 → 30 ms |
+| /faq | 85 → 91 | 100 → 100 | 100 → 100 | 96 → 96 | 4,3 → 3,5 s | 1,29 → **0,16 s** | 90 → 40 ms |
+
+Con il rallentamento "vero" del browser (devtools) invece della stima, dopo: home 87 (LCP 2,5 s), /servizi 90 (3,1 s), /chi-sono 93 (2,8 s), /contatti 97 (2,0 s), /faq 97 (2,0 s). CLS 0 ovunque.
+
+Il valore "LCP simulato" resta alto perché Lighthouse stima in modo pessimistico su un server locale; la misura che conta è quella dei visitatori veri (Search Console → *Core Web Vitals*, dopo 28 giorni di dati). Le immagini principali di home e /servizi (ritratto, foto del movimento) restano le più pesanti da scaricare su rete lenta.
+
+Best Practices 93–96: l'unico errore in console è lo script di Vercel Analytics, che in locale non esiste (in produzione c'è).
+
+### Cosa resta
+1. **Contenuti da Roberto (punto G, lista 7.4):** prezzi indicativi, tempi, urgenze, cosa non è incluso e cosa copre la garanzia; anni di attività, formazione, attrezzatura; 3–5 casi veri con foto. Con questi si scrive la sezione "Domande sul restauro" su /servizi e si arricchisce /marche.
+2. **Daytona 6239:** se è un lavoro vero, si toglie la dicitura "ricostruzione".
+3. **Orari:** il sito dice lun–ven 9–18, sab e dom chiuso. Da confermare e copiare identici sul Google Business Profile.
+4. **Nameserver:** ancora su Wix. Quando passeranno a Vercel vanno ricopiati MX, SPF e il TXT di Google.
+5. **Facoltativo:** immagine social (og:image) diversa per le pagine principali; meno pesi del font Cormorant.
 
 ---
 
