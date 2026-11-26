@@ -23,6 +23,14 @@ const wixRedirects: [string, string][] = [
 const nextConfig: NextConfig = {
   // foto degli orologi caricate da Roberto nell'area clienti di Desideri&Code
   images: { remotePatterns: [{ protocol: "https", hostname: "newyirfmizuskwhqtzuw.supabase.co", pathname: "/storage/v1/object/public/vetrine/**" }] },
+  // immagini e modelli in /public: una settimana di cache nel browser e sulla CDN (se un file cambia con lo stesso
+  // nome, al massimo per qualche giorno qualcuno vede ancora quello vecchio)
+  async headers() {
+    const cache = [{ key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=86400" }];
+    return ["/images/:p*", "/lavori/:p*", "/vetrina/:p*", "/marche/:p*", "/models/:p*", "/brand/:p*", "/vendi/:p*", "/orologi/:p*", "/draco/:p*"].map(
+      (source) => ({ source, headers: cache })
+    );
+  },
   async redirects() {
     return wixRedirects.map(([source, destination]) => ({ source, destination, statusCode: 301 }));
   },
