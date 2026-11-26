@@ -1076,3 +1076,8 @@ body {
     animation-delay: 0s !important;
   }
 }
+
+/* banner dei cookie: nascosto prima del disegno a chi ha già scelto (script in <head>, vedi Consent.tsx) */
+html[data-consenso] .rl-consent {
+  display: none;
+}

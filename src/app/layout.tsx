@@ -11,6 +11,7 @@ import OffscreenPause from "@/components/OffscreenPause";
 import JsonLd from "@/components/JsonLd";
 import { Analytics } from "@vercel/analytics/next";
 import Consent from "@/components/Consent";
+import { CONSENT_HEAD } from "@/lib/consenso";
 import ContatoreVisite from "@/components/ContatoreVisite";
 import { localBusinessLd, OG_IMAGE, websiteLd } from "@/lib/seo";
 import { site } from "@/data/site";
@@ -44,6 +45,10 @@ export const viewport: Viewport = { themeColor: "#003d27", viewportFit: "cover" 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="it" data-scroll-behavior="smooth" className={`${cormorant.variable} ${montserrat.variable} ${plexMono.variable}`} suppressHydrationWarning>
+      <head>
+        {/* nasconde il banner dei cookie, prima del primo disegno, a chi ha già scelto */}
+        <script dangerouslySetInnerHTML={{ __html: CONSENT_HEAD }} />
+      </head>
       <body className="grain min-h-dvh flex flex-col">
         <ContatoreVisite />
         <JsonLd data={localBusinessLd} />
