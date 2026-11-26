@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { site } from "@/data/site";
 import { services } from "@/data/services";
 import { brands } from "@/data/brands";
+import { GOOGLE_REVIEWS_URL } from "@/data/reviews";
 
 export const OG_IMAGE = { url: "/og-image.png", width: 1200, height: 630, alt: "Roberto Landi Lab Watches – Restauro e riparazione orologi di lusso a Pistoia" };
 
@@ -51,6 +52,9 @@ export const localBusinessLd = {
     postalCode: site.address.zip,
     addressCountry: "IT",
   },
+  geo: { "@type": "GeoCoordinates", latitude: site.geo.lat, longitude: site.geo.lng },
+  // la scheda Google del laboratorio
+  hasMap: GOOGLE_REVIEWS_URL,
   openingHoursSpecification: site.hours
     .filter((h) => "schema" in h)
     .map((h) => ({ "@type": "OpeningHoursSpecification", dayOfWeek: h.schema!.days, opens: h.schema!.opens, closes: h.schema!.closes })),
@@ -65,10 +69,44 @@ export const localBusinessLd = {
       itemOffered: { "@type": "Service", name: s.title, description: s.text, url: `${site.url}/servizi#${s.slug}` },
     })),
   },
-  sameAs: Object.values(site.social),
+  sameAs: [...Object.values(site.social), GOOGLE_REVIEWS_URL],
   legalName: site.fiscal.holder,
   vatID: `IT${site.vat}`,
   taxID: site.fiscal.taxCode,
+};
+
+/** I servizi della pagina Restauro, ognuno con la sua scheda (contenuto visibile in pagina, niente prezzi inventati) */
+export function servicesLd(list: { slug: string; title: string; text: string; image: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@graph": list.map((s) => ({
+      "@type": "Service",
+      "@id": `${site.url}/servizi#${s.slug}`,
+      name: s.title,
+      description: s.text,
+      url: `${site.url}/servizi#${s.slug}`,
+      image: `${site.url}${s.image}`,
+      serviceType: "Riparazione e restauro di orologi",
+      provider: { "@id": `${site.url}/#business` },
+      areaServed: [{ "@type": "City", name: "Pistoia" }, { "@type": "Country", name: "Italia" }],
+    })),
+  };
+}
+
+/** Roberto, per la pagina Chi sono (solo fatti scritti nella pagina) */
+export const personLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": `${site.url}/chi-sono#roberto`,
+  name: site.owner,
+  jobTitle: "Orologiaio artigiano",
+  description: "Orologiaio artigiano a Pistoia: restauro, revisione e compravendita di orologi di lusso.",
+  image: `${site.url}/images/roberto-landi-ritratto.webp`,
+  url: `${site.url}/chi-sono`,
+  worksFor: { "@id": `${site.url}/#business` },
+  workLocation: { "@id": `${site.url}/#business` },
+  knowsAbout: ["Orologeria", "Restauro di orologi di lusso", "Revisione di movimenti meccanici"],
+  sameAs: Object.values(site.social),
 };
 
 export const websiteLd = {

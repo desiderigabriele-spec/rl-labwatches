@@ -4,15 +4,14 @@ import JsonLd from "@/components/JsonLd";
 import Reveal from "@/components/Reveal";
 import { EndCta } from "@/components/pages/Bits";
 import { GOOGLE_REVIEWS_URL, reviews } from "@/data/reviews";
-import { breadcrumbLd, pageMeta } from "@/lib/seo";
+import { breadcrumbLd, pageMeta, personLd } from "@/lib/seo";
 
 export const metadata = pageMeta({
-  title: "Chi sono",
+  title: "Chi sono: orologiaio artigiano a Pistoia",
   description:
-    "Roberto Landi, artigiano di Pistoia specializzato in riparazione e restauro di orologi di lusso: la mia storia e la passione per l'orologeria.",
+    "Roberto Landi, orologiaio artigiano a Pistoia: la bottega di famiglia, il Liceo Artistico, la passione per l'orologeria e un laboratorio per orologi di lusso.",
   path: "/chi-sono",
 });
-metadata.title = { absolute: "Chi sono | Roberto Landi, orologiaio a Pistoia" };
 
 const STORY = [
   ["L'inizio", "La bottega di famiglia", "Mio padre era un abile restauratore e intarsiatore del legno: da lui ho imparato la pazienza e la cura per ogni dettaglio."],
@@ -25,16 +24,17 @@ export default function ChiSonoPage() {
   return (
     <>
       <JsonLd data={breadcrumbLd([{ name: "Chi sono", path: "/chi-sono" }])} />
+      <JsonLd data={personLd} />
       <section className="relative overflow-hidden pt-32 sm:pt-40">
         <div className="mx-auto grid max-w-7xl items-end gap-10 px-4 sm:px-8 lg:grid-cols-[1.15fr_0.85fr]">
           <Reveal className="pb-6 lg:pb-20">
             <nav aria-label="Percorso" className="mb-6 text-[0.68rem] uppercase tracking-[0.2em] text-mute">
               <Link href="/" className="hover:text-gold">Home</Link> <span aria-hidden>/</span> Chi sono
             </nav>
-            <p className="eyebrow">Roberto Landi · orologiaio a Pistoia</p>
-            <h1 className="mt-5 font-display text-[2.4rem] font-light italic leading-[1.08] sm:text-6xl">
+            <h1 className="eyebrow">Roberto Landi, orologiaio artigiano a Pistoia</h1>
+            <p className="mt-5 font-display text-[2.4rem] font-light italic leading-[1.08] sm:text-6xl">
               &ldquo;Non mi limito a riparare: <span className="text-gold">risveglio la bellezza</span> di ogni orologio.&rdquo;
-            </h1>
+            </p>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-mute">
               Mani da artigiano, cuore da orologiaio. Sapere artigiano e strumenti di ultima generazione, con una meticolosa attenzione ai dettagli. E a ogni
               cliente rispondo io.
@@ -68,12 +68,10 @@ export default function ChiSonoPage() {
       <section className="mx-auto grid max-w-7xl items-center gap-14 px-4 py-20 sm:px-8 lg:grid-cols-2">
         <ol className="space-y-8 border-l border-gold/50 pl-6">
           {STORY.map(([k, t, d], i) => (
-            <Reveal key={t} delay={i * 0.06}>
-              <li>
+            <Reveal as="li" key={t} delay={i * 0.06}>
                 <p className="text-[0.68rem] uppercase tracking-[0.22em] text-gold">{k}</p>
                 <h2 className="mt-1 font-display text-3xl font-light">{t}</h2>
                 <p className="mt-2 leading-relaxed text-mute">{d}</p>
-              </li>
             </Reveal>
           ))}
         </ol>

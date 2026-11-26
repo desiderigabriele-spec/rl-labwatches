@@ -21,6 +21,8 @@ export const site = {
     region: "Toscana",
     country: "Italia",
   },
+  // posizione del laboratorio (da Google Maps), per i dati strutturati
+  geo: { lat: 43.940625, lng: 10.926392 },
   // Orari della home del vecchio sito (la pagina Contatti riportava orari diversi: da confermare)
   hours: [
     { days: "Lunedì – Venerdì", time: "9:00 – 18:00", schema: { days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "09:00", closes: "18:00" } },

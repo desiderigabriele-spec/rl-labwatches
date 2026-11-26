@@ -13,6 +13,7 @@ import { breadcrumbLd } from "@/lib/seo";
 
 export function DarkHero({
   eyebrow,
+  h1,
   title,
   intro,
   image,
@@ -21,7 +22,9 @@ export function DarkHero({
   whatsapp,
   cta,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
+  /** titolo per Google (keyword + città): prende il posto del sopratitolo, con lo stesso aspetto; lo slogan grande resta */
+  h1?: string;
   title: React.ReactNode;
   intro?: React.ReactNode;
   image?: string;
@@ -43,8 +46,12 @@ export function DarkHero({
               <span key={c.path}> <span aria-hidden>/</span> {c.name}</span>
             ))}
           </nav>
-          <p className="eyebrow !text-gold-3">{eyebrow}</p>
-          <h1 className="mt-5 font-display text-[2.4rem] font-light leading-[1.04] sm:text-6xl">{title}</h1>
+          {h1 ? <h1 className="eyebrow !text-gold-3">{h1}</h1> : <p className="eyebrow !text-gold-3">{eyebrow}</p>}
+          {h1 ? (
+            <p className="mt-5 font-display text-[2.4rem] font-light leading-[1.04] sm:text-6xl">{title}</p>
+          ) : (
+            <h1 className="mt-5 font-display text-[2.4rem] font-light leading-[1.04] sm:text-6xl">{title}</h1>
+          )}
           {intro && <div className="mt-6 max-w-xl text-[0.98rem] leading-relaxed text-cream/70 sm:text-lg">{intro}</div>}
           {(whatsapp || cta) && (
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -89,13 +96,11 @@ export function StepsBand({ title = "Come funziona" }: { title?: string }) {
         </Reveal>
         <ol className="mt-8 grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map(([t, d], i) => (
-            <Reveal key={t} delay={i * 0.06}>
-              <li className="border-t border-gold-3/50 pt-5">
+            <Reveal as="li" key={t} delay={i * 0.06} className="border-t border-gold-3/50 pt-5">
                 <p className="font-display text-3xl font-light">
                   <span className="text-gold-3">{i + 1}.</span> {t}
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-cream/70">{d}</p>
-              </li>
             </Reveal>
           ))}
         </ol>

@@ -23,7 +23,7 @@ import NotifyDialog, { type Intent } from "./NotifyDialog";
  */
 
 const FILA = (b: Brand) => `/vetrina/fila/${b.slug}.webp`;
-const LOGO_CHIARO = (b: Brand) => `/marche/chiaro/${b.slug}.png`;
+const LOGO_CHIARO = (b: Brand) => `/marche/chiaro/${b.slug}.webp`;
 /** plafoniere sul soffitto della vetrina: una per cofanetto, accesa solo quella al centro */
 const LAMPS = [-3, -2, -1, 0, 1, 2, 3];
 
@@ -54,9 +54,9 @@ function StripHands({ brand }: { brand: Brand }) {
   return (
     <span aria-hidden className="vet-hands" style={{ left: `${d.x - d.r}%`, width: `${2 * d.r}%`, top: `${d.y - d.r * a}%`, height: `${2 * d.r * a}%` }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={`/vetrina/fila/${brand.slug}-ore.webp`} alt="" draggable={false} decoding="async" />
+      <img src={`/vetrina/fila/${brand.slug}-ore.webp`} alt="" draggable={false} decoding="async" fetchPriority="low" />
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={`/vetrina/fila/${brand.slug}-minuti.webp`} alt="" draggable={false} decoding="async" />
+      <img src={`/vetrina/fila/${brand.slug}-minuti.webp`} alt="" draggable={false} decoding="async" fetchPriority="low" />
     </span>
   );
 }
@@ -88,7 +88,7 @@ const Slot = memo(function Slot({
         <span className="vet-own-halo" />
         <span className="vet-own-lamp" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/vetrina/fila/fascio.webp" alt="" draggable={false} decoding="async" className="vet-own-beam" />
+        <img src="/vetrina/fila/fascio.webp" alt="" draggable={false} decoding="async" fetchPriority="low" className="vet-own-beam" />
       </span>
       <button
         type="button"
@@ -105,7 +105,7 @@ const Slot = memo(function Slot({
           {brand.vetrina ? (
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={FILA(brand)} alt={`Cofanetto ${brand.name}`} width={840} height={1200} draggable={false} decoding="async" className="vet-photo" />
+              <img src={FILA(brand)} alt={`Cofanetto ${brand.name}`} width={840} height={1200} draggable={false} decoding="async" fetchPriority="low" className="vet-photo" />
               <StripHands brand={brand} />
               {armed && <CloseupPiece brand={brand} run eager />}
             </>
@@ -126,6 +126,7 @@ const Slot = memo(function Slot({
           alt={brand.name}
           draggable={false}
           decoding="async"
+          fetchPriority="low"
           className={brand.ratio > 3 ? "h-4 lg:h-6" : "h-8 lg:h-12"}
           style={{ aspectRatio: `${brand.ratio}` }}
         />
@@ -565,7 +566,7 @@ export default function Showcase({
           ))}
           <span className="vet-halo vet-light" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/vetrina/fila/fascio.webp" alt="" draggable={false} className="vet-beam vet-light" />
+          <img src="/vetrina/fila/fascio.webp" alt="" draggable={false} fetchPriority="low" className="vet-beam vet-light" />
           <span className="vet-dust vet-light">
             <i />
             <i />

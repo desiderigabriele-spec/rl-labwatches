@@ -11,6 +11,7 @@ import OffscreenPause from "@/components/OffscreenPause";
 import JsonLd from "@/components/JsonLd";
 import { Analytics } from "@vercel/analytics/next";
 import Consent from "@/components/Consent";
+import { CONSENT_HEAD } from "@/lib/consenso";
 import ContatoreVisite from "@/components/ContatoreVisite";
 import { localBusinessLd, OG_IMAGE, websiteLd } from "@/lib/seo";
 import { site } from "@/data/site";
@@ -21,12 +22,13 @@ const cormorant = Cormorant_Garamond({
   style: ["normal", "italic"],
   variable: "--font-cormorant",
 });
-const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-plex-mono" });
+// carattere delle etichette piccole: non serve per il primo disegno, quindi niente precaricamento
+const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-plex-mono", preload: false });
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-montserrat" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: "Roberto Landi: Artigiano Orologi di Lusso a Pistoia | RL Lab Watches", template: "%s | Roberto Landi" },
+  title: { default: "Orologiaio a Pistoia: restauro orologi | Roberto Landi", template: "%s | Roberto Landi" },
   description: site.description,
   applicationName: site.name,
   authors: [{ name: site.owner }],
@@ -43,6 +45,10 @@ export const viewport: Viewport = { themeColor: "#003d27", viewportFit: "cover" 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="it" data-scroll-behavior="smooth" className={`${cormorant.variable} ${montserrat.variable} ${plexMono.variable}`} suppressHydrationWarning>
+      <head>
+        {/* nasconde il banner dei cookie, prima del primo disegno, a chi ha già scelto */}
+        <script dangerouslySetInnerHTML={{ __html: CONSENT_HEAD }} />
+      </head>
       <body className="grain min-h-dvh flex flex-col">
         <ContatoreVisite />
         <JsonLd data={localBusinessLd} />

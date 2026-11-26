@@ -9,7 +9,7 @@
   --color-line: #d8ccb2;
   --color-fg: #12201a;
   --color-mute: #5b625b;
-  --color-gold: #86661f; /* oro scurito per testi piccoli sul champagne (leggibilità) */
+  --color-gold: #7a5c1b; /* oro scurito per testi piccoli sul champagne: contrasto ≥ 4,5 anche sul fondo più scuro */
   --color-gold-2: #bd923c; /* oro del logo */
   --color-gold-3: #d7b368; /* oro del logo su fondo scuro */
   --color-green: #00452a;
@@ -72,6 +72,24 @@ body {
   /* l'oro si dipinge solo dentro il riquadro: margine per le code e l'inclinazione del corsivo, compensato */
   padding: 0 0.12em 0.28em;
   margin: 0 -0.12em -0.28em;
+}
+/* Ingresso dei blocchi (Reveal) e dei titoli (SplitText). Niente è nascosto nell'HTML: `rv-wait` lo mette
+   useRevealOnView, dopo il caricamento, solo su ciò che è ancora fuori schermo; `rv-in` quando ci entra. */
+.rv.rv-wait {
+  opacity: 0;
+  transform: translateY(28px);
+}
+.rv.rv-wait.rv-in {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--rv-d, 0s), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--rv-d, 0s);
+}
+.st.rv-wait .st-w {
+  transform: translateY(110%) rotate(4deg);
+}
+.st.rv-wait.rv-in .st-w {
+  transform: none;
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--rv-d, 0s) + var(--i, 0) * 60ms);
 }
 /* fessura di SplitText: alta abbastanza per le code delle lettere, senza cambiare l'impaginazione */
 .split-slot {
@@ -622,7 +640,7 @@ body {
 }
 .btn-wa:hover { background: #18663f; transform: translateY(-1px); }
 .btn-wa b { display: block; font-size: 0.88rem; font-weight: 600; line-height: 1.2; letter-spacing: 0.01em; }
-.btn-wa small { display: block; font-size: 0.7rem; opacity: 0.85; line-height: 1.3; }
+.btn-wa small { display: block; font-size: 0.7rem; opacity: 0.95; line-height: 1.3; }
 .btn-wa svg { width: 1.05rem; height: 1.05rem; }
 
 /* grana leggera su tutto il sito: una tessera di rumore già pronta (nero con trasparenza, public/grana.png),
@@ -1057,4 +1075,9 @@ body {
     animation-duration: 0s !important;
     animation-delay: 0s !important;
   }
+}
+
+/* banner dei cookie: nascosto prima del disegno a chi ha già scelto (script in <head>, vedi Consent.tsx) */
+html[data-consenso] .rl-consent {
+  display: none;
 }

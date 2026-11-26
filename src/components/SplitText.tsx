@@ -1,13 +1,13 @@
 "use client";
-import { Fragment, useRef } from "react";
-import { motion, useInView } from "motion/react";
+import { Fragment } from "react";
+import { useRevealOnView } from "@/lib/useRevealOnView";
 
 /**
  * Testo che compare parola per parola, salendo da una "fessura" (effetto editoriale).
  * Le parole tra *asterischi* vengono evidenziate in oro corsivo.
- * Parte quando il titolo intero entra nello schermo (non parola per parola: una parola corta nascosta nella sua
- * fessura non risulterebbe mai visibile e resterebbe vuota). La fessura ha margine sotto e ai lati, compensato
- * con margini negativi: le code delle lettere (g, p, f in corsivo) non vengono tagliate e l'impaginazione non cambia.
+ * Nell'HTML le parole sono già al loro posto (visibili a Google e subito sullo schermo): l'ingresso si fa solo per
+ * i titoli che a pagina caricata sono ancora più in basso, col CSS (.st, vedi globals.css e useRevealOnView).
+ * La fessura ha margine sotto e ai lati, compensato con margini negativi: le code delle lettere non vengono tagliate.
  */
 export default function SplitText({
   text,
@@ -22,12 +22,11 @@ export default function SplitText({
   as?: "span" | "h1" | "h2" | "h3" | "p";
   id?: string;
 }) {
-  const ref = useRef<HTMLElement>(null);
-  const inView = useInView(ref, { once: true, margin: "0px 0px -40px 0px" });
+  const ref = useRevealOnView<HTMLElement>("0px 0px -40px 0px");
   const words = text.split(" ");
   let gold = false;
   return (
-    <Tag className={className} id={id} ref={ref as never}>
+    <Tag className={`st ${className}`} id={id} ref={ref as never} style={delay ? ({ "--rv-d": `${delay}s` } as React.CSSProperties) : undefined}>
       {words.map((w, i) => {
         const starts = w.startsWith("*");
         if (starts) gold = true;
@@ -37,14 +36,9 @@ export default function SplitText({
         return (
           <Fragment key={i}>
             <span className="split-slot">
-              <motion.span
-                className={`inline-block ${isGold ? "gold-text italic" : ""}`}
-                initial={{ y: "110%", rotate: 4 }}
-                animate={inView ? { y: "0%", rotate: 0 } : { y: "110%", rotate: 4 }}
-                transition={{ duration: 0.9, delay: delay + i * 0.06, ease: [0.22, 1, 0.36, 1] }}
-              >
+              <span className={`st-w inline-block ${isGold ? "gold-text italic" : ""}`} style={{ "--i": i } as React.CSSProperties}>
                 {clean}
-              </motion.span>
+              </span>
             </span>
             {/* spazio reale tra le parole (fuori dal blocco animato, altrimenti il browser lo elimina) */}
             {i < words.length - 1 && " "}

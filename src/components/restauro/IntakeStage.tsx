@@ -24,7 +24,7 @@ export default function IntakeStage({ progress }: { progress: MotionValue<number
       <div className="flex h-full w-full items-center justify-center" style={{ containerType: "size" }}>
       <div className="relative aspect-square" style={{ width: "min(100cqw, 100cqh)" }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={DIAL_WORN} alt="Quadrante del Daytona 6239 com'è arrivato in laboratorio" loading="lazy" decoding="async" className="h-full w-full rounded-full shadow-[0_30px_60px_rgba(0,0,0,0.18)]" />
+        <img src={DIAL_WORN} alt="Quadrante usurato di un Daytona 6239: ricostruzione di come arriva un orologio da restaurare" loading="lazy" decoding="async" className="h-full w-full rounded-full shadow-[0_30px_60px_rgba(0,0,0,0.18)]" />
         <motion.span
           aria-hidden
           style={{ top: scanTop, opacity: scanOpacity }}

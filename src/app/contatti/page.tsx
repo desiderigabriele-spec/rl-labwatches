@@ -8,9 +8,9 @@ import { site, whatsappLink } from "@/data/site";
 import { breadcrumbLd, pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({
-  title: "Contatti: orologiaio a Pistoia",
+  title: "Contatti e orari: orologiaio a Pistoia",
   description:
-    "Roberto Landi, orologiaio a Pistoia in Via Padre Giovanni Antonelli 69. Telefono, WhatsApp ed email per un preventivo gratuito o un consiglio.",
+    "Laboratorio in Via Padre Giovanni Antonelli 69 a Pistoia, aperto dal lunedì al venerdì 9–18. Chiama, scrivi su WhatsApp o mandami una foto dell'orologio.",
   path: "/contatti",
 });
 
@@ -26,10 +26,10 @@ export default function ContattiPage() {
           <nav aria-label="Percorso" className="mb-6 text-[0.68rem] uppercase tracking-[0.2em] text-mute">
             <Link href="/" className="hover:text-gold">Home</Link> <span aria-hidden>/</span> Contatti
           </nav>
-          <p className="eyebrow">Contatti</p>
-          <h1 className="mt-5 font-display text-[2.4rem] font-light leading-[1.04] sm:text-6xl">
+          <h1 className="eyebrow">Contatti del laboratorio di orologeria a Pistoia</h1>
+          <p className="mt-5 font-display text-[2.4rem] font-light leading-[1.04] sm:text-6xl">
             Scrivimi, chiamami <em className="text-gold">o passa in laboratorio.</em>
-          </h1>
+          </p>
           <p className="mt-5">
             <OpenNow />
           </p>
@@ -39,7 +39,7 @@ export default function ContattiPage() {
             <a href={whatsappLink("Buongiorno Roberto, le scrivo dal sito.")} target="_blank" rel="noopener noreferrer" className="flex h-full flex-col gap-2 rounded-2xl bg-[#1f7a4d] p-7 text-white transition-colors hover:bg-[#18663f]">
               <WhatsAppIcon className="h-7 w-7" />
               <span className="mt-2 font-display text-3xl">WhatsApp</span>
-              <span className="text-sm text-white/80">La via più veloce: mandami anche una foto dell&apos;orologio.</span>
+              <span className="text-sm text-white/90">La via più veloce: mandami anche una foto dell&apos;orologio.</span>
             </a>
           </Reveal>
           <Reveal delay={0.06}>

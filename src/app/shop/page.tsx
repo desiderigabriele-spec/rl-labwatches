@@ -13,8 +13,8 @@ export const revalidate = 60;
 export async function generateMetadata() {
   const { reale } = await getCatalogo();
   return pageMeta({
-    title: "Orologi di lusso selezionati e revisionati",
-    description: "Orologi di lusso e d'epoca selezionati da Roberto Landi a Pistoia, controllati e revisionati in laboratorio prima della vendita.",
+    title: "Compravendita orologi di lusso a Pistoia",
+    description: "Orologi di lusso usati e d'epoca selezionati a Pistoia: ognuno aperto, controllato e revisionato in laboratorio prima della vendita, con garanzia scritta.",
     path: "/shop",
     noindex: !reale,
   });
@@ -32,7 +32,7 @@ export default async function ShopPage() {
   return (
     <>
       <PageHero
-        eyebrow="Compravendita"
+        h1="Compravendita di orologi di lusso a Pistoia"
         title="Orologi aperti, controllati *e revisionati da me.*"
         intro="La vetrina online apre a gennaio 2027. Intanto puoi chiedermi un modello preciso, o affidarmi il tuo da vendere."
         crumbs={[{ name: "Orologi", path: "/shop" }]}

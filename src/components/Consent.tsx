@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { CONSENT_KEY } from "@/lib/consenso";
 
 /**
  * Consenso ai cookie di statistica (Google Analytics e Microsoft Clarity).
@@ -12,7 +13,7 @@ import { useEffect, useState } from "react";
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-RMM6K4FQH5";
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || ""; // vuoto: Analytics va diretto con GA_ID (un solo tag Google per pagina)
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID || "zh3obcyaoc";
-const KEY = "rl-consenso";
+const KEY = CONSENT_KEY;
 const attivo = process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
 
 type W = Window & { dataLayer?: unknown[]; gtag?: (...a: unknown[]) => void; clarity?: unknown; __rlStats?: boolean };
@@ -80,19 +81,25 @@ export function openConsent() {
   window.dispatchEvent(new Event("rl-consenso"));
 }
 
+/**
+ * Il banner è già nell'HTML e si vede dal primo disegno della pagina: se comparisse dopo qualche secondo
+ * diventerebbe "l'elemento più grande" e Google conterebbe la pagina come lenta (LCP).
+ * Chi ha già scelto non lo vede mai: lo script CONSENT_HEAD, in <head>, mette data-consenso su <html>
+ * prima del disegno e il CSS lo nasconde (vedi lib/consenso.ts e globals.css).
+ */
+
 export default function Consent() {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
   useEffect(() => {
     const v = read();
     if (v === "si") loadStats();
-    // il banner arriva dopo l'intro e quando la pagina è pronta, non durante il primo caricamento
-    const t = v ? 0 : window.setTimeout(() => setShow(true), 3500);
-    const reopen = () => setShow(true);
-    window.addEventListener("rl-consenso", reopen);
-    return () => {
-      window.clearTimeout(t);
-      window.removeEventListener("rl-consenso", reopen);
+    if (v) setShow(false);
+    const reopen = () => {
+      document.documentElement.removeAttribute("data-consenso");
+      setShow(true);
     };
+    window.addEventListener("rl-consenso", reopen);
+    return () => window.removeEventListener("rl-consenso", reopen);
   }, []);
 
   const choose = (v: "si" | "no") => {
@@ -109,7 +116,7 @@ export default function Consent() {
     <div
       role="dialog"
       aria-label="Cookie di statistica"
-      className="fixed inset-x-3 bottom-[calc(96px+env(safe-area-inset-bottom))] z-[45] mx-auto max-w-lg rounded-2xl border border-gold-3/30 bg-[#0b100d]/95 p-4 text-cream shadow-[0_20px_50px_rgba(0,0,0,0.45)] sm:bottom-6 sm:left-6 sm:right-auto sm:p-5"
+      className="rl-consent fixed inset-x-3 bottom-[calc(96px+env(safe-area-inset-bottom))] z-[45] mx-auto max-w-lg rounded-2xl border border-gold-3/30 bg-[#0b100d]/95 p-4 text-cream shadow-[0_20px_50px_rgba(0,0,0,0.45)] sm:bottom-6 sm:left-6 sm:right-auto sm:p-5"
     >
       <p className="text-[0.82rem] leading-relaxed text-cream/80">
         Uso cookie di statistica (Google Analytics e Microsoft Clarity) per capire come viene usato il sito e

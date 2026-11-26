@@ -6,9 +6,9 @@ import { whatsappLink } from "@/data/site";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({
-  title: "Marche: Rolex, Patek Philippe, Audemars Piguet",
+  title: "Riparazione Rolex, Patek e Omega a Pistoia",
   description:
-    "Riparazione e restauro di orologi Rolex, Patek Philippe, Audemars Piguet, Cartier, Tudor e Omega a Pistoia. Servizio su misura per ogni grande marchio.",
+    "Riparazione e restauro di Rolex, Patek Philippe, Audemars Piguet, Cartier, Tudor e Omega a Pistoia, da orologiaio indipendente. Preventivo gratuito su foto.",
   path: "/marche",
 });
 
@@ -16,7 +16,7 @@ export default function MarchePage() {
   return (
     <>
       <DarkHero
-        eyebrow="Le marche del mio banco"
+        h1="Riparazione di Rolex, Patek Philippe e grandi marche a Pistoia"
         title={
           <>
             Ogni maison ha i suoi segreti. <em className="text-gold-3">Li conosco a memoria.</em>
@@ -35,7 +35,7 @@ export default function MarchePage() {
                   <img src={`/vetrina/fila/${b.slug}.webp`} alt={`Cofanetto ${b.name}`} width={840} height={1200} loading="lazy" decoding="async" className="mx-auto aspect-[840/1020] h-auto w-[70%] object-cover object-top" />
                 )}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/marche/chiaro/${b.slug}.png`} alt={b.name} loading="lazy" className={`mx-auto mt-5 w-auto opacity-90 ${b.ratio > 3 ? "h-5" : "h-10"}`} style={{ aspectRatio: `${b.ratio}` }} />
+                <img src={`/marche/chiaro/${b.slug}.webp`} alt={b.name} loading="lazy" className={`mx-auto mt-5 w-auto opacity-90 ${b.ratio > 3 ? "h-5" : "h-10"}`} style={{ aspectRatio: `${b.ratio}` }} />
                 <h2 className="sr-only">Riparazione e restauro {b.name}</h2>
                 <p className="mt-5 flex-1 text-[0.92rem] leading-relaxed text-cream/70">{b.text}</p>
                 <div className="mt-6 flex flex-wrap gap-2">
