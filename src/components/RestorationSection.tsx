@@ -49,7 +49,7 @@ function Step({ i, progress }: { i: number; progress: MotionValue<number> }) {
           steps[i].title
         )}
       </h3>
-      <p className={`mt-2 max-w-sm text-[0.95rem] leading-snug text-mute sm:text-base sm:leading-relaxed lg:mt-4 ${first ? "hidden sm:block" : ""}`}>{steps[i].text}</p>
+      <p className={`mt-2 max-w-sm text-base leading-snug text-mute sm:text-base sm:leading-relaxed lg:mt-4 ${first ? "hidden sm:block" : ""}`}>{steps[i].text}</p>
       {first && (
         <ol className="mt-3 grid max-w-md grid-cols-2 gap-x-4 gap-y-1.5 text-xs sm:mt-5 sm:text-sm lg:grid-cols-1 lg:gap-2">
           {DEFECTS.map((_, k) => (
@@ -198,7 +198,7 @@ export default function RestorationSection() {
           <button
             type="button"
             onClick={skip}
-            className="shrink-0 rounded-full border border-line bg-paper/80 px-3.5 py-1.5 text-[0.62rem] uppercase tracking-[0.2em] text-mute backdrop-blur transition-colors hover:border-fg hover:text-fg"
+            className="shrink-0 rounded-full border border-line bg-paper/80 px-3.5 py-1.5 text-xs uppercase tracking-[0.2em] text-mute backdrop-blur transition-colors hover:border-fg hover:text-fg"
           >
             Salta <span aria-hidden>↓</span>
           </button>

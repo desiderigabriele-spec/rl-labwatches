@@ -58,7 +58,7 @@ export default function QuoteWizard() {
 
   const chip = (on: boolean) => `rounded-full border px-4 py-2.5 text-sm transition-colors ${on ? "border-green bg-green text-cream" : "border-line bg-paper hover:border-gold"}`;
   const field = "mt-1.5 w-full rounded-xl border border-line bg-paper px-4 py-3 text-base text-fg outline-none placeholder:text-mute/60 focus:border-gold";
-  const label = "text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-mute";
+  const label = "text-xs font-semibold uppercase tracking-[0.2em] text-mute";
   const titles = ["Che orologio è?", "Cosa ti serve?", "Come ti rispondo"];
 
   if (state === "sent")

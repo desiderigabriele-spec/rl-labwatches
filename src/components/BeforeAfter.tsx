@@ -23,7 +23,7 @@ export default function BeforeAfter() {
           <Reveal>
             <p className="eyebrow">Prima e dopo</p>
           </Reveal>
-          <SplitText as="h2" id="prima-dopo" text="Com'era. *Com'è tornato.*" className="mt-4 block font-display text-4xl font-light leading-tight sm:text-6xl" />
+          <SplitText as="h2" id="prima-dopo" text="Com'era. *Com'è tornato.*" className="mt-4 block font-display text-4xl font-light leading-tight sm:text-5xl" />
           <Reveal delay={0.1}>
             <p className="mt-5 max-w-md leading-relaxed text-mute">
               Lavori veri del mio laboratorio. Sfoglia i lavori e trascina la linea per vedere la differenza.

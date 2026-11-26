@@ -49,7 +49,7 @@ export default function LegalPage({ page, path }: { page: LP; path: string }) {
             ) : type === "note" ? (
               <p key={i} className="mt-12 border-t border-line pt-6 text-sm text-mute">{text}</p>
             ) : (
-              <p key={i} className="mt-4 text-[1.05rem] leading-[1.8] text-mute">{text}</p>
+              <p key={i} className="mt-4 text-base leading-[1.8] text-mute">{text}</p>
             )
           )}
         </article>

@@ -23,11 +23,11 @@ export default function ContattiPage() {
       <JsonLd data={breadcrumbLd([{ name: "Contatti", path: "/contatti" }])} />
       <section className="mx-auto max-w-7xl px-4 pb-12 pt-32 sm:px-8 sm:pt-40">
         <Reveal>
-          <nav aria-label="Percorso" className="mb-6 text-[0.68rem] uppercase tracking-[0.2em] text-mute">
-            <Link href="/" className="hover:text-gold">Home</Link> <span aria-hidden>/</span> Contatti
+          <nav aria-label="Percorso" className="mb-6 text-xs uppercase tracking-[0.2em] text-mute">
+            <Link href="/" className="inline-block py-1.5 hover:text-gold">Home</Link> <span aria-hidden>/</span> Contatti
           </nav>
           <h1 className="eyebrow">Contatti del laboratorio di orologeria a Pistoia</h1>
-          <p className="mt-5 font-display text-[2.4rem] font-light leading-[1.04] sm:text-6xl">
+          <p className="mt-5 font-display text-display font-light leading-[1.04] sm:text-6xl">
             Scrivimi, chiamami <em className="text-gold">o passa in laboratorio.</em>
           </p>
           <p className="mt-5">
@@ -36,17 +36,17 @@ export default function ContattiPage() {
         </Reveal>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           <Reveal>
-            <a href={whatsappLink("Buongiorno Roberto, le scrivo dal sito.")} target="_blank" rel="noopener noreferrer" className="flex h-full flex-col gap-2 rounded-2xl bg-[#1f7a4d] p-7 text-white transition-colors hover:bg-[#18663f]">
+            <a href={whatsappLink("Buongiorno Roberto, le scrivo dal sito.")} target="_blank" rel="noopener noreferrer" className="flex h-full flex-col gap-2 rounded-2xl bg-wa p-7 text-white transition-colors hover:bg-wa-dark">
               <WhatsAppIcon className="h-7 w-7" />
               <span className="mt-2 font-display text-3xl">WhatsApp</span>
-              <span className="text-sm text-white/90">La via più veloce: mandami anche una foto dell&apos;orologio.</span>
+              <span className="text-sm text-white">La via più veloce: mandami anche una foto dell&apos;orologio.</span>
             </a>
           </Reveal>
           <Reveal delay={0.06}>
             <a href={tel} className="guilloche flex h-full flex-col gap-2 rounded-2xl bg-green-2 p-7 text-cream transition-opacity hover:opacity-95">
               <span aria-hidden className="text-2xl text-gold-3">☏</span>
               <span className="mt-2 font-display text-3xl">Chiama</span>
-              <span className="text-sm text-cream/75">{site.phone}</span>
+              <span className="text-sm text-cream/80">{site.phone}</span>
             </a>
           </Reveal>
           <Reveal delay={0.12}>

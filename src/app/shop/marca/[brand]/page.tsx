@@ -56,25 +56,25 @@ export default async function BrandPage({ params }: Props) {
     <>
       <JsonLd data={breadcrumbLd(crumbs)} />
       {/* fondo scuro sotto la pagina: arrivando dalla vetrina non si vede il lampo chiaro del cambio pagina */}
-      <style>{"body{background:#0b100d}"}</style>
+      <style>{"body{background:var(--color-night)}"}</style>
       {/* apertura scura, in continuità con la vetrina */}
       {/* apertura compatta: il cofanetto piccolo e che cosa si trova in questa pagina */}
-      <section className="guilloche relative overflow-hidden bg-[#0b100d] pb-12 pt-20 text-cream sm:pb-16 sm:pt-36">
+      <section className="guilloche relative overflow-hidden bg-night pb-12 pt-20 text-cream sm:pb-16 sm:pt-36">
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_0%,rgba(0,69,42,0.35),transparent_60%)]" />
         <div className="relative">
           <BrandEntrance slug={b.slug}>
-            <nav aria-label="Percorso" className="text-[0.7rem] uppercase tracking-[0.2em] text-cream/45">
-              <Link href="/" className="hover:text-gold-3">Home</Link> <span aria-hidden>/</span>{" "}
-              <Link href="/shop" className="hover:text-gold-3">Orologi</Link> <span aria-hidden>/</span> {b.name}
+            <nav aria-label="Percorso" className="text-xs uppercase tracking-[0.2em] text-cream/65">
+              <Link href="/" className="inline-block py-1.5 hover:text-gold-3">Home</Link> <span aria-hidden>/</span>{" "}
+              <Link href="/shop" className="inline-block py-1.5 hover:text-gold-3">Orologi</Link> <span aria-hidden>/</span> {b.name}
             </nav>
-            <h1 className="mt-3 font-display text-[2rem] font-light leading-[1.05] sm:mt-4 sm:text-5xl lg:text-6xl">
+            <h1 className="mt-3 font-display text-display font-light leading-[1.05] sm:mt-4 sm:text-6xl">
               <em className="text-gold-3">{b.name}</em> usati e revisionati a Pistoia
             </h1>
-            <p className="mx-auto mt-4 max-w-md text-[0.95rem] leading-relaxed text-cream/70 sm:mx-0 sm:mt-5 sm:max-w-2xl sm:text-base lg:text-lg">
+            <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-cream/80 sm:mx-0 sm:mt-5 sm:max-w-2xl sm:text-base lg:text-lg">
               Qui trovi i {b.name} che ho selezionato e revisionato nel mio laboratorio di Pistoia, pronti da indossare. Per ogni orologio ci sono foto
               vere, referenza, anno, condizioni e corredo. Ti interessa un pezzo o ne cerchi uno preciso? Scrivimi e ti rispondo io.
             </p>
-            <ul className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-[0.62rem] uppercase tracking-[0.18em] text-gold-3 sm:justify-start sm:gap-x-6 sm:text-[0.72rem]">
+            <ul className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs uppercase tracking-[0.2em] text-gold-3 sm:justify-start sm:gap-x-6 sm:text-xs">
               <li>Revisionati in laboratorio</li>
               <li>Garanzia 12 mesi</li>
               <li>Spedizione assicurata o ritiro a Pistoia</li>
@@ -86,10 +86,10 @@ export default async function BrandPage({ params }: Props) {
       <div className="bg-paper">
       <section id="disponibili" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:px-8">
         <div className="mb-8 flex items-end justify-between gap-6 sm:mb-10">
-          <h2 className="font-display text-4xl font-light">
+          <h2 className="font-display text-4xl font-light sm:text-5xl">
             {list.length ? `${list.length} ${list.length === 1 ? "orologio disponibile" : "orologi disponibili"}` : "Orologi disponibili"}
           </h2>
-          <Link href="/shop" className="shrink-0 border-b border-line pb-1 text-[0.7rem] uppercase tracking-[0.2em] text-mute hover:text-fg">
+          <Link href="/shop" className="shrink-0 border-b border-line pb-1 text-xs uppercase tracking-[0.2em] text-mute hover:text-fg">
             Tutte le marche
           </Link>
         </div>
@@ -104,7 +104,7 @@ export default async function BrandPage({ params }: Props) {
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-8 sm:py-20 md:grid-cols-[1.1fr_0.9fr] md:items-center">
           <div>
             <p className="eyebrow">Hai già un {b.name}?</p>
-            <h2 className="mt-3 font-display text-4xl font-light">
+            <h2 className="mt-3 font-display text-4xl font-light sm:text-5xl">
               Restauro e revisione <em className="text-gold">{b.name}</em>
             </h2>
             <p className="mt-4 max-w-xl leading-relaxed text-mute">{b.text}</p>

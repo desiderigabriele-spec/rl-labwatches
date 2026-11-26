@@ -166,7 +166,7 @@ export default function ShopFiltri({ products, senzaMarca = false }: { products:
               )}
               {menu.map((m) => (
                 <fieldset key={m.k} className="border-b border-line py-4">
-                  <legend className="float-left mb-2 w-full text-[0.7rem] uppercase tracking-[0.2em] text-mute">{m.nome}</legend>
+                  <legend className="float-left mb-2 w-full text-xs uppercase tracking-[0.2em] text-mute">{m.nome}</legend>
                   <div className="clear-both grid gap-1">
                     {m.opzioni.map((o) => {
                       const n = righe.filter(({ c }) => passa(c, { ...scelti, [m.k]: [o.id] }, soloDisponibili && ciSonoVenduti)).length;

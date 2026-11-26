@@ -102,8 +102,8 @@ export default function NotifyDialog({
   };
 
   const field =
-    "mt-1.5 w-full min-w-0 rounded-xl border border-cream/20 bg-cream/[0.05] px-3.5 py-2.5 text-base text-cream placeholder:text-cream/35 focus:border-gold-3 focus:outline-none sm:py-3 sm:text-[0.95rem]";
-  const label = "block text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-gold-3";
+    "mt-1.5 w-full min-w-0 rounded-xl border border-cream/20 bg-cream/[0.05] px-3.5 py-2.5 text-base text-cream placeholder:text-cream/50 focus:border-gold-3 focus:outline-none sm:py-3 sm:text-base";
+  const label = "block text-xs font-semibold uppercase tracking-[0.2em] text-gold-3";
 
   if (!mounted) return null;
   return createPortal(
@@ -126,7 +126,7 @@ export default function NotifyDialog({
             exit={{ y: 24, opacity: 0 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             data-lenis-prevent
-            className="relative grid max-h-[92dvh] w-full max-w-[46rem] overflow-y-auto rounded-t-[22px] border border-gold-3/25 bg-[#0b100d] text-cream shadow-[0_40px_80px_rgba(0,0,0,0.6)] sm:grid-cols-[0.82fr_1.18fr] sm:rounded-[22px]"
+            className="relative grid max-h-[92dvh] w-full max-w-[46rem] overflow-y-auto rounded-t-[22px] border border-gold-3/25 bg-night text-cream shadow-[0_40px_80px_rgba(0,0,0,0.6)] sm:grid-cols-[0.82fr_1.18fr] sm:rounded-[22px]"
           >
             {/* l'orologio da vicino */}
             <div className="relative h-44 overflow-hidden bg-[#111] [container-type:size] sm:h-auto sm:min-h-[30rem]">
@@ -137,8 +137,8 @@ export default function NotifyDialog({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={image || "/vendi/vetrina.webp"} alt="" className="absolute inset-0 h-full w-full object-cover object-[50%_32%]" />
               )}
-              <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0b100d] sm:bg-gradient-to-r" />
-              <span className="absolute bottom-3 left-3 rounded-full bg-[#0b100d]/70 px-3 py-1.5 text-[0.56rem] font-semibold uppercase tracking-[0.24em] text-gold-3 backdrop-blur-sm">
+              <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-night sm:bg-gradient-to-r" />
+              <span className="absolute bottom-3 left-3 rounded-full bg-night/70 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-gold-3 backdrop-blur-sm">
                 In vetrina · gennaio 2027
               </span>
             </div>
@@ -153,7 +153,7 @@ export default function NotifyDialog({
                   <h2 id={`${id}-t`} className="font-display text-3xl font-light leading-tight">
                     Grazie, <em className="text-gold-3">ti avviso io.</em>
                   </h2>
-                  <p className="mt-4 text-sm leading-relaxed text-cream/70">
+                  <p className="mt-4 text-sm leading-relaxed text-cream/80">
                     Appena gli orologi{brand ? ` ${brand}` : ""} sono in vetrina ti scrivo. Se nel frattempo cerchi un modello preciso o vuoi far valutare il tuo, chiedimelo pure.
                   </p>
                   <button type="button" onClick={onClose} className="btn-gold mt-7">
@@ -162,7 +162,7 @@ export default function NotifyDialog({
                 </div>
               ) : (
                 <form onSubmit={submit} noValidate className="mt-3">
-                  <h2 id={`${id}-t`} className="pr-10 font-display text-[1.8rem] font-light leading-[1.05] sm:text-[2rem]">
+                  <h2 id={`${id}-t`} className="pr-10 font-display text-3xl font-light leading-[1.05] sm:text-4xl">
                     {intent === "vendere" ? (
                       <>
                         Vendilo con me. <em className="text-gold-3">Così com&apos;è, o restaurato.</em>
@@ -173,7 +173,7 @@ export default function NotifyDialog({
                       </>
                     )}
                   </h2>
-                  <p className="mt-2.5 text-[0.85rem] leading-relaxed text-cream/65">La vetrina online apre a gennaio 2027. Lasciami i tuoi dati: ti avviso io appena è disponibile.</p>
+                  <p className="mt-2.5 text-sm leading-relaxed text-cream/65">La vetrina online apre a gennaio 2027. Lasciami i tuoi dati: ti avviso io appena è disponibile.</p>
 
                   <div className="mt-4 grid grid-cols-2 gap-3 sm:mt-5">
                     <div>
@@ -196,7 +196,7 @@ export default function NotifyDialog({
                       <input id={`${id}-p`} type="tel" inputMode="tel" value={tel} onChange={(e) => setTel(e.target.value)} autoComplete="tel" placeholder="333 1234567" className={field} />
                     </div>
                   </div>
-                  <p className="mt-1.5 text-[0.7rem] text-cream/45">Basta uno dei due.</p>
+                  <p className="mt-1.5 text-xs text-cream/65">Basta uno dei due.</p>
 
                   {/* acquistare, vendere o tutte e due */}
                   <fieldset className="mt-4">
@@ -220,7 +220,7 @@ export default function NotifyDialog({
                   {/* antispam: invisibile alle persone */}
                   <input name="website" tabIndex={-1} autoComplete="off" aria-hidden className="absolute left-[-9999px] h-0 w-0 opacity-0" />
 
-                  <label className="mt-4 flex items-start gap-3 text-[0.72rem] leading-relaxed text-cream/60">
+                  <label className="mt-4 flex items-start gap-3 text-xs leading-relaxed text-cream/65">
                     <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-[#d7b368]" />
                     <span>
                       Ho letto l&apos;

@@ -28,8 +28,8 @@ export default function PageHero({
       <div className="relative mx-auto max-w-7xl px-4 sm:px-8">
         <Reveal>
           {crumbs && (
-            <nav aria-label="Percorso" className="mb-6 text-[0.7rem] uppercase tracking-[0.2em] text-mute">
-              <Link href="/" className="hover:text-gold">Home</Link>
+            <nav aria-label="Percorso" className="mb-6 text-xs uppercase tracking-[0.2em] text-mute">
+              <Link href="/" className="inline-block py-1.5 hover:text-gold">Home</Link>
               {crumbs.map((c) => (
                 <span key={c.path}> <span aria-hidden>/</span> {c.name}</span>
               ))}
@@ -37,11 +37,11 @@ export default function PageHero({
           )}
           {h1 ? <h1 className="eyebrow">{h1}</h1> : <p className="eyebrow">{eyebrow}</p>}
           {h1 ? (
-            <p className="mt-5 font-display text-5xl font-light leading-[1.05] sm:text-7xl">
+            <p className="mt-5 font-display text-display font-light leading-[1.05] sm:text-6xl">
               {typeof title === "string" ? <SplitText text={title} delay={0.1} /> : title}
             </p>
           ) : (
-            <h1 className="mt-5 font-display text-5xl font-light leading-[1.05] sm:text-7xl">
+            <h1 className="mt-5 font-display text-display font-light leading-[1.05] sm:text-6xl">
               {typeof title === "string" ? <SplitText text={title} delay={0.1} /> : title}
             </h1>
           )}

@@ -51,7 +51,7 @@ export default async function ShopPage() {
             <Reveal key={t} delay={i * 0.05}>
               <div className="h-full rounded-2xl border border-line bg-paper-2 p-6">
                 <p className="font-display text-2xl">{t}</p>
-                <p className="mt-2 text-sm leading-relaxed text-mute">{d}</p>
+                <p className="mt-2 text-base leading-relaxed text-mute">{d}</p>
               </div>
             </Reveal>
           ))}
@@ -61,8 +61,8 @@ export default async function ShopPage() {
       <section className="guilloche bg-green-2 text-cream">
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-14 sm:px-8 md:grid-cols-[1.2fr_0.8fr]">
           <Reveal>
-            <h2 className="font-display text-4xl font-light">Cerchi un modello preciso?</h2>
-            <p className="mt-3 max-w-xl text-cream/75">Dimmi cosa cerchi e il budget: lo trovo io, e prima di proportelo lo apro e lo controllo in laboratorio.</p>
+            <h2 className="font-display text-4xl font-light sm:text-5xl">Cerchi un modello preciso?</h2>
+            <p className="mt-3 max-w-xl text-cream/80">Dimmi cosa cerchi e il budget: lo trovo io, e prima di proportelo lo apro e lo controllo in laboratorio.</p>
           </Reveal>
           <Reveal delay={0.08} className="flex flex-wrap gap-3 md:justify-end">
             <a href={whatsappLink("Buongiorno Roberto, cerco un orologio: ")} target="_blank" rel="noopener noreferrer" className="btn-wa whitespace-nowrap">
@@ -79,7 +79,7 @@ export default async function ShopPage() {
       {/* la lista degli orologi compare solo quando ci sono quelli veri (fino ad allora erano esempi) */}
       {reale && (
         <section id="orologi" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:px-8">
-          <h2 className="mb-8 font-display text-4xl font-light">Tutti gli orologi</h2>
+          <h2 className="mb-8 font-display text-4xl font-light sm:text-5xl">Tutti gli orologi</h2>
           <div className="mb-12">
             <BrandNav />
           </div>

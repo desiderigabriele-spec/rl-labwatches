@@ -82,7 +82,7 @@ export function openZoom(
   const root = el("div", "position:fixed;inset:0;z-index:38;overflow:hidden") as HTMLDivElement;
   root.setAttribute("role", "dialog");
   root.setAttribute("aria-label", `Orologi ${o.name}`);
-  const back = el("div", "position:absolute;inset:0;background:#0b100d;opacity:0;cursor:zoom-out") as HTMLDivElement;
+  const back = el("div", "position:absolute;inset:0;background:var(--color-night);opacity:0;cursor:zoom-out") as HTMLDivElement;
   // Due strati che si ingrandiscono con transform (scheda grafica, niente ridisegno a ogni fotogramma):
   // - il cofanetto, impaginato piccolo come in vetrina e ingrandito: la sua foto non ha più dettaglio di così;
   // - la foto ravvicinata, impaginata già alla misura finale e rimpicciolita all'inizio: arriva nitida.
@@ -110,7 +110,7 @@ export function openZoom(
       (o.onTap
         ? // vetrina chiusa fino a gennaio: bottone "filetto d'oro" come nel resto della vetrina
           `<button type="button" data-cta style="pointer-events:auto;margin-top:${phone ? 14 : 18}px;display:inline-flex;align-items:center;gap:10px;white-space:nowrap;border:1px solid #d7b368;border-radius:999px;background:rgba(11,16,13,.55);color:#f5f1e8;padding:${phone ? "12px 18px" : "14px 24px"};font:500 ${phone ? 13 : 14}px/1.2 var(--font-montserrat),system-ui,sans-serif;letter-spacing:.04em;cursor:pointer;backdrop-filter:blur(6px)">`
-        : `<button type="button" data-cta class="zoom-cta" style="pointer-events:auto;margin-top:${phone ? 14 : 18}px;display:inline-flex;align-items:center;gap:10px;white-space:nowrap;border:0;border-radius:999px;background:#d7b368;color:#0b100d;padding:${phone ? "12px 18px" : "14px 26px"};font:600 ${phone ? 11 : 12}px/1.2 var(--font-montserrat),system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;cursor:pointer">`) +
+        : `<button type="button" data-cta class="zoom-cta" style="pointer-events:auto;margin-top:${phone ? 14 : 18}px;display:inline-flex;align-items:center;gap:10px;white-space:nowrap;border:0;border-radius:999px;background:var(--color-gold-3);color:var(--color-night);padding:${phone ? "12px 18px" : "14px 26px"};font:600 12px/1.2 var(--font-montserrat),system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;cursor:pointer">`) +
       (o.onTap ? "" : `<svg class="zoom-tap" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M12 10.5V9a1.5 1.5 0 0 1 3 0v2"/><path d="M15 10.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-2.7L3.6 14.6a1.5 1.5 0 0 1 2.5-1.7L9 16"/><path d="M6 4.5 4.5 3M13 3.5 14.5 2M9.5 2V.5" opacity=".7"/></svg>`) +
       `${o.onTap ? `Avvisami · orologi ${o.name} <span style="color:#d7b368">→</span>` : phone ? "Tocca · vedi i disponibili" : "Tocca l'orologio · vedi quelli disponibili"}</button>`
   );

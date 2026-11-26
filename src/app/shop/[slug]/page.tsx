@@ -62,7 +62,7 @@ export default async function ProductPage({ params }: Props) {
     <section className="mx-auto max-w-7xl px-4 pt-32 pb-24 sm:px-8">
       {reale && <JsonLd data={productLd} />}
       <JsonLd data={breadcrumbLd([{ name: "Orologi", path: "/shop" }, { name: `${p.brand} ${p.name}`, path: `/shop/${p.slug}` }])} />
-      <Link href="/shop" className="text-xs uppercase tracking-[0.24em] text-mute hover:text-gold">← Tutti gli orologi</Link>
+      <Link href="/shop" className="text-xs uppercase tracking-[0.2em] text-mute hover:text-gold">← Tutti gli orologi</Link>
       <div className="mt-10 grid gap-14 lg:grid-cols-2">
         <Reveal>
           <ProductGallery name={`${p.brand} ${p.name}`} frames={frames} photos={photos} />
@@ -79,9 +79,9 @@ export default async function ProductPage({ params }: Props) {
           {/* prezzo chiaro e rassicurante: barrato, cifra grande, risparmio in euro, motivi di fiducia, un solo pulsante */}
           <div className="mt-8 border-y border-line py-6">
             {!p.sold && p.listPrice != null && <s className="tag-mono block text-base text-mute">{formatPrice(p.listPrice)}</s>}
-            <p className={`${p.price === null ? "font-display text-4xl" : "tag-mono text-4xl sm:text-[2.6rem]"} leading-tight ${p.sold ? "text-mute" : "text-green"}`}>{formatPrice(p.price)}</p>
+            <p className={`${p.price === null ? "font-display text-4xl" : "tag-mono text-4xl sm:text-display"} leading-tight ${p.sold ? "text-mute" : "text-green"}`}>{formatPrice(p.price)}</p>
             {!p.sold && p.listPrice != null && p.price != null && (
-              <p className="mt-3"><span className="bg-green px-2.5 py-1 text-[0.7rem] uppercase tracking-[0.14em] text-cream">Risparmi {formatPrice(p.listPrice - p.price)}</span></p>
+              <p className="mt-3"><span className="bg-green px-2.5 py-1 text-xs uppercase tracking-[0.14em] text-cream">Risparmi {formatPrice(p.listPrice - p.price)}</span></p>
             )}
             {!p.sold && (
               <ul className="mt-5 grid gap-1.5 text-sm text-green">

@@ -28,11 +28,11 @@ export default function ChiSonoPage() {
       <section className="relative overflow-hidden pt-32 sm:pt-40">
         <div className="mx-auto grid max-w-7xl items-end gap-10 px-4 sm:px-8 lg:grid-cols-[1.15fr_0.85fr]">
           <Reveal className="pb-6 lg:pb-20">
-            <nav aria-label="Percorso" className="mb-6 text-[0.68rem] uppercase tracking-[0.2em] text-mute">
-              <Link href="/" className="hover:text-gold">Home</Link> <span aria-hidden>/</span> Chi sono
+            <nav aria-label="Percorso" className="mb-6 text-xs uppercase tracking-[0.2em] text-mute">
+              <Link href="/" className="inline-block py-1.5 hover:text-gold">Home</Link> <span aria-hidden>/</span> Chi sono
             </nav>
             <h1 className="eyebrow">Roberto Landi, orologiaio artigiano a Pistoia</h1>
-            <p className="mt-5 font-display text-[2.4rem] font-light italic leading-[1.08] sm:text-6xl">
+            <p className="mt-5 font-display text-display font-light italic leading-[1.08] sm:text-6xl">
               &ldquo;Non mi limito a riparare: <span className="text-gold">risveglio la bellezza</span> di ogni orologio.&rdquo;
             </p>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-mute">
@@ -52,15 +52,15 @@ export default function ChiSonoPage() {
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 text-center sm:grid-cols-3 sm:px-8">
           <div>
             <p className="font-display text-5xl font-light text-gold-3">12 mesi</p>
-            <p className="mt-1 text-sm text-cream/70">di garanzia su ogni lavoro</p>
+            <p className="mt-1 text-sm text-cream/80">di garanzia su ogni lavoro</p>
           </div>
           <a href={GOOGLE_REVIEWS_URL} target="_blank" rel="noopener noreferrer" className="group">
             <p className="font-display text-5xl font-light text-gold-3">★★★★★</p>
-            <p className="mt-1 text-sm text-cream/70 group-hover:text-cream">{reviews.length} recensioni su Google · leggile</p>
+            <p className="mt-1 text-sm text-cream/80 group-hover:text-cream">{reviews.length} recensioni su Google · leggile</p>
           </a>
           <div>
             <p className="font-display text-5xl font-light text-gold-3">Gratis</p>
-            <p className="mt-1 text-sm text-cream/70">la prima valutazione e il preventivo</p>
+            <p className="mt-1 text-sm text-cream/80">la prima valutazione e il preventivo</p>
           </div>
         </div>
       </section>
@@ -69,7 +69,7 @@ export default function ChiSonoPage() {
         <ol className="space-y-8 border-l border-gold/50 pl-6">
           {STORY.map(([k, t, d], i) => (
             <Reveal as="li" key={t} delay={i * 0.06}>
-                <p className="text-[0.68rem] uppercase tracking-[0.22em] text-gold">{k}</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-gold">{k}</p>
                 <h2 className="mt-1 font-display text-3xl font-light">{t}</h2>
                 <p className="mt-2 leading-relaxed text-mute">{d}</p>
             </Reveal>

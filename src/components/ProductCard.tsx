@@ -29,7 +29,7 @@ export default function ProductCard({ product: p }: { product: Product }) {
   const f = fiducia(p);
   const specifiche = rigaSpecifiche(p);
   const sconto = p.listPrice != null && p.price != null && p.listPrice > p.price ? Math.round((1 - p.price / p.listPrice) * 100) : 0;
-  const etichetta = "absolute top-3 px-2.5 py-1 text-[0.65rem] uppercase tracking-[0.16em]";
+  const etichetta = "absolute top-3 px-2.5 py-1 text-xs uppercase tracking-[0.2em]";
   return (
     <Link href={`/shop/${p.slug}`} className="group block">
       <div className="relative flex aspect-[4/5] items-center justify-center overflow-hidden border border-line bg-paper-2 transition-colors duration-500 group-hover:border-gold/50">
@@ -52,11 +52,11 @@ export default function ProductCard({ product: p }: { product: Product }) {
         ) : null}
       </div>
       <div className="mt-5">
-        <p className="text-[0.7rem] uppercase tracking-[0.24em] text-mute">{[p.brand, p.year].filter(Boolean).join(" · ")}</p>
-        <h3 className="mt-1 font-display text-[1.65rem] leading-tight">{p.name}</h3>
+        <p className="text-xs uppercase tracking-[0.2em] text-mute">{[p.brand, p.year].filter(Boolean).join(" · ")}</p>
+        <h3 className="mt-1 font-display text-3xl leading-tight">{p.name}</h3>
         {specifiche && <p className="mt-1.5 text-sm text-fg/70">{specifiche}</p>}
         <p className="mt-4 flex flex-wrap items-baseline gap-x-3 border-t border-line pt-3">
-          <span className={`${p.price === null ? "font-display text-xl" : "tag-mono text-[1.35rem]"} ${p.sold ? "text-mute" : "text-green"}`}>{formatPrice(p.price)}</span>
+          <span className={`${p.price === null ? "font-display text-2xl" : "tag-mono text-2xl"} ${p.sold ? "text-mute" : "text-green"}`}>{formatPrice(p.price)}</span>
           {!p.sold && p.listPrice != null && <s className="tag-mono text-xs text-mute">{formatPrice(p.listPrice)}</s>}
         </p>
         {!p.sold && f.riga && <p className="mt-2 text-xs text-green">✓ {f.riga}</p>}

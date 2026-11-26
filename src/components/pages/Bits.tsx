@@ -35,24 +35,24 @@ export function DarkHero({
   cta?: React.ReactNode;
 }) {
   return (
-    <section className="guilloche relative overflow-hidden bg-[#0b100d] pb-16 pt-32 text-cream sm:pb-20 sm:pt-40">
+    <section className="guilloche relative overflow-hidden bg-night pb-16 pt-32 text-cream sm:pb-20 sm:pt-40">
       <JsonLd data={breadcrumbLd(crumbs)} />
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(0,69,42,0.4),transparent_60%)]" />
       <div className={`relative mx-auto grid max-w-7xl gap-10 px-4 sm:px-8 ${image ? "lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16" : ""}`}>
         <Reveal>
-          <nav aria-label="Percorso" className="mb-6 text-[0.68rem] uppercase tracking-[0.2em] text-cream/45">
-            <Link href="/" className="hover:text-gold-3">Home</Link>
+          <nav aria-label="Percorso" className="mb-6 text-xs uppercase tracking-[0.2em] text-cream/65">
+            <Link href="/" className="inline-block py-1.5 hover:text-gold-3">Home</Link>
             {crumbs.map((c) => (
               <span key={c.path}> <span aria-hidden>/</span> {c.name}</span>
             ))}
           </nav>
           {h1 ? <h1 className="eyebrow !text-gold-3">{h1}</h1> : <p className="eyebrow !text-gold-3">{eyebrow}</p>}
           {h1 ? (
-            <p className="mt-5 font-display text-[2.4rem] font-light leading-[1.04] sm:text-6xl">{title}</p>
+            <p className="mt-5 font-display text-display font-light leading-[1.04] sm:text-6xl">{title}</p>
           ) : (
-            <h1 className="mt-5 font-display text-[2.4rem] font-light leading-[1.04] sm:text-6xl">{title}</h1>
+            <h1 className="mt-5 font-display text-display font-light leading-[1.04] sm:text-6xl">{title}</h1>
           )}
-          {intro && <div className="mt-6 max-w-xl text-[0.98rem] leading-relaxed text-cream/70 sm:text-lg">{intro}</div>}
+          {intro && <div className="mt-6 max-w-xl text-base leading-relaxed text-cream/80 sm:text-lg">{intro}</div>}
           {(whatsapp || cta) && (
             <div className="mt-8 flex flex-wrap items-center gap-3">
               {whatsapp && (
@@ -100,7 +100,7 @@ export function StepsBand({ title = "Come funziona" }: { title?: string }) {
                 <p className="font-display text-3xl font-light">
                   <span className="text-gold-3">{i + 1}.</span> {t}
                 </p>
-                <p className="mt-2 text-sm leading-relaxed text-cream/70">{d}</p>
+                <p className="mt-2 text-base leading-relaxed text-cream/80">{d}</p>
             </Reveal>
           ))}
         </ol>

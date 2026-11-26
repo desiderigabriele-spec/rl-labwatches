@@ -59,7 +59,7 @@ export default function ServiziPage() {
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-8 sm:py-20">
             <Reveal>
               <p className="eyebrow">{String(fi + 1).padStart(2, "0")} · {f.k}</p>
-              <p className="mt-3 max-w-xl font-display text-2xl font-light text-mute">{f.d}</p>
+              <p className="mt-3 max-w-xl font-display text-2xl text-mute">{f.d}</p>
             </Reveal>
             <div className={`mt-10 grid gap-8 ${f.slugs.length === 2 ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
               {f.slugs.map((slug, i) => {
@@ -73,8 +73,8 @@ export default function ServiziPage() {
                       </div>
                       <h3 className="mt-5 font-display text-3xl font-light">{s.title}</h3>
                       <p className="mt-1 font-display text-lg italic text-gold">{s.tagline}</p>
-                      <p className="mt-3 text-[0.95rem] leading-relaxed text-mute">{s.text}</p>
-                      <Link href={`/preventivo?servizio=${encodeURIComponent(s.title)}`} className="mt-4 inline-block text-sm uppercase tracking-[0.18em] text-green hover:text-gold">
+                      <p className="mt-3 text-base leading-relaxed text-mute">{s.text}</p>
+                      <Link href={`/preventivo?servizio=${encodeURIComponent(s.title)}`} className="mt-2 inline-flex min-h-11 items-center text-sm uppercase tracking-[0.2em] text-green hover:text-gold">
                         Chiedi il preventivo →
                       </Link>
                     </article>
@@ -97,7 +97,7 @@ export default function ServiziPage() {
           </Reveal>
           <Reveal delay={0.08}>
             <p className="eyebrow">Da tutta Italia e dall&apos;estero</p>
-            <h2 className="mt-3 font-display text-4xl font-light">{consegna.title}</h2>
+            <h2 className="mt-3 font-display text-4xl font-light sm:text-5xl">{consegna.title}</h2>
             <p className="mt-2 font-display text-lg italic text-gold">{consegna.tagline}</p>
             <p className="mt-4 leading-relaxed text-mute">{consegna.text}</p>
           </Reveal>
