@@ -68,12 +68,10 @@ export default function ChiSonoPage() {
       <section className="mx-auto grid max-w-7xl items-center gap-14 px-4 py-20 sm:px-8 lg:grid-cols-2">
         <ol className="space-y-8 border-l border-gold/50 pl-6">
           {STORY.map(([k, t, d], i) => (
-            <Reveal key={t} delay={i * 0.06}>
-              <li>
+            <Reveal as="li" key={t} delay={i * 0.06}>
                 <p className="text-[0.68rem] uppercase tracking-[0.22em] text-gold">{k}</p>
                 <h2 className="mt-1 font-display text-3xl font-light">{t}</h2>
                 <p className="mt-2 leading-relaxed text-mute">{d}</p>
-              </li>
             </Reveal>
           ))}
         </ol>

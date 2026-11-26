@@ -91,8 +91,9 @@ export default function Home() {
               src="/images/roberto-landi-ritratto.webp"
               alt="Roberto Landi, orologiaio a Pistoia"
               fill
-              loading="eager"
-              fetchPriority="high"
+              // su telefono questa versione è nascosta: "lazy" evita che venga precaricata e scaricata due volte
+              // (su computer è comunque a schermo e parte subito)
+              loading="lazy"
               sizes="45vw"
               className="object-contain object-bottom [mask-image:linear-gradient(to_bottom,black_82%,transparent)]"
             />

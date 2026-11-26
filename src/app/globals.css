@@ -73,6 +73,24 @@ body {
   padding: 0 0.12em 0.28em;
   margin: 0 -0.12em -0.28em;
 }
+/* Ingresso dei blocchi (Reveal) e dei titoli (SplitText). Niente è nascosto nell'HTML: `rv-wait` lo mette
+   useRevealOnView, dopo il caricamento, solo su ciò che è ancora fuori schermo; `rv-in` quando ci entra. */
+.rv.rv-wait {
+  opacity: 0;
+  transform: translateY(28px);
+}
+.rv.rv-wait.rv-in {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--rv-d, 0s), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--rv-d, 0s);
+}
+.st.rv-wait .st-w {
+  transform: translateY(110%) rotate(4deg);
+}
+.st.rv-wait.rv-in .st-w {
+  transform: none;
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--rv-d, 0s) + var(--i, 0) * 60ms);
+}
 /* fessura di SplitText: alta abbastanza per le code delle lettere, senza cambiare l'impaginazione */
 .split-slot {
   display: inline-block;

@@ -89,13 +89,11 @@ export function StepsBand({ title = "Come funziona" }: { title?: string }) {
         </Reveal>
         <ol className="mt-8 grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map(([t, d], i) => (
-            <Reveal key={t} delay={i * 0.06}>
-              <li className="border-t border-gold-3/50 pt-5">
+            <Reveal as="li" key={t} delay={i * 0.06} className="border-t border-gold-3/50 pt-5">
                 <p className="font-display text-3xl font-light">
                   <span className="text-gold-3">{i + 1}.</span> {t}
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-cream/70">{d}</p>
-              </li>
             </Reveal>
           ))}
         </ol>
