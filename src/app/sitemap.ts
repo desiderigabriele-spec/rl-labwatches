@@ -46,6 +46,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     page("/termini-di-servizio", 0.2, "yearly"),
     page("/cookie", 0.2, "yearly"),
     page("/note-legali", 0.2, "yearly"),
-    ...(reale ? [page("/shop", 0.8, "weekly"), ...brands.map((b) => page(`/shop/marca/${b.slug}`, 0.7, "weekly")), ...products.map((p) => page(`/shop/${p.slug}`, 0.6, "weekly"))] : []),
+    ...(reale ? [page("/shop", 0.8, "weekly"), ...brands
+          .filter((b) => products.some((p) => p.brand.toLowerCase() === b.name.toLowerCase()))
+          .map((b) => page(`/shop/marca/${b.slug}`, 0.7, "weekly")), ...products.map((p) => page(`/shop/${p.slug}`, 0.6, "weekly"))] : []),
   ];
 }
