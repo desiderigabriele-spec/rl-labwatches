@@ -62,7 +62,7 @@ export default async function ShopPage() {
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-14 sm:px-8 md:grid-cols-[1.2fr_0.8fr]">
           <Reveal>
             <h2 className="font-display text-4xl font-light sm:text-5xl">Cerchi un modello preciso?</h2>
-            <p className="mt-3 max-w-xl text-cream/75">Dimmi cosa cerchi e il budget: lo trovo io, e prima di proportelo lo apro e lo controllo in laboratorio.</p>
+            <p className="mt-3 max-w-xl text-cream/80">Dimmi cosa cerchi e il budget: lo trovo io, e prima di proportelo lo apro e lo controllo in laboratorio.</p>
           </Reveal>
           <Reveal delay={0.08} className="flex flex-wrap gap-3 md:justify-end">
             <a href={whatsappLink("Buongiorno Roberto, cerco un orologio: ")} target="_blank" rel="noopener noreferrer" className="btn-wa whitespace-nowrap">

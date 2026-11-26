@@ -102,7 +102,7 @@ export default function NotifyDialog({
   };
 
   const field =
-    "mt-1.5 w-full min-w-0 rounded-xl border border-cream/20 bg-cream/[0.05] px-3.5 py-2.5 text-base text-cream placeholder:text-cream/35 focus:border-gold-3 focus:outline-none sm:py-3 sm:text-base";
+    "mt-1.5 w-full min-w-0 rounded-xl border border-cream/20 bg-cream/[0.05] px-3.5 py-2.5 text-base text-cream placeholder:text-cream/50 focus:border-gold-3 focus:outline-none sm:py-3 sm:text-base";
   const label = "block text-xs font-semibold uppercase tracking-[0.22em] text-gold-3";
 
   if (!mounted) return null;
@@ -153,7 +153,7 @@ export default function NotifyDialog({
                   <h2 id={`${id}-t`} className="font-display text-3xl font-light leading-tight">
                     Grazie, <em className="text-gold-3">ti avviso io.</em>
                   </h2>
-                  <p className="mt-4 text-sm leading-relaxed text-cream/70">
+                  <p className="mt-4 text-sm leading-relaxed text-cream/80">
                     Appena gli orologi{brand ? ` ${brand}` : ""} sono in vetrina ti scrivo. Se nel frattempo cerchi un modello preciso o vuoi far valutare il tuo, chiedimelo pure.
                   </p>
                   <button type="button" onClick={onClose} className="btn-gold mt-7">
@@ -196,7 +196,7 @@ export default function NotifyDialog({
                       <input id={`${id}-p`} type="tel" inputMode="tel" value={tel} onChange={(e) => setTel(e.target.value)} autoComplete="tel" placeholder="333 1234567" className={field} />
                     </div>
                   </div>
-                  <p className="mt-1.5 text-xs text-cream/45">Basta uno dei due.</p>
+                  <p className="mt-1.5 text-xs text-cream/65">Basta uno dei due.</p>
 
                   {/* acquistare, vendere o tutte e due */}
                   <fieldset className="mt-4">
@@ -220,7 +220,7 @@ export default function NotifyDialog({
                   {/* antispam: invisibile alle persone */}
                   <input name="website" tabIndex={-1} autoComplete="off" aria-hidden className="absolute left-[-9999px] h-0 w-0 opacity-0" />
 
-                  <label className="mt-4 flex items-start gap-3 text-xs leading-relaxed text-cream/60">
+                  <label className="mt-4 flex items-start gap-3 text-xs leading-relaxed text-cream/65">
                     <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-[#d7b368]" />
                     <span>
                       Ho letto l&apos;

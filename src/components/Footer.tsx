@@ -55,12 +55,12 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-cream/15">
-        <div className="mx-auto max-w-7xl px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-6 text-xs text-cream/55 sm:px-8 lg:pb-6">
+        <div className="mx-auto max-w-7xl px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-6 text-xs text-cream/65 sm:px-8 lg:pb-6">
           <p>© {new Date().getFullYear()} RL Lab Watches · {site.fiscal.holder} · {site.fiscal.seat}</p>
           <p className="mt-1">
             P.IVA {site.vat} · C.F. {site.fiscal.taxCode} · CCIAA e n. REA {site.fiscal.rea}
           </p>
-          <p className="mt-2 max-w-[75ch] leading-relaxed text-cream/45">
+          <p className="mt-2 max-w-[75ch] leading-relaxed text-cream/65">
             Laboratorio indipendente, non affiliato ai marchi citati. I nomi e i loghi delle marche appartengono ai rispettivi proprietari e sono usati solo per indicare gli orologi su cui intervengo. Le immagini dei cofanetti, degli orologi in vetrina e del restauro passo dopo passo sono ricostruzioni a scopo illustrativo; le foto prima e dopo sono di lavori veri.
           </p>
         </div>

@@ -40,7 +40,7 @@ export function DarkHero({
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(0,69,42,0.4),transparent_60%)]" />
       <div className={`relative mx-auto grid max-w-7xl gap-10 px-4 sm:px-8 ${image ? "lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16" : ""}`}>
         <Reveal>
-          <nav aria-label="Percorso" className="mb-6 text-xs uppercase tracking-[0.2em] text-cream/45">
+          <nav aria-label="Percorso" className="mb-6 text-xs uppercase tracking-[0.2em] text-cream/65">
             <Link href="/" className="hover:text-gold-3">Home</Link>
             {crumbs.map((c) => (
               <span key={c.path}> <span aria-hidden>/</span> {c.name}</span>
@@ -52,7 +52,7 @@ export function DarkHero({
           ) : (
             <h1 className="mt-5 font-display text-display font-light leading-[1.04] sm:text-6xl">{title}</h1>
           )}
-          {intro && <div className="mt-6 max-w-xl text-base leading-relaxed text-cream/70 sm:text-lg">{intro}</div>}
+          {intro && <div className="mt-6 max-w-xl text-base leading-relaxed text-cream/80 sm:text-lg">{intro}</div>}
           {(whatsapp || cta) && (
             <div className="mt-8 flex flex-wrap items-center gap-3">
               {whatsapp && (
@@ -100,7 +100,7 @@ export function StepsBand({ title = "Come funziona" }: { title?: string }) {
                 <p className="font-display text-3xl font-light">
                   <span className="text-gold-3">{i + 1}.</span> {t}
                 </p>
-                <p className="mt-2 text-base leading-relaxed text-cream/70">{d}</p>
+                <p className="mt-2 text-base leading-relaxed text-cream/80">{d}</p>
             </Reveal>
           ))}
         </ol>

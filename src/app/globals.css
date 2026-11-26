@@ -15,6 +15,8 @@
   --color-green: #00452a;
   --color-green-2: #003d27;
   --color-cream: #f5f1e8;
+  /* stelle delle recensioni: oro scuro, si leggono sul champagne (contrasto 3,4:1 come chiede un simbolo) */
+  --color-star: #a8740b;
 
   /* scala dei caratteri: 12 · 14 · 16 · 18 (testi) · 24 · 30 · 36 · 40 · 48 · 72 (titoli). 40 = slogan d'apertura su telefono */
   --text-display: 2.5rem;
@@ -171,7 +173,7 @@ body {
   border: 1px solid rgb(245 241 232 / 0.2);
   padding: 0.75rem 0.85rem;
   font-size: 0.875rem;
-  color: rgb(245 241 232 / 0.75);
+  color: rgb(245 241 232 / 0.8);
   transition: border-color 0.25s ease, background-color 0.25s ease, color 0.25s ease;
 }
 .notify-pick.is-on { border-color: var(--color-gold-3); background: rgb(215 179 104 / 0.1); color: var(--color-cream); }
@@ -207,7 +209,7 @@ body {
   border-radius: 0.9rem;
   border: 1px solid rgb(245 241 232 / 0.14);
   background: rgb(245 241 232 / 0.03);
-  color: rgb(245 241 232 / 0.55);
+  color: rgb(245 241 232 / 0.65);
   transition: color 0.35s ease, border-color 0.35s ease, background-color 0.35s ease, box-shadow 0.35s ease;
 }
 .brand-chip:hover { color: var(--color-cream); border-color: rgb(215 179 104 / 0.5); }

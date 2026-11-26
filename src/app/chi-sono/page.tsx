@@ -52,15 +52,15 @@ export default function ChiSonoPage() {
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 text-center sm:grid-cols-3 sm:px-8">
           <div>
             <p className="font-display text-5xl font-light text-gold-3">12 mesi</p>
-            <p className="mt-1 text-sm text-cream/70">di garanzia su ogni lavoro</p>
+            <p className="mt-1 text-sm text-cream/80">di garanzia su ogni lavoro</p>
           </div>
           <a href={GOOGLE_REVIEWS_URL} target="_blank" rel="noopener noreferrer" className="group">
             <p className="font-display text-5xl font-light text-gold-3">★★★★★</p>
-            <p className="mt-1 text-sm text-cream/70 group-hover:text-cream">{reviews.length} recensioni su Google · leggile</p>
+            <p className="mt-1 text-sm text-cream/80 group-hover:text-cream">{reviews.length} recensioni su Google · leggile</p>
           </a>
           <div>
             <p className="font-display text-5xl font-light text-gold-3">Gratis</p>
-            <p className="mt-1 text-sm text-cream/70">la prima valutazione e il preventivo</p>
+            <p className="mt-1 text-sm text-cream/80">la prima valutazione e il preventivo</p>
           </div>
         </div>
       </section>

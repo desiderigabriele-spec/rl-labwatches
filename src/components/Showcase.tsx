@@ -527,7 +527,7 @@ export default function Showcase({
             </h2>
           </div>
           <div>
-            <p className="text-base leading-relaxed text-cream/60 sm:text-base">{intro}</p>
+            <p className="text-base leading-relaxed text-cream/65 sm:text-base">{intro}</p>
             {locked && (
               <div className="mt-6 flex items-center gap-2.5 sm:gap-3">
                 <button type="button" onClick={() => openNotify()} className="btn-gold">

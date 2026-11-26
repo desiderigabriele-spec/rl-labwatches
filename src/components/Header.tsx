@@ -171,13 +171,13 @@ export default function Header() {
           ))}
         </ul>
         {/* le pagine secondarie, piccole: marche e domande frequenti */}
-        <motion.p initial={false} animate={{ opacity: open ? 1 : 0 }} transition={{ delay: open ? 0.5 : 0 }} className="mb-6 flex gap-6 text-sm uppercase tracking-[0.2em] text-cream/70">
+        <motion.p initial={false} animate={{ opacity: open ? 1 : 0 }} transition={{ delay: open ? 0.5 : 0 }} className="mb-6 flex gap-6 text-sm uppercase tracking-[0.2em] text-cream/80">
           <Link href="/marche" tabIndex={open ? 0 : -1} className="hover:text-gold-3">Marche</Link>
           <Link href="/faq" tabIndex={open ? 0 : -1} className="hover:text-gold-3">FAQ</Link>
         </motion.p>
         <motion.div initial={false} animate={{ opacity: open ? 1 : 0 }} transition={{ delay: open ? 0.55 : 0 }} className="space-y-4 border-t border-cream/15 pt-6">
           <Link href="/preventivo" tabIndex={open ? 0 : -1} className="btn w-full justify-center !border-gold-3 !bg-gold-3 !text-green-2">Richiedi un preventivo</Link>
-          <p className="tag-mono text-center text-xs text-cream/60">{site.address.street} · {site.address.city}</p>
+          <p className="tag-mono text-center text-xs text-cream/65">{site.address.street} · {site.address.city}</p>
         </motion.div>
       </motion.nav>
     </header>

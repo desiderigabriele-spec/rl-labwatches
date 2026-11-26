@@ -22,7 +22,7 @@ function GoogleG({ className = "h-5 w-5" }: { className?: string }) {
 }
 
 const Stars = ({ className = "" }: { className?: string }) => (
-  <span className={`tracking-[0.12em] text-[#fbbc04] ${className}`} aria-label="5 stelle su 5">
+  <span className={`tracking-[0.12em] text-star ${className}`} aria-label="5 stelle su 5">
     ★★★★★
   </span>
 );

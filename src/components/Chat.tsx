@@ -137,10 +137,10 @@ export default function Chat() {
             <img src="/roberto-chat.webp" alt="" width={40} height={40} className="h-10 w-10 rounded-full bg-[#1a2a22] object-cover" onError={(e) => (e.currentTarget.style.visibility = "hidden")} />
             <div className="min-w-0 flex-1">
               <p className="font-display text-lg leading-tight">Roberto Landi</p>
-              <p className="text-xs text-cream/55">Orologiaio a Pistoia · rispondo io, di persona</p>
+              <p className="text-xs text-cream/65">Orologiaio a Pistoia · rispondo io, di persona</p>
             </div>
             {topic && (
-              <button type="button" onClick={restart} className="text-xs text-cream/55 underline underline-offset-2 hover:text-gold-3">
+              <button type="button" onClick={restart} className="text-xs text-cream/65 underline underline-offset-2 hover:text-gold-3">
                 Ricomincia
               </button>
             )}
@@ -199,7 +199,7 @@ export default function Chat() {
                 <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="chat-go border border-cream/20 hover:bg-cream/5">
                   <span aria-hidden>☏</span> Chiamami · {site.phone}
                 </a>
-                <Link href="/preventivo" onClick={() => setOpen(false)} className="pt-1 text-center text-xs text-cream/60 underline underline-offset-2 hover:text-gold-3">
+                <Link href="/preventivo" onClick={() => setOpen(false)} className="pt-1 text-center text-xs text-cream/65 underline underline-offset-2 hover:text-gold-3">
                   Preferisci un preventivo con le foto? Compila il modulo
                 </Link>
               </div>
@@ -221,7 +221,7 @@ export default function Chat() {
                   if (e.key === "Enter" && !e.shiftKey) send(e);
                 }}
                 placeholder="Es. Rolex Submariner, si ferma dopo un giorno"
-                className="max-h-28 min-h-[2.75rem] flex-1 resize-none rounded-xl border border-cream/20 bg-cream/[0.05] px-3 py-2.5 text-base text-cream placeholder:text-cream/35 focus:border-gold-3 focus:outline-none sm:text-base"
+                className="max-h-28 min-h-[2.75rem] flex-1 resize-none rounded-xl border border-cream/20 bg-cream/[0.05] px-3 py-2.5 text-base text-cream placeholder:text-cream/50 focus:border-gold-3 focus:outline-none sm:text-base"
               />
               <button type="submit" className="h-11 shrink-0 rounded-xl bg-gold-3 px-4 text-sm font-semibold text-[#0b100d]">
                 {draft.trim() ? "Invia" : "Salta"}

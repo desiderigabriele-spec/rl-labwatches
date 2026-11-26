@@ -63,14 +63,14 @@ export default async function BrandPage({ params }: Props) {
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_0%,rgba(0,69,42,0.35),transparent_60%)]" />
         <div className="relative">
           <BrandEntrance slug={b.slug}>
-            <nav aria-label="Percorso" className="text-xs uppercase tracking-[0.2em] text-cream/45">
+            <nav aria-label="Percorso" className="text-xs uppercase tracking-[0.2em] text-cream/65">
               <Link href="/" className="hover:text-gold-3">Home</Link> <span aria-hidden>/</span>{" "}
               <Link href="/shop" className="hover:text-gold-3">Orologi</Link> <span aria-hidden>/</span> {b.name}
             </nav>
             <h1 className="mt-3 font-display text-display font-light leading-[1.05] sm:mt-4 sm:text-6xl">
               <em className="text-gold-3">{b.name}</em> usati e revisionati a Pistoia
             </h1>
-            <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-cream/70 sm:mx-0 sm:mt-5 sm:max-w-2xl sm:text-base lg:text-lg">
+            <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-cream/80 sm:mx-0 sm:mt-5 sm:max-w-2xl sm:text-base lg:text-lg">
               Qui trovi i {b.name} che ho selezionato e revisionato nel mio laboratorio di Pistoia, pronti da indossare. Per ogni orologio ci sono foto
               vere, referenza, anno, condizioni e corredo. Ti interessa un pezzo o ne cerchi uno preciso? Scrivimi e ti rispondo io.
             </p>
