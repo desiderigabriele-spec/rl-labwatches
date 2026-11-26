@@ -9,7 +9,7 @@ export default function Footer() {
         <div className="col-span-2 space-y-5 lg:col-span-1">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/brand/parti/RL-completo-negativo-trasparente.svg" alt="Roberto Landi Lab Watches" loading="lazy" width={1080} height={595} className="h-20 w-auto sm:h-28" />
-          <p className="max-w-sm text-sm leading-relaxed text-cream/65">
+          <p className="max-w-sm text-base leading-relaxed text-cream/65">
             Artigiano di orologi di lusso a Pistoia: restauro, revisione e riparazione con spedizione sicura in tutto il mondo.
           </p>
         </div>

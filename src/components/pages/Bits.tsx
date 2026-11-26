@@ -100,7 +100,7 @@ export function StepsBand({ title = "Come funziona" }: { title?: string }) {
                 <p className="font-display text-3xl font-light">
                   <span className="text-gold-3">{i + 1}.</span> {t}
                 </p>
-                <p className="mt-2 text-sm leading-relaxed text-cream/70">{d}</p>
+                <p className="mt-2 text-base leading-relaxed text-cream/70">{d}</p>
             </Reveal>
           ))}
         </ol>

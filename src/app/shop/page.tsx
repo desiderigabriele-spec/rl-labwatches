@@ -51,7 +51,7 @@ export default async function ShopPage() {
             <Reveal key={t} delay={i * 0.05}>
               <div className="h-full rounded-2xl border border-line bg-paper-2 p-6">
                 <p className="font-display text-2xl">{t}</p>
-                <p className="mt-2 text-sm leading-relaxed text-mute">{d}</p>
+                <p className="mt-2 text-base leading-relaxed text-mute">{d}</p>
               </div>
             </Reveal>
           ))}
