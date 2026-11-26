@@ -31,13 +31,15 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const b = brandBySlug((await params).brand);
-  const { reale } = await getCatalogo();
+  const { reale, products } = await getCatalogo();
+  // una marca senza orologi in vetrina resta fuori da Google, anche quando la vetrina è aperta
+  const haOrologi = !!b && products.some((p) => p.brand.toLowerCase() === b.name.toLowerCase());
   return b
     ? pageMeta({
         title: `${b.name} usati e revisionati a Pistoia`,
         description: `${b.name} usati selezionati a Pistoia: ogni pezzo è aperto, revisionato e garantito 12 mesi. Cerchi un modello preciso? Te lo trovo e lo controllo io.`,
         path: `/shop/marca/${b.slug}`,
-        noindex: !reale,
+        noindex: !reale || !haOrologi,
       })
     : {};
 }
