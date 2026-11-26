@@ -8,6 +8,18 @@ import ShopFiltri from "@/components/ShopFiltri";
 import { brandBySlug, brands } from "@/data/brands";
 import { getCatalogo } from "@/data/catalogo";
 import { breadcrumbLd, pageMeta } from "@/lib/seo";
+import { WhatsAppIcon } from "@/components/WhatsAppButton";
+import { whatsappLink } from "@/data/site";
+
+/** modelli che passano più spesso dal banco, per marca */
+const MODELLI: Record<string, string[]> = {
+  rolex: ["Submariner", "Daytona", "Datejust", "GMT-Master II", "Explorer", "Day-Date"],
+  "patek-philippe": ["Nautilus", "Aquanaut", "Calatrava", "Complicazioni"],
+  "audemars-piguet": ["Royal Oak", "Royal Oak Offshore", "Code 11.59"],
+  cartier: ["Tank", "Santos", "Panthère", "Ballon Bleu"],
+  tudor: ["Black Bay", "Pelagos", "Ranger"],
+  omega: ["Speedmaster", "Seamaster", "Constellation"],
+};
 
 type Props = { params: Promise<{ brand: string }> };
 
@@ -77,7 +89,7 @@ export default async function BrandPage({ params }: Props) {
           <h2 className="font-display text-4xl font-light">
             {list.length ? `${list.length} ${list.length === 1 ? "orologio disponibile" : "orologi disponibili"}` : "Orologi disponibili"}
           </h2>
-          <Link href="/shop#orologi" className="shrink-0 border-b border-line pb-1 text-[0.7rem] uppercase tracking-[0.2em] text-mute hover:text-fg">
+          <Link href="/shop" className="shrink-0 border-b border-line pb-1 text-[0.7rem] uppercase tracking-[0.2em] text-mute hover:text-fg">
             Tutte le marche
           </Link>
         </div>
@@ -85,6 +97,39 @@ export default async function BrandPage({ params }: Props) {
           <BrandNav current={b.slug} />
         </div>
         {list.length ? <ShopFiltri products={list} senzaMarca /> : <EmptyBrand brand={b} />}
+      </section>
+
+      {/* restauro della marca: la pagina serve anche a chi un orologio ce l'ha già */}
+      <section className="border-t border-line bg-paper-2">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-8 sm:py-20 md:grid-cols-[1.1fr_0.9fr] md:items-center">
+          <div>
+            <p className="eyebrow">Hai già un {b.name}?</p>
+            <h2 className="mt-3 font-display text-4xl font-light">
+              Restauro e revisione <em className="text-gold">{b.name}</em>
+            </h2>
+            <p className="mt-4 max-w-xl leading-relaxed text-mute">{b.text}</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a href={whatsappLink(`Buongiorno Roberto, ho un ${b.name} da far vedere.`)} target="_blank" rel="noopener noreferrer" className="btn-wa whitespace-nowrap">
+                <WhatsAppIcon className="h-5 w-5" />
+                <span>
+                  <b>Ho un {b.name}</b>
+                  <small>Mandami una foto</small>
+                </span>
+              </a>
+              <Link href="/servizi" className="btn self-center">I lavori che faccio</Link>
+            </div>
+          </div>
+          {MODELLI[b.slug] && (
+            <div>
+              <p className="eyebrow">Passano spesso dal mio banco</p>
+              <ul className="mt-4 flex flex-wrap gap-2">
+                {MODELLI[b.slug].map((m) => (
+                  <li key={m} className="rounded-full border border-line bg-paper px-4 py-2 text-sm">{b.name} {m}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </section>
       </div>
     </>

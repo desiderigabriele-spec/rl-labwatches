@@ -1,8 +1,8 @@
 import Link from "next/link";
-import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
+import { DarkHero, EndCta } from "@/components/pages/Bits";
 import { brands } from "@/data/brands";
-import BrandLogo from "@/components/BrandLogo";
+import { whatsappLink } from "@/data/site";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({
@@ -15,37 +15,47 @@ export const metadata = pageMeta({
 export default function MarchePage() {
   return (
     <>
-      <PageHero
-        eyebrow="Specializzato nei migliori marchi internazionali"
-        title="Riparazione e restauro di *orologi di lusso*"
-        intro={
+      <DarkHero
+        eyebrow="Le marche del mio banco"
+        title={
           <>
-            <p>Ogni Maison ha i suoi segreti: calibri, finiture, tolleranze. La mia esperienza mi permette di intervenire con sicurezza sui modelli di tutte le principali case orologiere.</p>
-            <p className="mt-4">Questi sono i marchi che passano più spesso sul mio banco di lavoro.</p>
+            Ogni maison ha i suoi segreti. <em className="text-gold-3">Li conosco a memoria.</em>
           </>
         }
+        intro="Calibri, finiture, tolleranze: ogni casa orologiera ha le sue. Questi sono i marchi che passano più spesso sul mio banco, ma lavoro su tutti i movimenti di qualità."
         crumbs={[{ name: "Marche", path: "/marche" }]}
       />
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-8">
-        <div className="grid gap-px overflow-hidden border border-line bg-line md:grid-cols-2">
+      <section className="guilloche relative bg-[#0b100d] pb-20 text-cream">
+        <div className="mx-auto grid max-w-7xl gap-5 px-4 sm:grid-cols-2 sm:px-8 lg:grid-cols-3">
           {brands.map((b, i) => (
-            <Reveal key={b.name} delay={(i % 2) * 0.08} className="h-full">
-              <article className="group h-full bg-paper p-8 sm:p-12">
-                <div className="flex h-24 items-center">
-                  <BrandLogo brand={b} className={`text-fg transition-colors duration-500 group-hover:text-gold ${b.ratio > 3 ? "h-12" : "h-20"}`} />
+            <Reveal key={b.slug} delay={(i % 3) * 0.06} className="h-full">
+              <article className="flex h-full flex-col rounded-2xl border border-gold-3/20 bg-cream/[0.03] p-6">
+                {b.vetrina && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={`/vetrina/fila/${b.slug}.webp`} alt={`Cofanetto ${b.name}`} width={840} height={1200} loading="lazy" decoding="async" className="mx-auto aspect-[840/1020] h-auto w-[70%] object-cover object-top" />
+                )}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/marche/chiaro/${b.slug}.png`} alt={b.name} loading="lazy" className={`mx-auto mt-5 w-auto opacity-90 ${b.ratio > 3 ? "h-5" : "h-10"}`} style={{ aspectRatio: `${b.ratio}` }} />
+                <h2 className="sr-only">Riparazione e restauro {b.name}</h2>
+                <p className="mt-5 flex-1 text-[0.92rem] leading-relaxed text-cream/70">{b.text}</p>
+                <div className="mt-6 flex flex-wrap gap-2">
+                  <a href={whatsappLink(`Buongiorno Roberto, ho un ${b.name} da far vedere.`)} target="_blank" rel="noopener noreferrer" className="btn-gold !px-4 !py-2 text-[0.8rem]">
+                    Ho un {b.name}
+                  </a>
+                  <Link href={`/shop/marca/${b.slug}`} className="btn-gold btn-gold-quiet !px-4 !py-2 text-[0.8rem]">
+                    In vendita
+                  </Link>
                 </div>
-                <h2 className="mt-6 text-xs uppercase tracking-[0.3em] text-mute">Riparazione e restauro {b.name}</h2>
-                <span className="mt-5 block h-px w-12 bg-gold-2" />
-                <p className="mt-6 leading-relaxed text-mute">{b.text}</p>
               </article>
             </Reveal>
           ))}
         </div>
-        <Reveal className="mt-16 text-center">
-          <p className="text-mute">Il tuo orologio è di un altro marchio? Lavoro su modelli di tutte le principali case orologiere.</p>
-          <Link href="/preventivo" className="btn btn-solid mt-6">Richiedi un preventivo</Link>
-        </Reveal>
       </section>
+      <EndCta
+        title={<>Un&apos;altra <em className="text-gold">marca?</em></>}
+        text="Lavoro su tutti i movimenti meccanici e automatici di qualità. Mandami una foto e ti dico subito."
+        whatsapp="Buongiorno Roberto, ho un orologio di un'altra marca da far vedere."
+      />
     </>
   );
 }

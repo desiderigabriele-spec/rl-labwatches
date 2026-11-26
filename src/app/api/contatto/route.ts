@@ -41,8 +41,10 @@ export async function POST(req: Request) {
   const name = clean(data.name, 120);
   const email = clean(data.email, 200);
   const message = typeof data.message === "string" ? data.message.trim().slice(0, 5000) : "";
-  if (!name || !isEmail(email) || message.length < 3) {
-    return NextResponse.json({ ok: false, error: "Compila nome, email e messaggio." }, { status: 422 });
+  const phone = clean(data.phone, 40);
+  // email o telefono: basta uno dei due (il preventivo a passi chiede l'uno o l'altro)
+  if (!name || !(isEmail(email) || /^\+?[\d\s().-]{7,20}$/.test(phone)) || (email && !isEmail(email)) || message.length < 3) {
+    return NextResponse.json({ ok: false, error: "Compila nome, un'email o un telefono validi e il messaggio." }, { status: 422 });
   }
 
   const key = process.env.RESEND_API_KEY;
@@ -51,8 +53,8 @@ export async function POST(req: Request) {
   const quote = data.kind === "preventivo";
   const watch = [clean(data.brand), clean(data.model)].filter(Boolean).join(" ");
   const subject = quote ? `Richiesta preventivo${watch ? ` – ${watch}` : ""} – ${name}` : `${clean(data.subject) || "Messaggio dal sito"} – ${name}`;
-  const lines = [quote ? "Nuova richiesta di preventivo dal sito" : "Nuovo messaggio dal sito", "", `Nome: ${name}`, `Email: ${email}`];
-  if (data.phone) lines.push(`Telefono: ${clean(data.phone, 40)}`);
+  const lines = [quote ? "Nuova richiesta di preventivo dal sito" : "Nuovo messaggio dal sito", "", `Nome: ${name}`, `Email: ${email || "-"}`];
+  if (phone) lines.push(`Telefono: ${phone}`);
   if (quote) lines.push(`Orologio: ${watch || "-"}`);
   if (quote && data.service) lines.push(`Servizio: ${clean(data.service)}`);
   lines.push("", message);
@@ -63,7 +65,7 @@ export async function POST(req: Request) {
     body: JSON.stringify({
       from: process.env.CONTACT_FROM || "Sito RL Lab Watches <onboarding@resend.dev>",
       to: [process.env.CONTACT_TO || site.formsTo],
-      reply_to: email,
+      ...(email ? { reply_to: email } : {}),
       subject,
       text: lines.join("\n"),
     }),

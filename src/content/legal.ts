@@ -3,11 +3,18 @@
 //   BOZZA da far verificare a un consulente prima della pubblicazione definitiva.
 // - termini, note legali, spedizioni: testi del vecchio sito, con il dominio corretto.
 export type LegalBlock = ["h" | "p" | "note", string];
-export type LegalPage = { title: string; blocks: LegalBlock[] };
+/** summary: "in breve", poche righe semplici sopra il testo completo (che resta quello che vale) */
+export type LegalPage = { title: string; summary?: string[]; blocks: LegalBlock[] };
 
 export const legal = {
   "privacy": {
     "title": "Informativa sulla Privacy",
+    "summary": [
+      "Uso i tuoi dati solo per risponderti, prepararti il preventivo e fare il lavoro che mi chiedi.",
+      "Non li vendo e non li cedo a nessuno; li vedono solo i fornitori tecnici del sito.",
+      "Le statistiche (Google Analytics e Clarity) partono solo se accetti i cookie.",
+      "Puoi chiedere di vedere, correggere o cancellare i tuoi dati scrivendo a info@rl-labwatches.it."
+    ],
     "blocks": [
       [
         "h",
@@ -190,6 +197,12 @@ export const legal = {
   },
   "cookie": {
     "title": "Informativa sui Cookie",
+    "summary": [
+      "Niente cookie pubblicitari o di profilazione.",
+      "Solo cookie di statistica (Google Analytics e Clarity), e solo se li accetti.",
+      "Se rifiuti, il sito funziona uguale.",
+      "Puoi cambiare idea quando vuoi da \"Preferenze cookie\" in fondo alla pagina."
+    ],
     "blocks": [
       [
         "h",
@@ -218,7 +231,7 @@ export const legal = {
       ],
       [
         "p",
-        "Il Sito usa inoltre una memoria tecnica del browser: localStorage per ricordare la tua scelta sui cookie, e sessionStorage per ricordare, durante la sola sessione di navigazione, che l'animazione introduttiva è già stata mostrata. Questa informazione non contiene dati personali, non viene inviata ai nostri server e si cancella alla chiusura della scheda del browser. I caratteri tipografici sono serviti direttamente dal Sito, senza collegamenti a servizi esterni."
+        "Il Sito usa inoltre una memoria tecnica del browser: localStorage per ricordare la tua scelta sui cookie, e sessionStorage per ricordare, durante la sola sessione di navigazione, che il saluto della chat è già stato mostrato. Questa informazione non contiene dati personali, non viene inviata ai nostri server e si cancella alla chiusura della scheda del browser. I caratteri tipografici sono serviti direttamente dal Sito, senza collegamenti a servizi esterni."
       ],
       [
         "h",
