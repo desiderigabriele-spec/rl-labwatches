@@ -1,6 +1,6 @@
 # Audit SEO: rl-labwatches.it
 
-Data: 26/11/2026 · Stato: **Fase 1 (audit) e Fase 2 (piano) completate, in attesa di approvazione**
+Data: 26/11/2026 · Stato: **Fase 1 (audit) e Fase 2 (piano) completate, con la parte AI Mode / AI Overviews (7 e G), in attesa di approvazione**
 
 ## Contesto
 
@@ -68,7 +68,7 @@ Misurato sulla build di produzione (`next start`), HTML grezzo.
 | Favicon | ⚠️ c'è solo `icon.svg`. Mancano `apple-touch-icon` (iPhone, segnalibri) e il manifest. |
 | Open Graph e Twitter card | ✅ su tutte le pagine, con og:image 1200×630. Un'unica immagine per tutto il sito. |
 | Canonical | ✅ assoluti e corretti |
-| Google Search Console | ❌ non verificato, nessuna sitemap inviata |
+| Google Search Console | ⏳ proprietà di dominio creata. Il record TXT di verifica è stato aggiunto il 26/11 nella zona DNS (Wix); manca il clic su "Verifica" e l'invio della sitemap. |
 
 ### 4. Performance (Lighthouse mobile, build locale)
 
@@ -99,7 +99,7 @@ Cause, misurate da Lighthouse:
 | LocalBusiness | tutte le pagine | ✅ valido: name, address, telephone, email, url, image, logo, orari, areaServed, sameAs (IG, FB), founder, catalogo servizi, P.IVA. ❌ mancano **geo** (coordinate), **hasMap**, la scheda Google in **sameAs** e **priceRange**. ⚠️ il tipo generico `LocalBusiness` va bene: schema.org non ha un tipo "orologiaio" e `JewelryStore` sarebbe impreciso. |
 | WebSite | tutte | ✅ |
 | BreadcrumbList | pagine interne | ✅ |
-| FAQPage | /faq | ✅ domande visibili in pagina. Google ormai mostra i risultati FAQ quasi solo per siti istituzionali, ma lo schema aiuta comunque la ricerca AI. |
+| FAQPage | /faq | ✅ domande visibili in pagina. Google ormai mostra i risultati FAQ quasi solo per siti istituzionali; lo schema resta corretto perché descrive contenuto visibile. |
 | Service | — | ❌ i servizi sono solo nel catalogo del LocalBusiness, non come `Service` su /servizi |
 | Person (Roberto) | — | ❌ manca su /chi-sono |
 | Recensioni/rating | — | ✅ assenti, giustamente: non vanno inventate |
@@ -109,7 +109,87 @@ JSON-LD sintatticamente valido su tutte le pagine: l'ho letto con un parser JSON
 ### 6. Accessibilità che pesa sulla SEO
 - **Contrasto:** l'oro `#86661f` sul fondo crema arriva a 4,03–4,41, sotto il minimo di 4,5. Riguarda sopratitoli, date e numeri. Anche il sottotitolo piccolo nel pulsante WhatsApp (4,32) e il testo della card WhatsApp in /contatti (4,01).
 - **Liste:** su /servizi (i 4 passi) e /chi-sono (le tappe) l'animazione mette un `<div>` direttamente dentro `<ol>`, e gli screen reader non le riconoscono come liste.
-- Alt, etichette dei moduli e testi dei link: ✅
+- Etichette dei moduli e testi dei link: ✅. Alt: vedi 7.6, perché le foto dei lavori veri hanno alt vuoto.
+
+### 7. AI Mode, AI Overviews e altri motori AI
+
+**7.1 Noindex e snippet.** Ho cercato `noindex`, `nosnippet`, `max-snippet`, `data-nosnippet` e `X-Robots-Tag` nel codice, nell'HTML della build e negli header di produzione.
+
+| Dove | Cosa | Giudizio |
+|---|---|---|
+| /shop, /shop/marca/×6, /shop/[esempio]×6 | `noindex, follow` | ✅ voluto: oggi la vetrina ha solo orologi d'esempio. Si toglie da solo quando ci sono quelli veri. ⚠️ Effetto collaterale: la sezione "Restauro e revisione Rolex" che ho appena messo nelle pagine marca dello shop **non è indicizzabile** (vedi 7.3). |
+| 404 | `noindex` | ✅ |
+| tutte le altre pagine | niente | ✅ nessun `nosnippet`, `max-snippet:0` o `data-nosnippet`; nessun `X-Robots-Tag` in produzione |
+
+**7.2 HTML iniziale e robots.txt.** ✅ Tutto il testo è nell'HTML iniziale (vedi 1). robots.txt è `Allow: /`: non blocca né Googlebot né JS e CSS, e non blocca i crawler AI. L'unica riserva è `opacity:0` di `Reveal`: il testo c'è, ma visivamente aspetta il JS. Si risolve con il punto A1 del piano.
+
+**7.3 Copertura delle domande correlate ("fan-out").** /servizi è l'unica pagina servizi. Per Rolex e le altre case fa da pagina servizio /marche.
+
+| Domanda tipica | /servizi | /marche | Dove sta oggi |
+|---|---|---|---|
+| Come si lavora | ✅ i 4 passi | ❌ | /servizi |
+| Garanzia | ✅ 12 mesi, nell'intro | ❌ | anche /faq |
+| Zone servite / spedizione | ✅ sezione consegna e ritiro | ❌ | anche /spedizioni-e-consegna |
+| **Costi indicativi** | ❌ solo "preventivo gratuito" | ❌ | /faq dice "variano molto" |
+| **Tempi** | ❌ | ❌ | /faq dice "dipende", senza cifre |
+| **Urgenze** (vetro rotto, orologio fermo, acqua entrata) | ❌ | ❌ | da nessuna parte |
+| **Cosa NON è incluso / limiti** (non è centro autorizzato, quando il ricambio originale non c'è, cosa copre la garanzia) | ❌ | ❌ | solo il piè di pagina dice "laboratorio indipendente" |
+| Ogni quanto si fa la revisione | ❌ | ❌ | da nessuna parte |
+| Ricambi originali o compatibili | ⚠️ sì per i ricambi | ❌ | /faq |
+| Cosa succede alla garanzia della casa se lo apre un indipendente | ❌ | ❌ | da nessuna parte |
+| Pagamenti | ❌ | ❌ | /faq |
+
+Le risposte sono sparse fra /faq e le pagine legali, e sulle domande più cercate (prezzi, tempi, urgenze, limiti) **mancano i fatti**. I titoli H2 di /servizi sono i nomi dei servizi; mancano H2 per le domande. Su /marche ogni marca ha un solo paragrafo generico ("simbolo assoluto…"). I numeri non li scrivo io: servono da Roberto (vedi 7.4).
+
+**7.4 Segnali di esperienza diretta.**
+
+Ci sono già:
+- **8 lavori veri prima/dopo** in home, ma con alt vuoto (7.6).
+- **Foto vere del laboratorio** su /servizi.
+- **Ritratto e foto al banco** di Roberto.
+- **Racconto personale** su /chi-sono.
+
+Mancano: anni di attività, formazione con titoli, numeri, casi raccontati, attrezzatura.
+
+⚠️ **Da chiarire subito.** In home, il percorso "restauro del Daytona 6239" dice "Quadrante… com'è arrivato in laboratorio" e "dopo il restauro". Le immagini però vengono dal lavoro 3D e dai generatori di immagini. Se non è un lavoro vero, presentarlo come tale va contro proprio i segnali di esperienza. In quel caso o diventa "esempio illustrativo", oppure lo sostituiamo con un caso reale.
+
+**Cosa chiedere a Roberto** (non invento nulla):
+1. **Anno di inizio dell'attività** e anni al banco.
+2. **Formazione:** scuole o corsi di orologeria, attestati, con nome dell'ente, anno ed eventuale numero.
+3. **Certificazioni e iscrizioni:** albo artigiani, associazioni di categoria (CNA, Confartigianato…), eventuali accordi con fornitori di ricambi, se si possono citare.
+4. **3–5 casi veri raccontati:** modello e referenza, com'è arrivato, cosa ha fatto, quanto tempo, foto prima/durante/dopo. Ne nascono H2 su /servizi e /marche.
+5. **Prezzi indicativi veri**, anche come fasce "da… a…": revisione per marca e calibro, vetro, lucidatura, impermeabilità.
+6. **Tempi tipici** per intervento ed eventuale servizio urgente.
+7. **Cosa non fa o non garantisce:** limiti dei ricambi originali, cosa copre la garanzia di 12 mesi, se rilascia una ricevuta del lavoro.
+8. **Attrezzatura:** macchina per la tenuta stagna (fino a quanti bar), cronocomparatore, pulitrice a ultrasuoni. Sono fatti verificabili che si vedono nelle foto.
+9. **Numeri:** orologi revisionati all'anno o in totale, solo se li conosce davvero.
+10. **Il 6239 è un lavoro vero?** (vedi sopra)
+
+**7.5 Coerenza dell'entità.** Nome, indirizzo e telefono sono **identici** in sito, piè di pagina e JSON-LD. Due differenze:
+- Il piè di pagina firma "© RL Lab Watches · Landi Roberto", mentre il nome principale è "Roberto Landi Lab Watches". Va bene, perché "RL Lab Watches" è nel JSON-LD come `alternateName`, ma sul GBP il nome deve essere uno solo.
+- Gli orari sono da confermare (vedi sotto).
+
+| Dato | Sul sito e nel JSON-LD | Da mettere sul Google Business Profile |
+|---|---|---|
+| Nome | Roberto Landi Lab Watches | **Roberto Landi Lab Watches**, identico, senza keyword aggiunte (Google le vieta nel nome) |
+| Indirizzo | Via Padre Giovanni Antonelli, 69 · 51100 Pistoia (PT) | identico. La sede legale di Via Boccaccini 139 **non** va sul GBP. |
+| Telefono | +39 328 772 5925 | identico, come numero principale |
+| Sito web | https://www.rl-labwatches.it | `https://www.rl-labwatches.it/` |
+| Orari | Lun–Ven 9:00–18:00 · Sab e Dom chiuso, **da confermare** | gli stessi, una volta confermati. Se si riceve solo su appuntamento, indicarlo negli attributi. |
+| Categoria | — (schema `LocalBusiness`) | principale: riparazione orologi; secondaria: negozio di orologi, quando parte la vendita. Scegli le voci più vicine fra quelle proposte da Google. |
+| Servizi | Revisione completa · Restauro estetico completo · Sostituzione del vetro · Verifica d'autenticità · Prova di impermeabilità · Fornitura e personalizzazione di ricambi · Saldatura artigianale · Rimagliatura del bracciale · Consegna e ritiro sicuro | stessi 9 nomi, con la stessa descrizione breve. Se ci sono prezzi veri, gli stessi del sito. |
+| Descrizione | "Roberto Landi, artigiano di orologi di lusso a Pistoia: restauro, revisione e riparazione di Rolex, Patek Philippe, Audemars Piguet, Omega e altri grandi marchi. Spedizione sicura in tutto il mondo." | stesso testo (≤ 750 caratteri) |
+| Area servita | Pistoia + Italia (spedizione) | Pistoia e provincia; la spedizione nazionale nella descrizione |
+| Social | Instagram @rl_labwatches · Facebook robertolandi.labwatches | gli stessi link nel profilo |
+| Foto | ritratto, laboratorio, lavori prima/dopo | le stesse foto vere, più esterno e interno del laboratorio |
+| Email | info@rl-labwatches.it | (il GBP non la mostra) |
+
+**7.6 Immagini.**
+- **Nomi dei file buoni e parlanti** (es. `revisione-completa-movimento-rolex-daytona.jpg`, `lavori/daytona-acciaio-oro-prima.webp`).
+- **Alt buoni** su servizi, ritratto e marche.
+- ❌ **Le 16 foto dei lavori veri prima/dopo** (carosello in home) hanno `alt=""`: proprio le immagini più "di esperienza" sono invisibili a Google Immagini e ai motori AI. I dati per scrivere l'alt ci sono già (es. "Rolex Daytona acciaio e oro prima della lucidatura di cassa, lunetta e bracciale").
+- ✅ Decorative con `alt=""` giustamente: lancette, fasci di luce e ombre della vetrina.
+- **Video:** nessuno nel sito.
 
 ### Problemi ordinati per impatto
 
@@ -117,11 +197,15 @@ JSON-LD sintatticamente valido su tutte le pagine: l'ho letto con un parser JSON
 |---|---|---|
 | 1 | **Alto** | LCP 4,1–4,8 s su tutte le pagine: contenuto nascosto da `Reveal` fino al JavaScript |
 | 2 | **Alto** | H1 senza keyword né città; title della home troppo lungo (68) |
-| 3 | **Alto** | Search Console non verificato, sitemap mai inviata |
+| 3 | **Alto** | Search Console: TXT aggiunto, da completare la verifica e da inviare la sitemap |
 | 4 | **Alto** | Home: Performance 54, LCP doppio, 36 preload, 1,3 MB di immagini sovradimensionate, 2,2 s di blocco |
 | 5 | Medio | LocalBusiness senza geo, hasMap e link alla scheda Google |
 | 6 | Medio | Description di /cookie falsa; description corte su shop, marche e note legali |
 | 7 | Medio | Contrasto dell'oro sotto il minimo |
+| 7b | **Alto** | Prezzi, tempi, urgenze e limiti assenti: le domande più cercate non hanno risposta nei fatti (serve Roberto) |
+| 7c | **Alto** | Percorso "Daytona 6239" presentato come lavoro arrivato in laboratorio: da verificare se è reale |
+| 7d | Medio | Foto dei lavori veri con alt vuoto |
+| 7e | Medio | Contenuto di restauro per marca solo su pagine noindex dello shop |
 | 8 | Medio | Mancano Service su /servizi e Person su /chi-sono |
 | 9 | Basso | apple-touch-icon e manifest; title della 404; `lastModified` della sitemap |
 | 10 | Basso | Liste `ol` con `div` dentro; loghi in PNG; doppio salto http→https→www |
@@ -171,31 +255,41 @@ I testi del corpo pagina non li tocco.
 - Recensioni o rating: non li aggiungo.
 
 ### D. Tecnico (commit "tecnico") · impatto medio/basso · sforzo basso
-- Meta di verifica di **Google Search Console** nel `<head>` (proprietà "prefisso URL"). Funziona anche con il DNS ancora su Wix. **Mi serve il codice**, vedi la checklist.
+- **Google Search Console:** ✅ fatto il 26/11. Record TXT `google-site-verification=…` aggiunto nella zona DNS Wix, accanto all'SPF. ⚠️ Quando i nameserver passeranno a Vercel, va ricopiato su Vercel insieme a MX e SPF.
 - `apple-touch-icon` 180×180 e manifest, generati dal logo che c'è già.
 - `lastModified` reale nella sitemap: data fissa per pagina, aggiornata quando la pagina cambia.
-- Opzionale, utile alla ricerca AI: `llms.txt` con chi è Roberto, cosa fa, dove, contatti e link alle pagine. Solo fatti che sono già nel sito.
 
 ### E. Accessibilità (commit "accessibilità") · impatto medio · sforzo basso, **tocca un colore del marchio**
 - L'oro dei testi piccoli passa da `#86661f` a circa `#7a5c1b`: un filo più scuro, contrasto 4,7–5,2 (minimo 4,5). Ti mando prima/dopo.
 - Il sottotitolo nei pulsanti WhatsApp e il testo della card WhatsApp diventano un po' più chiari.
 
+### G. AI Mode e AI Overviews (commit "contenuti") · impatto alto · i fatti servono da Roberto
+Niente `llms.txt`, niente markup "per l'AI", niente testi spezzettati: solo contenuto vero, nelle pagine che ci sono già.
+1. **Alt descrittivi sulle 16 foto prima/dopo**, presi da `works.ts` (modello + intervento + prima/dopo). File: `WorksArc.tsx`. Si può fare subito.
+2. **/servizi: una sezione "Domande sul restauro"** in fondo, con H2 chiari: "Quanto costa…", "Quanto tempo…", "Cosa fare se si rompe il vetro o entra acqua", "Cosa copre la garanzia", "Cosa non faccio", "Ogni quanto revisionarlo". Testi di Roberto in prosa normale. Le FAQ già scritte restano su /faq.
+3. **/marche: per ogni marca**, al posto del paragrafo generico, i lavori tipici e i modelli che passano dal banco, più un caso vero con foto quando c'è. Stessa pagina, nessuna nuova URL. Il testo di restauro aggiunto nelle pagine marca dello shop resta lì per chi compra, ma la versione indicizzabile sta su /marche.
+4. **/chi-sono:** anni di attività, formazione e attrezzatura, quando Roberto li conferma.
+5. **Daytona 6239:** se non è un lavoro reale, la didascalia diventa "Esempio illustrativo" (oppure lo sostituiamo con un caso vero).
+6. Il JSON-LD segue i testi: `Service` con prezzi solo se veri, `Person` con anni e formazione solo se veri.
+
 ### F. Pagine nuove: **solo proposta, non le creo senza ok**
 - **Pagine di marca indicizzabili** (/marche/rolex, /marche/patek-philippe…). Oggi il testo "Restauro e revisione Rolex" sta su /shop/marca/rolex, che è noindex. Una pagina "Riparazione Rolex a Pistoia" con contenuto vero può posizionarsi su ricerche come "riparazione Rolex Pistoia". **Serve materiale di Roberto per marca:** lavori tipici, problemi frequenti, 2–3 foto vere, tempi indicativi. Senza, sarebbero pagine sottili e non le consiglio.
 - **Pagine per zona** (Firenze, Prato, Lucca…): **le sconsiglio.** Il laboratorio è uno e per le altre città il servizio è la spedizione, quindi sarebbero doorway page. Meglio una sola sezione "Da tutta Italia" (c'è già in /spedizioni-e-consegna) e la scheda Google ben curata.
-- **Ricerca AI:** le FAQ sono già visibili. Se Roberto dà **prezzi indicativi veri** (es. "revisione Rolex da … €"), le risposte diventano molto più citabili. Senza prezzi veri non scrivo cifre.
+- **Varianti di keyword:** nessuna pagina nuova per varianti ("riparazione orologi", "aggiustare orologio"…). Le copre il punto G dentro /servizi.
 
 ### Cosa mi serve da te
 1. **OK sul piano**, anche solo per alcune aree (A, B, C, D, E).
 2. **Testi del punto B:** ok così, modifiche, e opzione 1 o 2 per l'H1.
 3. **Orari:** il sito dice lun–ven 9–18. Nel codice c'è una nota: il vecchio sito aveva orari diversi in Contatti. Devono essere identici alla scheda Google.
 4. **Coordinate del laboratorio:** su Google Maps, tasto destro sul punto esatto → copia i due numeri.
-5. **Codice di verifica di Search Console** (proprietà "Prefisso URL" → metodo "Tag HTML" → mi incolli solo il `content="…"`).
+5. **Le risposte di Roberto alla lista 7.4**, soprattutto prezzi, tempi, limiti e se il Daytona 6239 è un lavoro vero.
 
 ---
 
 ## Checklist manuale (per te)
-- [ ] **Google Search Console:** aggiungi la proprietà `https://www.rl-labwatches.it/` (prefisso URL), metodo Tag HTML, e mandami il codice. Dopo la pubblicazione premi "Verifica" e invia `https://www.rl-labwatches.it/sitemap.xml`.
+- [ ] **Google Search Console** (proprietà di dominio `rl-labwatches.it`): il record TXT è già nel DNS. Premi **Verifica**; se fallisce, riprova dopo qualche ora. Poi in *Sitemap* invia `https://www.rl-labwatches.it/sitemap.xml`.
 - [ ] **Google Business Profile:** nome, indirizzo, telefono e orari **identici** al sito (vedi NAP sopra). Sito web: `https://www.rl-labwatches.it/`. Categoria: scegli la più precisa tra quelle che Google propone per "orologi" (es. servizio di riparazione orologi come principale, negozio di orologi come secondaria quando parte la compravendita).
+- [ ] **Search Console e funzioni AI:** controlla in *Impostazioni* / *Rapporto sulla copertura* che le pagine principali siano indicizzate e senza limiti di snippet. Dopo qualche settimana segui il rapporto sulle prestazioni nelle funzioni di AI generativa (AI Overviews / AI Mode) per vedere le query che portano al sito.
+- [ ] **Google Business Profile completo:** categorie, i 9 servizi con gli stessi nomi del sito, foto vere (laboratorio, banco, lavori prima/dopo, esterno con l'insegna), orari, attributi (su appuntamento). Chiedi le recensioni ai clienti veri e rispondi a tutte. Non comprarle e non scriverle.
 - [ ] **Bing Webmaster Tools:** importa la proprietà da Search Console (un clic), poi invia la sitemap.
 - [ ] **Nameserver su register.it:** ancora su Wix. Non disdire Wix Premium finché il DNS non è spostato.
