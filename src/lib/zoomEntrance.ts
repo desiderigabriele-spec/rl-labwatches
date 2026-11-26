@@ -82,7 +82,7 @@ export function openZoom(
   const root = el("div", "position:fixed;inset:0;z-index:38;overflow:hidden") as HTMLDivElement;
   root.setAttribute("role", "dialog");
   root.setAttribute("aria-label", `Orologi ${o.name}`);
-  const back = el("div", "position:absolute;inset:0;background:#0b100d;opacity:0;cursor:zoom-out") as HTMLDivElement;
+  const back = el("div", "position:absolute;inset:0;background:var(--color-night);opacity:0;cursor:zoom-out") as HTMLDivElement;
   // Due strati che si ingrandiscono con transform (scheda grafica, niente ridisegno a ogni fotogramma):
   // - il cofanetto, impaginato piccolo come in vetrina e ingrandito: la sua foto non ha più dettaglio di così;
   // - la foto ravvicinata, impaginata già alla misura finale e rimpicciolita all'inizio: arriva nitida.

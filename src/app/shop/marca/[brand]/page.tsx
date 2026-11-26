@@ -56,10 +56,10 @@ export default async function BrandPage({ params }: Props) {
     <>
       <JsonLd data={breadcrumbLd(crumbs)} />
       {/* fondo scuro sotto la pagina: arrivando dalla vetrina non si vede il lampo chiaro del cambio pagina */}
-      <style>{"body{background:#0b100d}"}</style>
+      <style>{"body{background:var(--color-night)}"}</style>
       {/* apertura scura, in continuità con la vetrina */}
       {/* apertura compatta: il cofanetto piccolo e che cosa si trova in questa pagina */}
-      <section className="guilloche relative overflow-hidden bg-[#0b100d] pb-12 pt-20 text-cream sm:pb-16 sm:pt-36">
+      <section className="guilloche relative overflow-hidden bg-night pb-12 pt-20 text-cream sm:pb-16 sm:pt-36">
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_0%,rgba(0,69,42,0.35),transparent_60%)]" />
         <div className="relative">
           <BrandEntrance slug={b.slug}>

@@ -25,7 +25,7 @@ export default function MarchePage() {
         intro="Calibri, finiture, tolleranze: ogni casa orologiera ha le sue. Questi sono i marchi che passano più spesso sul mio banco, ma lavoro su tutti i movimenti di qualità."
         crumbs={[{ name: "Marche", path: "/marche" }]}
       />
-      <section className="guilloche relative bg-[#0b100d] pb-20 text-cream">
+      <section className="guilloche relative bg-night pb-20 text-cream">
         <div className="mx-auto grid max-w-7xl gap-5 px-4 sm:grid-cols-2 sm:px-8 lg:grid-cols-3">
           {brands.map((b, i) => (
             <Reveal key={b.slug} delay={(i % 3) * 0.06} className="h-full">

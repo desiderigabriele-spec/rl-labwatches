@@ -35,7 +35,7 @@ export function DarkHero({
   cta?: React.ReactNode;
 }) {
   return (
-    <section className="guilloche relative overflow-hidden bg-[#0b100d] pb-16 pt-32 text-cream sm:pb-20 sm:pt-40">
+    <section className="guilloche relative overflow-hidden bg-night pb-16 pt-32 text-cream sm:pb-20 sm:pt-40">
       <JsonLd data={breadcrumbLd(crumbs)} />
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(0,69,42,0.4),transparent_60%)]" />
       <div className={`relative mx-auto grid max-w-7xl gap-10 px-4 sm:px-8 ${image ? "lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16" : ""}`}>

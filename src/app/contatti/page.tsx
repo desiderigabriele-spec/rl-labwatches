@@ -36,7 +36,7 @@ export default function ContattiPage() {
         </Reveal>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           <Reveal>
-            <a href={whatsappLink("Buongiorno Roberto, le scrivo dal sito.")} target="_blank" rel="noopener noreferrer" className="flex h-full flex-col gap-2 rounded-2xl bg-[#1f7a4d] p-7 text-white transition-colors hover:bg-[#18663f]">
+            <a href={whatsappLink("Buongiorno Roberto, le scrivo dal sito.")} target="_blank" rel="noopener noreferrer" className="flex h-full flex-col gap-2 rounded-2xl bg-wa p-7 text-white transition-colors hover:bg-wa-dark">
               <WhatsAppIcon className="h-7 w-7" />
               <span className="mt-2 font-display text-3xl">WhatsApp</span>
               <span className="text-sm text-white">La via più veloce: mandami anche una foto dell&apos;orologio.</span>

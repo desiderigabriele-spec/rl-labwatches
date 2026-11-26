@@ -510,7 +510,7 @@ export default function Showcase({
   const title2 = title || null;
 
   return (
-    <section id="vetrina" ref={ref} className="guilloche relative scroll-mt-20 overflow-hidden bg-[#0b100d] py-16 text-cream sm:py-24" aria-labelledby="vetrina-titolo">
+    <section id="vetrina" ref={ref} className="guilloche relative scroll-mt-20 overflow-hidden bg-night py-16 text-cream sm:py-24" aria-labelledby="vetrina-titolo">
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0,69,42,0.35),transparent_60%)]" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-8">
         <div className="grid gap-6 lg:grid-cols-[1fr_0.8fr] lg:items-end lg:gap-16">

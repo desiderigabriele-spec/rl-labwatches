@@ -126,7 +126,7 @@ export default function NotifyDialog({
             exit={{ y: 24, opacity: 0 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             data-lenis-prevent
-            className="relative grid max-h-[92dvh] w-full max-w-[46rem] overflow-y-auto rounded-t-[22px] border border-gold-3/25 bg-[#0b100d] text-cream shadow-[0_40px_80px_rgba(0,0,0,0.6)] sm:grid-cols-[0.82fr_1.18fr] sm:rounded-[22px]"
+            className="relative grid max-h-[92dvh] w-full max-w-[46rem] overflow-y-auto rounded-t-[22px] border border-gold-3/25 bg-night text-cream shadow-[0_40px_80px_rgba(0,0,0,0.6)] sm:grid-cols-[0.82fr_1.18fr] sm:rounded-[22px]"
           >
             {/* l'orologio da vicino */}
             <div className="relative h-44 overflow-hidden bg-[#111] [container-type:size] sm:h-auto sm:min-h-[30rem]">
@@ -137,8 +137,8 @@ export default function NotifyDialog({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={image || "/vendi/vetrina.webp"} alt="" className="absolute inset-0 h-full w-full object-cover object-[50%_32%]" />
               )}
-              <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0b100d] sm:bg-gradient-to-r" />
-              <span className="absolute bottom-3 left-3 rounded-full bg-[#0b100d]/70 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.24em] text-gold-3 backdrop-blur-sm">
+              <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-night sm:bg-gradient-to-r" />
+              <span className="absolute bottom-3 left-3 rounded-full bg-night/70 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.24em] text-gold-3 backdrop-blur-sm">
                 In vetrina · gennaio 2027
               </span>
             </div>

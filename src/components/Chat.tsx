@@ -106,7 +106,7 @@ export default function Chat() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="chat-hint fixed bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-4 z-40 max-w-[15rem] rounded-2xl rounded-br-md border border-gold-3/30 bg-[#0b100d] px-4 py-3 text-left text-sm leading-snug text-cream shadow-[0_14px_30px_rgba(0,0,0,0.35)] sm:right-6"
+          className="chat-hint fixed bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-4 z-40 max-w-[15rem] rounded-2xl rounded-br-md border border-gold-3/30 bg-night px-4 py-3 text-left text-sm leading-snug text-cream shadow-[0_14px_30px_rgba(0,0,0,0.35)] sm:right-6"
         >
           Un orologio da sistemare, vendere o trovare? <span className="text-gold-3">Scrivimi qui.</span>
         </button>
@@ -130,7 +130,7 @@ export default function Chat() {
           role="dialog"
           aria-label="Chat con Roberto"
           data-lenis-prevent
-          className="chat-panel fixed inset-x-3 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-50 flex max-h-[min(34rem,calc(100dvh-8rem))] flex-col overflow-hidden rounded-2xl border border-gold-3/25 bg-[#0b100d] text-cream shadow-[0_30px_60px_rgba(0,0,0,0.5)] sm:inset-x-auto sm:right-6 sm:w-[22rem]"
+          className="chat-panel fixed inset-x-3 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-50 flex max-h-[min(34rem,calc(100dvh-8rem))] flex-col overflow-hidden rounded-2xl border border-gold-3/25 bg-night text-cream shadow-[0_30px_60px_rgba(0,0,0,0.5)] sm:inset-x-auto sm:right-6 sm:w-[22rem]"
         >
           <div className="flex items-center gap-3 border-b border-cream/10 px-4 py-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -190,7 +190,7 @@ export default function Chat() {
 
             {topic && watch !== null && (
               <div className="grid gap-2 pt-1">
-                <a href={whatsappLink(text)} target="_blank" rel="noopener noreferrer" className="chat-go bg-[#1f7a4d] text-white hover:bg-[#18663f]">
+                <a href={whatsappLink(text)} target="_blank" rel="noopener noreferrer" className="chat-go bg-wa text-white hover:bg-wa-dark">
                   <WhatsAppIcon className="h-5 w-5" /> Continua su WhatsApp
                 </a>
                 <a href={mail} className="chat-go border border-gold-3/50 hover:bg-gold-3/10">
@@ -223,7 +223,7 @@ export default function Chat() {
                 placeholder="Es. Rolex Submariner, si ferma dopo un giorno"
                 className="max-h-28 min-h-[2.75rem] flex-1 resize-none rounded-xl border border-cream/20 bg-cream/[0.05] px-3 py-2.5 text-base text-cream placeholder:text-cream/50 focus:border-gold-3 focus:outline-none sm:text-base"
               />
-              <button type="submit" className="h-11 shrink-0 rounded-xl bg-gold-3 px-4 text-sm font-semibold text-[#0b100d]">
+              <button type="submit" className="h-11 shrink-0 rounded-xl bg-gold-3 px-4 text-sm font-semibold text-night">
                 {draft.trim() ? "Invia" : "Salta"}
               </button>
             </form>
