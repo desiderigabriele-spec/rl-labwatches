@@ -61,12 +61,17 @@ function inProdotto(r: Riga): Product {
   };
 }
 
+/** orologio di prova: indirizzo che inizia con "prova" oppure "(PROVA)" nel nome */
+const isProva = (r: Riga) => /^prova\b|^prova-/i.test(r.slug) || /\(prova\)/i.test(r.nome);
+
 export async function getCatalogo(): Promise<{ products: Product[]; reale: boolean }> {
   try {
     const url = `${SUPABASE_URL}/rest/v1/orologi?cliente_id=eq.${CLIENTE_ID}&pubblicato=eq.true&order=ordine.asc,created_at.desc&select=*`;
     const r = await fetch(url, { headers: { apikey: SUPABASE_KEY }, next: { revalidate: 60, tags: ["catalogo"] } });
     if (r.ok) {
-      const righe = (await r.json()) as Riga[];
+      // gli orologi di prova (es. quello per controllare il collegamento con l'area) non vanno mai online:
+      // non si mostrano, non entrano nella sitemap e da soli non "aprono" la vetrina a Google
+      const righe = ((await r.json()) as Riga[]).filter((x) => !isProva(x));
       if (righe.length) return { products: righe.map(inProdotto), reale: true };
     }
   } catch {
