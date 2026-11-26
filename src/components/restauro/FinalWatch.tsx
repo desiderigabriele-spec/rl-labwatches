@@ -66,7 +66,7 @@ export default function FinalWatch({ active }: { active: boolean }) {
   return (
     <div className="relative aspect-square h-full w-full">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={PHOTO} alt="Il Daytona 6239 dopo il restauro" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full [mask-image:radial-gradient(circle,black_60%,transparent_71%)]" />
+      <img src={PHOTO} alt="Ricostruzione del Daytona 6239 dopo il restauro" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full [mask-image:radial-gradient(circle,black_60%,transparent_71%)]" />
       <div
         className="absolute overflow-hidden rounded-full shadow-[inset_0_0_14px_rgba(0,0,0,0.45)]"
         style={{ left: `${DIAL_BOX.left}%`, top: `${DIAL_BOX.top}%`, width: `${DIAL_BOX.size}%`, height: `${DIAL_BOX.size}%` }}

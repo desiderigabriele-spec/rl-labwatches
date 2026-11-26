@@ -7,6 +7,7 @@ import { works } from "@/data/works";
 const N = works.length;
 /** versione da 480 px della stessa foto (scripts/varianti-immagini.mjs), per gli schermi che non chiedono di più */
 const small = (src: string) => src.replace(/\.webp$/, "-480.webp");
+const lower = (t: string) => t.charAt(0).toLowerCase() + t.slice(1);
 /** distanza (anche con la virgola) del lavoro i da quello davanti, sul giro: -N/2..N/2 */
 const wrapD = (i: number, p: number) => {
   let d = (((i - p) % N) + N) % N;
@@ -238,12 +239,12 @@ export default function WorksArc() {
                 <div className="absolute inset-0 overflow-hidden rounded-md border-[9px] border-[#f8f2e4] bg-paper-2 shadow-[0_34px_60px_-26px_rgba(18,32,26,0.5),0_2px_6px_rgba(18,32,26,0.08)]">
                   {near && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={wk.after} srcSet={`${small(wk.after)} 480w, ${wk.after} 900w`} sizes="(min-width: 1024px) 340px, 60vw" loading="lazy" decoding="async" alt="" draggable={false} className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+                    <img src={wk.after} srcSet={`${small(wk.after)} 480w, ${wk.after} 900w`} sizes="(min-width: 1024px) 340px, 60vw" loading="lazy" decoding="async" alt={`${wk.watch} dopo il lavoro: ${lower(wk.job)}`} draggable={false} className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
                   )}
                   {front && (
                     <>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img data-before src={wk.before} srcSet={`${small(wk.before)} 480w, ${wk.before} 900w`} sizes="(min-width: 1024px) 340px, 60vw" loading="lazy" decoding="async" alt="" draggable={false} className="pointer-events-none absolute inset-0 h-full w-full object-cover" style={{ clipPath: "inset(0 50% 0 0)" }} />
+                      <img data-before src={wk.before} srcSet={`${small(wk.before)} 480w, ${wk.before} 900w`} sizes="(min-width: 1024px) 340px, 60vw" loading="lazy" decoding="async" alt={`${wk.watch} prima del lavoro: ${lower(wk.job)}`} draggable={false} className="pointer-events-none absolute inset-0 h-full w-full object-cover" style={{ clipPath: "inset(0 50% 0 0)" }} />
                       <span data-line aria-hidden className="absolute bottom-0 top-0 w-px bg-paper shadow-[0_0_0_1px_rgba(0,0,0,0.25)]" style={{ left: "50%" }}>
                         <span className="absolute left-1/2 top-1/2 grid h-9 w-9 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize place-items-center rounded-full bg-fg text-paper shadow-lg">↔</span>
                       </span>
