@@ -4,7 +4,7 @@ import JsonLd from "@/components/JsonLd";
 import Reveal from "@/components/Reveal";
 import { EndCta } from "@/components/pages/Bits";
 import { GOOGLE_REVIEWS_URL, reviews } from "@/data/reviews";
-import { breadcrumbLd, pageMeta } from "@/lib/seo";
+import { breadcrumbLd, pageMeta, personLd } from "@/lib/seo";
 
 export const metadata = pageMeta({
   title: "Chi sono: orologiaio artigiano a Pistoia",
@@ -24,6 +24,7 @@ export default function ChiSonoPage() {
   return (
     <>
       <JsonLd data={breadcrumbLd([{ name: "Chi sono", path: "/chi-sono" }])} />
+      <JsonLd data={personLd} />
       <section className="relative overflow-hidden pt-32 sm:pt-40">
         <div className="mx-auto grid max-w-7xl items-end gap-10 px-4 sm:px-8 lg:grid-cols-[1.15fr_0.85fr]">
           <Reveal className="pb-6 lg:pb-20">

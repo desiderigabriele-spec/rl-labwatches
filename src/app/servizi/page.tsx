@@ -4,7 +4,8 @@ import Reveal from "@/components/Reveal";
 import { DarkHero, EndCta, StepsBand } from "@/components/pages/Bits";
 import ProblemPicker from "@/components/pages/ProblemPicker";
 import { services } from "@/data/services";
-import { pageMeta } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
+import { pageMeta, servicesLd } from "@/lib/seo";
 
 export const metadata = pageMeta({
   title: "Riparazione e restauro orologi a Pistoia",
@@ -25,6 +26,7 @@ export default function ServiziPage() {
   const consegna = bySlug["consegna-e-ritiro"];
   return (
     <>
+      <JsonLd data={servicesLd(services)} />
       <DarkHero
         h1="Riparazione e restauro di orologi di lusso a Pistoia"
         title={
